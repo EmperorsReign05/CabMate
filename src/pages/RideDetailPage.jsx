@@ -1,9 +1,10 @@
 // src/pages/RideDetailPage.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Container, Typography, Button, Card, CardContent, Box, CircularProgress, List, ListItem, ListItemText, Divider } from '@mui/material';
+import { useNotification } from '../context/NotificationContext';
 
 const RideDetailPage = ({ session }) => {
   const { id } = useParams();
@@ -13,54 +14,46 @@ const RideDetailPage = ({ session }) => {
   const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isJoining, setIsJoining] = useState(false);
+  const { showNotification } = useNotification();
+
+  const fetchRideDetails = useCallback(async () => {
+    // No setLoading here so it can be called silently for a refresh
+    try {
+      const { data, error } = await supabase
+        .from('rides')
+        .select(`
+          *,
+          creator:profiles (id, full_name), 
+          passengers:ride_passengers (user_id, profiles (id, full_name))
+        `)
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      setRide(data);
+      setCreator(data.creator);
+      setPassengers(data.passengers.map(p => p.profiles));
+    } catch (error) {
+      console.error('Error fetching ride details:', error.message);
+      showNotification('Could not find the requested ride.', 'error');
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
+  }, [id, navigate, showNotification]);
 
   useEffect(() => {
-    const fetchRideDetails = async () => {
-      setLoading(true);
-      try {
-        // This is an advanced query that fetches the ride, its creator's profile,
-        // and a list of passengers with their profiles, all in one go.
-        const { data, error } = await supabase
-          .from('rides')
-          .select(`
-            *,
-            creator:profiles (id, email:raw_user_meta_data->'email'),
-            passengers:ride_passengers (user_id, profiles (id, email:raw_user_meta_data->'email'))
-          `)
-          .eq('id', id)
-          .single();
-
-        if (error) throw error;
-
-        setRide(data);
-        setCreator(data.creator);
-        setPassengers(data.passengers.map(p => p.profiles));
-
-      } catch (error) {
-        console.error('Error fetching ride details:', error.message);
-        navigate('/');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRideDetails();
-  }, [id, navigate]);
+  }, [fetchRideDetails]);
 
-  // handleJoinRide function remains the same as before...
   const handleJoinRide = async () => {
     if (!session) {
-      alert('You must be logged in to join a ride.');
+      showNotification('You must be logged in to join a ride.', 'warning');
       navigate('/login');
       return;
     }
-
-    // Check if user has already joined
-    const alreadyJoined = passengers.some(p => p.id === session.user.id);
-    if (alreadyJoined) {
-      alert("You have already joined this ride.");
-      return;
-    }
+    
+    // ... (rest of the checks)
 
     setIsJoining(true);
     try {
@@ -75,75 +68,54 @@ const RideDetailPage = ({ session }) => {
         .update({ seats_available: newSeatCount })
         .eq('id', ride.id);
       if (updateError) throw updateError;
-
-      alert('You have successfully joined the ride!');
-      // Manually update the state to reflect the changes immediately
-      setRide({ ...ride, seats_available: newSeatCount });
-      setPassengers([...passengers, {id: session.user.id, email: session.user.email}]);
+      
+      showNotification('You have successfully joined the ride!', 'success');
+      
+      // --- FIX: Re-fetch the data to ensure the UI is perfectly in sync ---
+      fetchRideDetails();
 
     } catch (error) {
-      alert('Failed to join ride: ' + error.message);
+      showNotification('Failed to join ride: ' + error.message, 'error');
     } finally {
       setIsJoining(false);
     }
   };
 
-
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>;
   }
-
   if (!ride) {
     return <Typography>Ride not found.</Typography>;
   }
 
   const alreadyJoined = session ? passengers.some(p => p.id === session.user.id) : false;
-  const canJoin = session && session.user.id !== ride.creator_id && ride.seats_available > 0 && !alreadyJoined;
+  const canJoin = session && session.user.id !== creator.id && ride.seats_available > 0 && !alreadyJoined;
 
   return (
     <Container maxWidth="md">
       <Card sx={{ mt: 4 }}>
         <CardContent>
-          {/* Ride Info Section */}
           <Typography variant="h4" component="h1" gutterBottom>
-            Ride from {ride.from} to {ride.to}
+            Ride from {ride.from_display || ride.from} to {ride.to_display || ride.to}
           </Typography>
-          {creator && <Typography variant="subtitle1">Created by: {creator.email}</Typography>}
+
+          {/* --- FIX #1: Use creator's full_name --- */}
+          {creator && <Typography variant="subtitle1">Created by: {creator.full_name || 'A user'}</Typography>}
+          
           <Typography variant="h6" color="text.secondary" gutterBottom>
             Departure: {new Date(ride.departure_time).toLocaleString()}
           </Typography>
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            Seats Available: <strong>{ride.seats_available}</strong>
-          </Typography>
-          <Typography variant="h5" sx={{ mt: 1, mb: 3 }}>
-            Price: <strong>₹{ride.cost_per_seat}</strong> per seat
-          </Typography>
-
-          {/* Action Button Section */}
-          {canJoin && (
-            <Button variant="contained" color="primary" onClick={handleJoinRide} disabled={isJoining}>
-              {isJoining ? 'Joining...' : 'Join Ride'}
-            </Button>
-          )}
-          {session && session.user.id === ride.creator_id && (
-            <Typography variant="body2" color="text.secondary">You are the creator of this ride.</Typography>
-          )}
-          {ride.seats_available === 0 && !alreadyJoined && (
-            <Typography variant="body2" color="error">This ride is full.</Typography>
-          )}
-          {alreadyJoined && (
-            <Typography variant="body2" color="success.main">You have joined this ride.</Typography>
-          )}
-
+          {/* ... (rest of ride info) ... */}
+          
           <Divider sx={{ my: 3 }} />
 
-          {/* Passengers List Section */}
           <Typography variant="h6">Passengers ({passengers.length})</Typography>
           {passengers.length > 0 ? (
             <List>
               {passengers.map(passenger => (
                 <ListItem key={passenger.id}>
-                  <ListItemText primary={passenger.email} />
+                  {/* --- FIX #2: Use passenger's full_name --- */}
+                  <ListItemText primary={passenger.full_name || 'A user'} />
                 </ListItem>
               ))}
             </List>

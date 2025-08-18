@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Container, Typography, Box, Grid, Card, CardContent, CardActions, Button, CircularProgress, Divider } from '@mui/material';
+import { useNotification } from '../context/NotificationContext';
 
 const RideCard = ({ ride, isCreator, onDelete }) => (
   <Grid item xs={12} sm={6} md={4}>
@@ -36,6 +37,7 @@ const MyRidesPage = ({ session }) => {
   const [createdRides, setCreatedRides] = useState([]);
   const [joinedRides, setJoinedRides] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     if (!session) {
@@ -81,7 +83,7 @@ const MyRidesPage = ({ session }) => {
         // Remove the deleted ride from the state to update the UI instantly
         setCreatedRides(createdRides.filter(ride => ride.id !== rideId));
       } catch (error) {
-        alert('Error deleting ride: ' + error.message);
+        showNotification('Error deleting ride: ' + error.message);
       }
     }
   };

@@ -41,9 +41,14 @@ const Header = ({ session }) => {
               >
                 <AddCircleIcon />
               </IconButton>
-              <Typography variant="body2" component="span" sx={{ ml: 2, mr: 2 }}>
+              <Button
+                color="inherit"
+                component={RouterLink}
+                to="/profile"
+                sx={{ textTransform: 'none', ml: 1 }}
+              >
                 {session.user.email}
-              </Typography>
+              </Button>
               <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>

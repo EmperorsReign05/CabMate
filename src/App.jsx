@@ -7,7 +7,8 @@ import LoginPage from './pages/LoginPage';
 import CreateRidePage from './pages/CreateRidePage';
 import RideDetailPage from './pages/RideDetailPage';
 import MyRidesPage from './pages/MyRidesPage';
-
+import { NotificationProvider } from './context/NotificationContext';
+import ProfilePage from './pages/ProfilePage';
 function App() {
   // --- THIS IS THE MISSING LOGIC ---
   const [session, setSession] = useState(null);
@@ -26,6 +27,7 @@ function App() {
   // --- END OF MISSING LOGIC ---
 
   return (
+  <NotificationProvider>
     <BrowserRouter>
       {/* Pass the session to all components that need it */}
       <Header session={session} />
@@ -36,9 +38,11 @@ function App() {
           <Route path="/create" element={<CreateRidePage session={session} />} />
           <Route path="/ride/:id" element={<RideDetailPage session={session} />} />
           <Route path="/my-rides" element={<MyRidesPage session={session} />} />
+           <Route path="/profile" element={<ProfilePage session={session} />} />
         </Routes>
       </main>
     </BrowserRouter>
+  </NotificationProvider>
   );
 }
 

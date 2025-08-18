@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Container, Box, TextField, Button, Typography, Tabs, Tab } from '@mui/material';
+import { useNotification } from '../context/NotificationContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
+  const { showNotification } = useNotification();
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [tabIndex, setTabIndex] = useState(0); // 0 for Sign In, 1 for Sign Up
@@ -23,14 +25,14 @@ const LoginPage = () => {
       if (tabIndex === 1) { // Sign Up logic
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        alert('Account created! Please check your email to confirm your sign up.');
+        showNotification('Account created! Please check your email to confirm your sign up.');
       } else { // Sign In logic
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         navigate('/'); // Redirect to home on successful login
       }
     } catch (error) {
-      alert(error.error_description || error.message);
+      showNotification(error.error_description || error.message);
     } finally {
       setLoading(false);
     }
