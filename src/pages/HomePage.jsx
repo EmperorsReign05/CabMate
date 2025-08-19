@@ -11,6 +11,7 @@ import {
   IconButton, Chip, Stack
 } from '@mui/material';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import RideCard from '../components/RideCard';
 
 const libraries = ['places'];
 
@@ -49,7 +50,27 @@ const HomePage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+ useEffect(() => {
+    //Set up the channel
+    const channel = supabase.channel('public:rides');
 
+    //Define what to do when a new ride is inserted
+    const onInsert = (payload) => {
+      console.log('New ride received!', payload);
+      // Add the new ride to the top of our current search results
+      setSearchResults(currentRides => [payload.new, ...currentRides]);
+    };
+
+    // Subscribe to the channel
+    channel
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'rides' }, onInsert)
+      .subscribe();
+
+    // Cleanup: Unsubscribe when the component unmounts
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,

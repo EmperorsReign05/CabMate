@@ -6,11 +6,13 @@ import { supabase } from '../supabaseClient';
 import { useJsApiLoader } from '@react-google-maps/api';
 import LocationAutocomplete from '../components/LocationAutocomplete'; 
 import { Container, Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
+import { useNotification } from '../context/NotificationContext';
 
 const libraries = ['places'];
 
 const CreateRidePage = ({ session }) => {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
   // State now holds address and coordinates
   const [from, setFrom] = useState(null);
   const [to, setTo] = useState(null);
@@ -34,7 +36,7 @@ const CreateRidePage = ({ session }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!from || !to) {
-      alert("Please select 'From' and 'To' locations.");
+      showNotification("Please select 'From' and 'To' locations.", 'warning');
       return;
     }
     setLoading(true);
@@ -56,10 +58,10 @@ const CreateRidePage = ({ session }) => {
         },
       ]);
       if (error) throw error;
-      alert('Ride created successfully!');
+       showNotification('Ride created successfully!', 'success');
       navigate('/');
     } catch (error) {
-      alert(error.message);
+      showNotification(error.message, 'error');
     } finally {
       setLoading(false);
     }

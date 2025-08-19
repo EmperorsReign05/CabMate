@@ -5,32 +5,8 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Container, Typography, Box, Grid, Card, CardContent, CardActions, Button, CircularProgress, Divider } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
+import RideCard from '../components/RideCard';
 
-const RideCard = ({ ride, isCreator, onDelete }) => (
-  <Grid item xs={12} sm={6} md={4}>
-    <Card>
-      <CardContent>
-        <Typography variant="h5" component="div">
-          {(ride.from_display || ride.from)} to {(ride.to_display || ride.to)}
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          {new Date(ride.departure_time).toLocaleString()}
-        </Typography>
-        <Typography variant="body2">
-          Seats Available: {ride.seats_available}
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button size="small" component={RouterLink} to={`/ride/${ride.id}`}>View Details</Button>
-        {isCreator && (
-          <Button size="small" color="error" onClick={() => onDelete(ride.id)}>
-            Delete
-          </Button>
-        )}
-      </CardActions>
-    </Card>
-  </Grid>
-);
 
 const MyRidesPage = ({ session }) => {
   const navigate = useNavigate();
@@ -101,7 +77,7 @@ const MyRidesPage = ({ session }) => {
         <Grid container spacing={2}>
           {createdRides.length > 0 ? (
             createdRides.map(ride => (
-              <RideCard key={ride.id} ride={ride} isCreator={true} onDelete={handleDelete} />
+               <RideCard key={ride.id} ride={ride} isCreator={true} onDelete={handleDelete} />
             ))
           ) : (
             <Typography sx={{ ml: 2 }}>You haven't created any rides yet.</Typography>
@@ -118,7 +94,7 @@ const MyRidesPage = ({ session }) => {
         <Grid container spacing={2}>
           {joinedRides.length > 0 ? (
             joinedRides.map(ride => (
-              <RideCard key={ride.id} ride={ride} isCreator={false} />
+              <RideCard key={ride.id} ride={ride} />
             ))
           ) : (
             <Typography sx={{ ml: 2 }}>You haven't joined any rides yet.</Typography>

@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { Container, Box, TextField, Button, Typography, Tabs, Tab } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom'; 
+import { Container, Box, TextField, Button, Typography, Tabs, Tab, Grid } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
 
 const LoginPage = () => {
@@ -55,6 +56,13 @@ const LoginPage = () => {
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={loading}>
             {loading ? 'Processing...' : (tabIndex === 0 ? 'Sign In' : 'Sign Up')}
           </Button>
+          <Grid container justifyContent="flex-end">
+    <Grid item>
+      <Button component={RouterLink} to="/forgot-password" sx={{ textTransform: 'none' }}>
+        Forgot password?
+      </Button>
+    </Grid>
+  </Grid>
         </Box>
       </Box>
     </Container>

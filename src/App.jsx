@@ -9,8 +9,10 @@ import RideDetailPage from './pages/RideDetailPage';
 import MyRidesPage from './pages/MyRidesPage';
 import { NotificationProvider } from './context/NotificationContext';
 import ProfilePage from './pages/ProfilePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import UpdatePasswordPage from './pages/UpdatePasswordPage';
 function App() {
-  // --- THIS IS THE MISSING LOGIC ---
+
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -24,12 +26,11 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
-  // --- END OF MISSING LOGIC ---
 
   return (
   <NotificationProvider>
     <BrowserRouter>
-      {/* Pass the session to all components that need it */}
+     
       <Header session={session} />
       <main style={{ padding: '1rem' }}>
         <Routes>
@@ -39,6 +40,8 @@ function App() {
           <Route path="/ride/:id" element={<RideDetailPage session={session} />} />
           <Route path="/my-rides" element={<MyRidesPage session={session} />} />
            <Route path="/profile" element={<ProfilePage session={session} />} />
+           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+           <Route path="/update-password" element={<UpdatePasswordPage />} />
         </Routes>
       </main>
     </BrowserRouter>
