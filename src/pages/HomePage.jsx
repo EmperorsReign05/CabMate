@@ -50,14 +50,16 @@ const HomePage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [fromInput, setFromInput] = useState('');
+  const [toInput, setToInput] = useState('');
  useEffect(() => {
     //Set up the channel
     const channel = supabase.channel('public:rides');
 
-    //Define what to do when a new ride is inserted
+    //when a new ride is inserted
     const onInsert = (payload) => {
       console.log('New ride received!', payload);
-      // Add the new ride to the top of our current search results
+      // Add the new ride to the top of current search results
       setSearchResults(currentRides => [payload.new, ...currentRides]);
     };
 
@@ -110,12 +112,16 @@ const HomePage = () => {
   const handleQuickSearch = (route) => {
     setFromLocation(route.from);
     setToLocation(route.to);
+     setFromInput(route.from.shortName);
+    setToInput(route.to.shortName);
     // Autofills inputs, search happens only when "Find Rides" is clicked
   };
 
   const handleSwap = () => {
     setFromLocation(toLocation);
     setToLocation(fromLocation);
+    setFromInput(toInput);
+    setToInput(fromInput);
   };
 
   if (!isLoaded) {
@@ -137,6 +143,7 @@ const HomePage = () => {
           <Box sx={{ width: '100%' }}>
             <LocationAutocomplete
               label="From"
+              
               onPlaceSelect={setFromLocation}
               value={fromLocation}
             />
@@ -192,26 +199,8 @@ const HomePage = () => {
               </Typography>
             ) : (
               searchResults.map((ride) => (
-                <Grid item xs={12} sm={6} md={4} key={ride.id}>
-                  <CardActionArea component={RouterLink} to={`/ride/${ride.id}`}>
-                    <Card>
-                      <CardContent>
-                        <Typography variant="h6" noWrap title={ride.from_display || ride.from}>
-                          {ride.from_display || ride.from}
-                        </Typography>
-                        <Typography variant="body1" noWrap title={ride.to_display || ride.to}>
-                          to {ride.to_display || ride.to}
-                        </Typography>
-                        <Typography sx={{ my: 1.5 }} color="text.secondary">
-                          {new Date(ride.departure_time).toLocaleString()}
-                        </Typography>
-                        <Typography variant="body2">
-                          Seats Available: {ride.seats_available}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </CardActionArea>
-                </Grid>
+                <RideCard key={ride.id} ride={ride} />
+               
               ))
             )}
           </Grid>
