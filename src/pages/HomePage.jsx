@@ -1,6 +1,7 @@
 // src/pages/HomePage.jsx
 
-import React, { useState, useCallback } from 'react';
+
+import React, { useState, useCallback, useEffect } from 'react'; 
 import { Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useJsApiLoader } from '@react-google-maps/api';
