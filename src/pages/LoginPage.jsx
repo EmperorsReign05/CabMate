@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Link as RouterLink } from 'react-router-dom'; 
 import { Container, Box, TextField, Button, Typography, Tabs, Tab, Grid } from '@mui/material';
-import { useNotification } from '../context/NotificationContext';
+import { useNotification } from '../hooks/useNotification';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

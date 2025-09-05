@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Container, Typography, Button, Card, CardContent, Box, CircularProgress, List, ListItem, ListItemText, Divider, Chip, Stack } from '@mui/material';
-import { useNotification } from '../context/NotificationContext';
+import { useNotification } from '../hooks/useNotification';
 
 const RideDetailPage = ({ session }) => {
   const { id } = useParams();
@@ -54,7 +54,8 @@ const RideDetailPage = ({ session }) => {
         setUserRequestStatus(currentUserRequest ? currentUserRequest.status : null);
       }
 
-    } catch (error) {
+    } catch (err) {
+      console.error('Fetch ride details error:', err);
       showNotification('Could not find the requested ride.', 'error');
       navigate('/');
     } finally {
@@ -103,8 +104,9 @@ const RideDetailPage = ({ session }) => {
 
         showNotification('Passenger approved!', 'success');
         fetchRideDetails(); // Refresh data
-    } catch (error) {
-        showNotification('Failed to approve request: ' + error.message, 'error');
+    } catch (err) {
+      console.error('Request approval error:', err);
+      showNotification('Failed to approve request: ' + err.message, 'error');
     } finally {
         setIsProcessing(false);
     }

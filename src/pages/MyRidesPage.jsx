@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Container, Typography, Box, Grid, Card, CardContent, CardActions, Button, CircularProgress, Divider } from '@mui/material';
-import { useNotification } from '../context/NotificationContext';
+import { useNotification } from '../hooks/useNotification';
 import RideCard from '../components/RideCard';
 
 

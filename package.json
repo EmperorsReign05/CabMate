@@ -1,7 +1,8 @@
 {
-  "name": "carpool",
+  "name": "cabmate",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A modern carpooling web application built with React and Supabase",
   "type": "module",
   "scripts": {
     "dev": "vite",

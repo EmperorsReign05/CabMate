@@ -1,16 +1,11 @@
 // src/context/NotificationContext.jsx
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { NotificationContext } from './context';
 
-const NotificationContext = createContext();
-
-export const useNotification = () => {
-  return useContext(NotificationContext);
-};
-
-export const NotificationProvider = ({ children }) => {
+export default function NotificationProvider({ children }) {
   const [notification, setNotification] = useState({
     open: false,
     message: '',
@@ -43,4 +38,4 @@ export const NotificationProvider = ({ children }) => {
       </Snackbar>
     </NotificationContext.Provider>
   );
-};
+}

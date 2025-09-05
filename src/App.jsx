@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage';
 import CreateRidePage from './pages/CreateRidePage';
 import RideDetailPage from './pages/RideDetailPage';
 import MyRidesPage from './pages/MyRidesPage';
-import { NotificationProvider } from './context/NotificationContext';
+import NotificationProvider from './context/NotificationContext';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage';

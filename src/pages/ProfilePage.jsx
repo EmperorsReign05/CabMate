@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { useNotification } from '../context/NotificationContext';
+import { useNotification } from '../hooks/useNotification';
 import { Container, Typography, Box, TextField, Button, CircularProgress } from '@mui/material';
 
 const ProfilePage = ({ session }) => {
@@ -38,7 +38,8 @@ const ProfilePage = ({ session }) => {
           if (data) {
             setFullName(data.full_name || '');
           }
-        } catch (error) {
+        } catch (err) {
+          console.error('Profile fetch error:', err);
           showNotification('Could not fetch profile data.', 'error');
         } finally {
           setLoading(false);
@@ -46,7 +47,7 @@ const ProfilePage = ({ session }) => {
       };
       fetchProfile();
     }
-  }, [session]);
+  }, [session, showNotification]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -64,7 +65,8 @@ const ProfilePage = ({ session }) => {
       
       if (error) throw error;
       showNotification('Profile updated successfully!', 'success');
-    } catch (error) {
+    } catch (err) {
+      console.error('Profile update error:', err);
       showNotification('Error updating profile.', 'error');
     } finally {
       setLoading(false);

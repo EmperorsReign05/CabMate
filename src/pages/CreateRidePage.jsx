@@ -6,7 +6,7 @@ import { supabase } from '../supabaseClient';
 import { useJsApiLoader } from '@react-google-maps/api';
 import LocationAutocomplete from '../components/LocationAutocomplete'; 
 import { Container, Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
-import { useNotification } from '../context/NotificationContext';
+import { useNotification } from '../hooks/useNotification';
 
 const libraries = ['places'];
 
@@ -41,7 +41,7 @@ const CreateRidePage = ({ session }) => {
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.from('rides').insert([
+      const { error } = await supabase.from('rides').insert([
         {
           from: from.address,
           from_display: from.shortName,
