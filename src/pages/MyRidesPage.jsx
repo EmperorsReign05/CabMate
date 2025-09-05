@@ -1,12 +1,10 @@
-// src/pages/MyRidesPage.jsx
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { Container, Typography, Box, Grid, Card, CardContent, CardActions, Button, CircularProgress, Divider } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardContent, CardHeader, CircularProgress, Divider } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
-import RideCard from '../components/RideCard';
-
+import RideCard from '../components/RideCard'; 
 
 const MyRidesPage = ({ session }) => {
   const navigate = useNavigate();
@@ -32,17 +30,16 @@ const MyRidesPage = ({ session }) => {
         .eq('creator_id', userId);
       
       // Fetch rides joined by the user
-      // This query first finds the user in ride_passengers, then fetches the associated ride details
       const { data: joinedData, error: joinedError } = await supabase
         .from('ride_passengers')
-        .select('rides(*)') // The magic is here: fetch all columns from the related 'rides' table
-        .eq('user_id', userId);
+        .select('rides(*)')
+        .eq('user_id', userId)
+        .eq('status', 'approved'); // Only show approved rides
 
       if (createdError || joinedError) {
         console.error('Error fetching my rides:', createdError || joinedError);
       } else {
         setCreatedRides(createdData);
-        // The data structure is { rides: { ... } }, so we need to map over it
         setJoinedRides(joinedData.map(item => item.rides));
       }
       setLoading(false);
@@ -56,7 +53,6 @@ const MyRidesPage = ({ session }) => {
       try {
         const { error } = await supabase.from('rides').delete().eq('id', rideId);
         if (error) throw error;
-        // Remove the deleted ride from the state to update the UI instantly
         setCreatedRides(createdRides.filter(ride => ride.id !== rideId));
       } catch (error) {
         showNotification('Error deleting ride: ' + error.message);
@@ -69,37 +65,43 @@ const MyRidesPage = ({ session }) => {
   }
 
   return (
-    <Container>
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Rides I've Created
-        </Typography>
-        <Grid container spacing={2}>
-          {createdRides.length > 0 ? (
-            createdRides.map(ride => (
-               <RideCard key={ride.id} ride={ride} isCreator={true} onDelete={handleDelete} />
-            ))
-          ) : (
-            <Typography sx={{ ml: 2 }}>You haven't created any rides yet.</Typography>
-          )}
-        </Grid>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 4 }}>
+        <Card>
+          <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides I've Created</Typography>} />
+          <CardContent>
+            {createdRides.length > 0 ? (
+              <Grid container spacing={2}>
+                {createdRides.map(ride => (
+                  <Grid item xs={12} sm={6} md={4} key={ride.id}>
+                    <RideCard ride={ride} isCreator={true} onDelete={handleDelete} />
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              <Typography sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>You haven't created any rides yet.</Typography>
+            )}
+          </CardContent>
+        </Card>
       </Box>
 
-      <Divider sx={{ my: 4 }} />
-
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Rides I've Joined
-        </Typography>
-        <Grid container spacing={2}>
-          {joinedRides.length > 0 ? (
-            joinedRides.map(ride => (
-              <RideCard key={ride.id} ride={ride} />
-            ))
-          ) : (
-            <Typography sx={{ ml: 2 }}>You haven't joined any rides yet.</Typography>
-          )}
-        </Grid>
+      <Box>
+        <Card>
+          <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides I've Joined</Typography>} />
+          <CardContent>
+            {joinedRides.length > 0 ? (
+              <Grid container spacing={2}>
+                {joinedRides.map(ride => (
+                  <Grid item xs={12} sm={6} md={4} key={ride.id}>
+                    <RideCard ride={ride} />
+                  </Grid>
+                ))}
+              </Grid>
+            ) : (
+              <Typography sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>You haven't joined any rides yet.</Typography>
+            )}
+          </CardContent>
+        </Card>
       </Box>
     </Container>
   );

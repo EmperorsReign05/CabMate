@@ -11,6 +11,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage';
+import DashboardPage from './pages/DashboardPage'; 
 function App() {
 
   const [session, setSession] = useState(null);
@@ -35,6 +36,7 @@ function App() {
       <main style={{ padding: '1rem' }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/dashboard" element={<DashboardPage session={session} />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/create" element={<CreateRidePage session={session} />} />
           <Route path="/ride/:id" element={<RideDetailPage session={session} />} />

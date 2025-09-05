@@ -1,0 +1,145 @@
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+import { Container, Typography, Box, Grid, Card, CardContent, Button, CircularProgress } from '@mui/material';
+import { Add, DirectionsCar, People, Event, TrendingUp } from '@mui/icons-material';
+import RideCard from '../components/RideCard';
+import { useNotification } from '../context/NotificationContext';
+
+const StatCard = ({ title, value, icon }) => (
+  <Card>
+    <CardContent>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ p: 1.5, bgcolor: 'primary.light', borderRadius: '50%', display: 'flex', mr: 2 }}>
+          {icon}
+        </Box>
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{value}</Typography>
+          <Typography variant="body2" color="text.secondary">{title}</Typography>
+        </Box>
+      </Box>
+    </CardContent>
+  </Card>
+);
+
+const DashboardPage = ({ session }) => {
+  const navigate = useNavigate();
+  const { showNotification } = useNotification();
+  const [stats, setStats] = useState({ created: 0, joined: 0, upcoming: 0, total: 0 });
+  const [upcomingRides, setUpcomingRides] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+
+    const fetchData = async () => {
+      setLoading(true);
+      const userId = session.user.id;
+
+      // Fetch profile to get user's name
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', userId)
+        .single();
+      
+      if (profileData) setProfile(profileData);
+
+      // Fetch all rides for stats
+      const { data: created, error: createdError } = await supabase.from('rides').select('id, departure_time').eq('creator_id', userId);
+      const { data: joined, error: joinedError } = await supabase.from('ride_passengers').select('rides(id, departure_time)').eq('user_id', userId).eq('status', 'approved');
+      const { count: total } = await supabase.from('rides').select('*', { count: 'exact', head: true });
+
+      const isCriticalProfileError = profileError && profileError.code !== 'PGRST116';
+
+      if (createdError || joinedError || isCriticalProfileError) {
+        showNotification('Error fetching dashboard data.', 'error');
+        console.error({ createdError, joinedError, profileError });
+      } else {
+        const allUserRides = [
+          ...(created || []),
+          ...(joined?.map(j => j.rides) || [])
+        ];
+        
+        const upcoming = allUserRides.filter(ride => new Date(ride.departure_time) > new Date());
+        
+        setStats({
+          created: created?.length || 0,
+          joined: joined?.length || 0,
+          upcoming: upcoming.length,
+          total: total || 0,
+        });
+
+        const upcomingRideIds = upcoming.map(r => r.id).slice(0, 3);
+        if (upcomingRideIds.length > 0) {
+            const { data: upcomingDetails } = await supabase.from('rides').select('*').in('id', upcomingRideIds);
+            if (upcomingDetails) {
+                setUpcomingRides(upcomingDetails);
+            }
+        }
+      }
+
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [session, navigate, showNotification]);
+
+  if (loading) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>;
+  }
+  
+  const welcomeName = profile?.full_name ? profile.full_name.split(" ")[0] : "User";
+
+  return (
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Header */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Box>
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>Welcome back, {welcomeName}!</Typography>
+          <Typography color="text.secondary">Here's what's happening with your rides.</Typography>
+        </Box>
+        <Button variant="contained" startIcon={<Add />} component={RouterLink} to="/create">
+          Create New Ride
+        </Button>
+      </Box>
+
+      {/* Stats Grid */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={6} md={3}><StatCard title="Rides Created" value={stats.created} icon={<DirectionsCar color="primary" />} /></Grid>
+        <Grid item xs={12} sm={6} md={3}><StatCard title="Rides Joined" value={stats.joined} icon={<People color="primary" />} /></Grid>
+        <Grid item xs={12} sm={6} md={3}><StatCard title="Upcoming" value={stats.upcoming} icon={<Event color="primary" />} /></Grid>
+        <Grid item xs={12} sm={6} md={3}><StatCard title="Total Rides" value={stats.total} icon={<TrendingUp color="primary" />} /></Grid>
+      </Grid>
+      
+      {/* Upcoming Rides */}
+      <Card>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Upcoming Rides</Typography>
+            <Button component={RouterLink} to="/my-rides">View All</Button>
+        </Box>
+        <CardContent>
+            {upcomingRides.length > 0 ? (
+                <Grid container spacing={2}>
+                    {upcomingRides.map(ride => (
+                        <Grid item xs={12} md={4} key={ride.id}><RideCard ride={ride} /></Grid>
+                    ))}
+                </Grid>
+            ) : (
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                    <Typography color="text.secondary" sx={{ mb: 2 }}>No upcoming rides</Typography>
+                    <Button variant="contained" component={RouterLink} to="/create">Create Your First Ride</Button>
+                </Box>
+            )}
+        </CardContent>
+      </Card>
+    </Container>
+  );
+};
+
+export default DashboardPage;
