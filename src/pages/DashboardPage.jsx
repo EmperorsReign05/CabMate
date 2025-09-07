@@ -1,3 +1,4 @@
+// src/pages/DashboardPage.jsx
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { Add, DirectionsCar, People, Event, TrendingUp } from '@mui/icons-materi
 import RideCard from '../components/RideCard';
 import { useNotification } from '../context/NotificationContext';
 
+// StatCard component remains the same
 const StatCard = ({ title, value, icon }) => (
   <Card>
     <CardContent>
@@ -38,29 +40,42 @@ const DashboardPage = ({ session }) => {
     }
 
     const fetchData = async () => {
+      console.log('--- STARTING DASHBOARD FETCH ---');
       setLoading(true);
       const userId = session.user.id;
-
-      // Fetch profile to get user's name
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', userId)
-        .single();
       
-      if (profileData) setProfile(profileData);
+      try {
+        // --- QUERY 1: PROFILES ---
+        console.log('1. Fetching profile...');
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', userId)
+          .single();
+        console.log('Profile Result:', { profileData, profileError });
+        if (profileError && profileError.code !== 'PGRST116') throw profileError;
+        if (profileData) setProfile(profileData);
 
-      // Fetch all rides for stats
-      const { data: created, error: createdError } = await supabase.from('rides').select('id, departure_time').eq('creator_id', userId);
-      const { data: joined, error: joinedError } = await supabase.from('ride_passengers').select('rides(id, departure_time)').eq('user_id', userId).eq('status', 'approved');
-      const { count: total } = await supabase.from('rides').select('*', { count: 'exact', head: true });
+        // --- QUERY 2: CREATED RIDES ---
+        console.log('2. Fetching created rides...');
+        const { data: created, error: createdError } = await supabase.from('rides').select('id, departure_time').eq('creator_id', userId);
+        console.log('Created Rides Result:', { created, createdError });
+        if (createdError) throw createdError;
 
-      const isCriticalProfileError = profileError && profileError.code !== 'PGRST116';
+        // --- QUERY 3: JOINED RIDES ---
+        console.log('3. Fetching joined rides...');
+        const { data: joined, error: joinedError } = await supabase.from('ride_passengers').select('rides(id, departure_time)').eq('user_id', userId).eq('status', 'approved');
+        console.log('Joined Rides Result:', { joined, joinedError });
+        if (joinedError) throw joinedError;
+        
+        // --- QUERY 4: TOTAL RIDES COUNT ---
+        console.log('4. Fetching total rides count...');
+        const { count: total, error: totalError } = await supabase.from('rides').select('*', { count: 'exact', head: true });
+        console.log('Total Rides Result:', { total, totalError });
+        if (totalError) throw totalError;
 
-      if (createdError || joinedError || isCriticalProfileError) {
-        showNotification('Error fetching dashboard data.', 'error');
-        console.error({ createdError, joinedError, profileError });
-      } else {
+        // --- PROCESSING DATA ---
+        console.log('All queries successful. Processing data...');
         const allUserRides = [
           ...(created || []),
           ...(joined?.map(j => j.rides) || [])
@@ -77,19 +92,25 @@ const DashboardPage = ({ session }) => {
 
         const upcomingRideIds = upcoming.map(r => r.id).slice(0, 3);
         if (upcomingRideIds.length > 0) {
-            const { data: upcomingDetails } = await supabase.from('rides').select('*').in('id', upcomingRideIds);
-            if (upcomingDetails) {
-                setUpcomingRides(upcomingDetails);
-            }
+            const { data: upcomingDetails, error: upcomingError } = await supabase.from('rides').select('*').in('id', upcomingRideIds);
+            if (upcomingError) throw upcomingError;
+            if (upcomingDetails) setUpcomingRides(upcomingDetails);
         }
-      }
 
-      setLoading(false);
+      } catch (error) {
+        console.error('--- DASHBOARD FETCH FAILED ---');
+        console.error('The operation failed at this error:', error);
+        showNotification(`Error fetching dashboard data: ${error.message}`, 'error');
+      } finally {
+        console.log('--- FINISHING DASHBOARD FETCH ---');
+        setLoading(false);
+      }
     };
 
     fetchData();
   }, [session, navigate, showNotification]);
 
+  // The JSX part of the component remains the same...
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>;
   }
@@ -98,7 +119,6 @@ const DashboardPage = ({ session }) => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Box>
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>Welcome back, {welcomeName}!</Typography>
@@ -108,16 +128,12 @@ const DashboardPage = ({ session }) => {
           Create New Ride
         </Button>
       </Box>
-
-      {/* Stats Grid */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}><StatCard title="Rides Created" value={stats.created} icon={<DirectionsCar color="primary" />} /></Grid>
         <Grid item xs={12} sm={6} md={3}><StatCard title="Rides Joined" value={stats.joined} icon={<People color="primary" />} /></Grid>
         <Grid item xs={12} sm={6} md={3}><StatCard title="Upcoming" value={stats.upcoming} icon={<Event color="primary" />} /></Grid>
         <Grid item xs={12} sm={6} md={3}><StatCard title="Total Rides" value={stats.total} icon={<TrendingUp color="primary" />} /></Grid>
       </Grid>
-      
-      {/* Upcoming Rides */}
       <Card>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Upcoming Rides</Typography>
