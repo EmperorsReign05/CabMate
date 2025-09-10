@@ -12,6 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage';
 import DashboardPage from './pages/DashboardPage'; 
+import Background from './components/Background';
 function App() {
 
   const [session, setSession] = useState(null);
@@ -29,6 +30,7 @@ function App() {
   }, []);
 
   return (
+      <Background>
   <NotificationProvider>
     <BrowserRouter>
      
@@ -48,6 +50,7 @@ function App() {
       </main>
     </BrowserRouter>
   </NotificationProvider>
+  </Background>
   );
 }
 
