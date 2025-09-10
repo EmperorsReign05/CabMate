@@ -8,7 +8,6 @@ import { Add, DirectionsCar, People, Event, TrendingUp } from '@mui/icons-materi
 import RideCard from '../components/RideCard';
 import { useNotification } from '../context/NotificationContext';
 
-// StatCard component remains the same
 const StatCard = ({ title, value, icon }) => (
   <Card>
     <CardContent>

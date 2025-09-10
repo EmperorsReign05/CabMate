@@ -1,6 +1,3 @@
-// src/pages/HomePage.jsx
-
-
 import React, { useState, useCallback, useEffect } from 'react'; 
 import { Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
@@ -18,29 +15,42 @@ const libraries = ['places'];
 
 const commonRoutes = [
   {
-    label: "Station to Hostel",
+    label: "Hostel to Station",
     from: {
+      address: "GHS Hostel, Manipal University Jaipur",
+      shortName: "GHS Hostel",
+      lat: 26.841833083482314, lng: 75.56287323121721
+    },
+    to: {
       address: "Jaipur Junction, Jaipur, Rajasthan",
       shortName: "Jaipur Junction",
       lat: 26.91806430588278, lng: 75.79018840654534
-    },
-    to: {
-      address: "GHS Hostel, Manipal University Jaipur",
-      shortName: "GHS Hostel",
-      lat: 26.841833083482314, lng: 75.56287323121721
     }
   },
   {
-    label: "Airport to Hostel",
+    label: "Hostel to Airport",
     from: {
-      address: "Jaipur International Airport, Jaipur",
-      shortName: "Jaipur Airport",
-      lat: 26.828500360798287, lng: 75.80639863352846
-    },
-    to: {
       address: "GHS Hostel, Manipal University Jaipur",
       shortName: "GHS Hostel",
       lat: 26.841833083482314, lng: 75.56287323121721
+    },
+    to: {
+      address: "Jaipur International Airport, Jaipur",
+      shortName: "Jaipur Airport",
+      lat: 26.828500360798287, lng: 75.80639863352846
+    }
+  },
+  {
+    label: "Hostel to Sindhi Camp",
+    from: {
+      address: "GHS Hostel, Manipal University Jaipur",
+      shortName: "GHS Hostel",
+      lat: 26.841833083482314, lng: 75.56287323121721
+    },
+    to: {
+      address: "Sindhi Camp Bus Stand",
+      shortName: "Sindhi Camp",
+      lat: 26.923614455298253, lng: 75.80057210709235 
     }
   }
 ];
@@ -60,16 +70,16 @@ const HomePage = () => {
     //when a new ride is inserted
     const onInsert = (payload) => {
       console.log('New ride received!', payload);
-      // Add the new ride to the top of current search results
+      //new ride to the top of current search results
       setSearchResults(currentRides => [payload.new, ...currentRides]);
     };
 
-    // Subscribe to the channel
+    //Subscribe to the channel
     channel
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'rides' }, onInsert)
       .subscribe();
 
-    // Cleanup: Unsubscribe when the component unmounts
+    //Unsubscribe when the component unmounts
     return () => {
       supabase.removeChannel(channel);
     };
@@ -93,7 +103,7 @@ const HomePage = () => {
         origin_lng: from.lng,
         dest_lat: to.lat,
         dest_lng: to.lng,
-        radius_meters: 5000,
+        radius_meters: 1000,
       });
 
       if (error) throw error;
@@ -115,7 +125,7 @@ const HomePage = () => {
     setToLocation(route.to);
      setFromInput(route.from.shortName);
     setToInput(route.to.shortName);
-    // Autofills inputs, search happens only when "Find Rides" is clicked
+  
   };
 
   const handleSwap = () => {
@@ -135,7 +145,6 @@ const HomePage = () => {
 
   return (
     <Container>
-      {/* Search Form */}
       <Box sx={{ my: 4, p: 2, border: '1px solid lightgray', borderRadius: 2 }}>
         <Typography variant="h5" component="h1" gutterBottom>
           Find a Ride
@@ -169,7 +178,6 @@ const HomePage = () => {
           </Button>
         </Stack>
 
-        {/* Quick Search Chips */}
         <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}>
           {commonRoutes.map((route) => (
             <Chip
@@ -181,7 +189,6 @@ const HomePage = () => {
         </Stack>
       </Box>
 
-      {/* Search Results */}
       {loading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <CircularProgress />
