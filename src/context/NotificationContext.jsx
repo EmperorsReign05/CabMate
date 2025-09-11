@@ -1,6 +1,6 @@
 // src/context/NotificationContext.jsx
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react'; // 1. Import useCallback
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
@@ -14,12 +14,14 @@ export const NotificationProvider = ({ children }) => {
   const [notification, setNotification] = useState({
     open: false,
     message: '',
-    severity: 'success', // can be 'error', 'warning', 'info', or 'success'
+    severity: 'success',
   });
 
-  const showNotification = (message, severity = 'success') => {
+  // 2. Wrap the showNotification function in useCallback
+  // This ensures the function doesn't get recreated on every render, stopping the loop.
+  const showNotification = useCallback((message, severity = 'success') => {
     setNotification({ open: true, message, severity });
-  };
+  }, []);
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
