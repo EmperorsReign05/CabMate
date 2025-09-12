@@ -21,44 +21,38 @@ const RideDetailPage = ({ session }) => {
   const fetchRideDetails = useCallback(async () => {
     setLoading(true);
     try {
-      // --- NEW LOGIC: Fetch data in simpler, separate steps ---
-
-      // 1. Fetch the main ride details first.
       const { data: rideData, error: rideError } = await supabase
         .from('rides')
         .select('*')
         .eq('id', id)
         .single();
-
       if (rideError) throw rideError;
       setRide(rideData);
 
-      // 2. Fetch the creator's profile information.
       const { data: creatorData, error: creatorError } = await supabase
         .from('profiles')
         .select('id, full_name')
         .eq('id', rideData.creator_id)
         .single();
-      
       if (creatorError) throw creatorError;
       setCreator(creatorData);
 
-      // 3. Fetch all passengers and their profiles for this ride.
+      // --- FINAL FIX IS HERE ---
+      // This more explicit query tells Supabase exactly how to join the tables,
+      // referencing the foreign key we just fixed.
       const { data: passengerData, error: passengerError } = await supabase
         .from('ride_passengers')
-        .select('status, profiles(id, full_name)')
+        .select('status, profile:profiles!user_id(id, full_name)')
         .eq('ride_id', id);
-
       if (passengerError) throw passengerError;
       
-      const approved = passengerData.filter(p => p.status === 'approved');
-      const pending = passengerData.filter(p => p.status === 'pending');
-      
-      setPassengers(approved);
-      setPendingRequests(pending);
+      const cleanPassengerData = passengerData.map(p => ({ ...p, profiles: p.profile })).filter(p => p.profiles);
+
+      setPassengers(cleanPassengerData.filter(p => p.status === 'approved'));
+      setPendingRequests(cleanPassengerData.filter(p => p.status === 'pending'));
 
       if (session) {
-        const currentUserRequest = passengerData.find(p => p.profiles.id === session.user.id);
+        const currentUserRequest = cleanPassengerData.find(p => p.profiles && p.profiles.id === session.user.id);
         setUserRequestStatus(currentUserRequest ? currentUserRequest.status : null);
       }
 
@@ -68,14 +62,13 @@ const RideDetailPage = ({ session }) => {
     } finally {
       setLoading(false);
     }
-  }, [id, showNotification, session]);
+  }, [id, session, showNotification]);
 
   useEffect(() => {
     fetchRideDetails();
   }, [fetchRideDetails]);
 
-  // --- All other functions (handleRequestRide, handleApproveRequest) remain the same ---
-    const handleRequestRide = async () => {
+  const handleRequestRide = async () => {
     if (!session) {
       showNotification('You must be logged in to request a ride.', 'warning');
       navigate('/login');
@@ -88,10 +81,16 @@ const RideDetailPage = ({ session }) => {
         .insert([{ ride_id: ride.id, user_id: session.user.id, status: 'pending' }]);
       if (error) throw error;
 
+      setUserRequestStatus('pending'); 
       showNotification('Your request has been sent!', 'success');
       fetchRideDetails();
     } catch (error) {
-      showNotification('Failed to send request: ' + error.message, 'error');
+      if (error.code === '23505') {
+        showNotification('You have already sent a request for this ride.', 'warning');
+        setUserRequestStatus('pending');
+      } else {
+        showNotification('Failed to send request: ' + error.message, 'error');
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -105,7 +104,6 @@ const RideDetailPage = ({ session }) => {
         user_id_to_approve: passengerUserId
       });
       if (error) throw error;
-
       showNotification('Passenger approved!', 'success');
       fetchRideDetails();
     } catch (error) {
@@ -125,7 +123,6 @@ const RideDetailPage = ({ session }) => {
   const isCreator = session && session.user.id === creator?.id;
   const canRequest = session && !isCreator && ride.seats_available > 0 && !userRequestStatus;
 
-  // --- The JSX (render) part of the component remains the same ---
   return (
     <Container maxWidth="md">
       <Card sx={{ mt: 4, p: 2 }}>
@@ -169,7 +166,7 @@ const RideDetailPage = ({ session }) => {
                       </Button>
                     </Stack>
                   }>
-                    <ListItemText primary={req.profiles.full_name || 'A user'} />
+                    <ListItemText primary={req.profiles.full_name || 'User with no profile'} />
                   </ListItem>
                 ))}
               </List>
@@ -182,7 +179,7 @@ const RideDetailPage = ({ session }) => {
             <List>
               {passengers.map(passenger => (
                 <ListItem key={passenger.profiles.id}>
-                  <ListItemText primary={passenger.profiles.full_name || 'A user'} />
+                  <ListItemText primary={passenger.profiles.full_name || 'User with no profile'} />
                 </ListItem>
               ))}
             </List>
