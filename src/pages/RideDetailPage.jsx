@@ -21,38 +21,28 @@ const RideDetailPage = ({ session }) => {
   const fetchRideDetails = useCallback(async () => {
     setLoading(true);
     try {
-      const { data: rideData, error: rideError } = await supabase
-        .from('rides')
-        .select('*')
-        .eq('id', id)
-        .single();
+      const { data: rideData, error: rideError } = await supabase.from('rides').select('*').eq('id', id).single();
       if (rideError) throw rideError;
       setRide(rideData);
 
-      const { data: creatorData, error: creatorError } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .eq('id', rideData.creator_id)
-        .single();
+      const { data: creatorData, error: creatorError } = await supabase.from('profiles').select('id, full_name').eq('id', rideData.creator_id).single();
       if (creatorError) throw creatorError;
       setCreator(creatorData);
 
-      // --- FINAL FIX IS HERE ---
-      // This more explicit query tells Supabase exactly how to join the tables,
-      // referencing the foreign key we just fixed.
+      // --- FIX #1: The query now selects user_id directly from ride_passengers ---
       const { data: passengerData, error: passengerError } = await supabase
         .from('ride_passengers')
-        .select('status, profile:profiles!user_id(id, full_name)')
+        .select('user_id, status, profiles(id, full_name)')
         .eq('ride_id', id);
       if (passengerError) throw passengerError;
       
-      const cleanPassengerData = passengerData.map(p => ({ ...p, profiles: p.profile })).filter(p => p.profiles);
+      const cleanPassengerData = passengerData.map(p => ({ ...p, profiles: p.profiles })).filter(p => p.user_id);
 
       setPassengers(cleanPassengerData.filter(p => p.status === 'approved'));
       setPendingRequests(cleanPassengerData.filter(p => p.status === 'pending'));
 
       if (session) {
-        const currentUserRequest = cleanPassengerData.find(p => p.profiles && p.profiles.id === session.user.id);
+        const currentUserRequest = cleanPassengerData.find(p => p.user_id === session.user.id);
         setUserRequestStatus(currentUserRequest ? currentUserRequest.status : null);
       }
 
@@ -68,6 +58,7 @@ const RideDetailPage = ({ session }) => {
     fetchRideDetails();
   }, [fetchRideDetails]);
 
+
   const handleRequestRide = async () => {
     if (!session) {
       showNotification('You must be logged in to request a ride.', 'warning');
@@ -76,11 +67,8 @@ const RideDetailPage = ({ session }) => {
     }
     setIsProcessing(true);
     try {
-      const { error } = await supabase
-        .from('ride_passengers')
-        .insert([{ ride_id: ride.id, user_id: session.user.id, status: 'pending' }]);
+      const { error } = await supabase.from('ride_passengers').insert([{ ride_id: ride.id, user_id: session.user.id, status: 'pending' }]);
       if (error) throw error;
-
       setUserRequestStatus('pending'); 
       showNotification('Your request has been sent!', 'success');
       fetchRideDetails();
@@ -154,19 +142,20 @@ const RideDetailPage = ({ session }) => {
               <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Pending Requests ({pendingRequests.length})</Typography>
               <List>
                 {pendingRequests.map(req => (
-                  <ListItem key={req.profiles.id} secondaryAction={
+                  // --- FIX #2: The key and the approve function now use req.user_id, which is always correct ---
+                  <ListItem key={req.user_id} secondaryAction={
                     <Stack direction="row" spacing={1}>
                       <Button 
                         variant="outlined" 
                         size="small" 
-                        onClick={() => handleApproveRequest(req.profiles.id)} 
+                        onClick={() => handleApproveRequest(req.user_id)} 
                         disabled={isProcessing || ride.seats_available === 0}
                       >
                         Approve
                       </Button>
                     </Stack>
                   }>
-                    <ListItemText primary={req.profiles.full_name || 'User with no profile'} />
+                    <ListItemText primary={req.profiles?.full_name || 'User with no profile'} />
                   </ListItem>
                 ))}
               </List>
@@ -178,8 +167,9 @@ const RideDetailPage = ({ session }) => {
           {passengers.length > 0 ? (
             <List>
               {passengers.map(passenger => (
-                <ListItem key={passenger.profiles.id}>
-                  <ListItemText primary={passenger.profiles.full_name || 'User with no profile'} />
+                 // --- FIX #3: The key now uses passenger.user_id for consistency ---
+                <ListItem key={passenger.user_id}>
+                  <ListItemText primary={passenger.profiles?.full_name || 'User with no profile'} />
                 </ListItem>
               ))}
             </List>
