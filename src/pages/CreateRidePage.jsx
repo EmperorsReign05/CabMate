@@ -1,32 +1,30 @@
-// src/pages/CreateRidePage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useJsApiLoader } from '@react-google-maps/api';
-import LocationAutocomplete from '../components/LocationAutocomplete'; 
-import { Container, Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
+import LocationAutocomplete from '../components/LocationAutocomplete';
+import { Container, Box, TextField, Button, Typography, CircularProgress, FormControlLabel, Checkbox, Tooltip } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+
 
 const libraries = ['places'];
 
 const CreateRidePage = ({ session }) => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
-  // State now holds address and coordinates
   const [from, setFrom] = useState(null);
   const [to, setTo] = useState(null);
   const [rideDetails, setRideDetails] = useState({ departure_time: '', seats_available: 1, cost_per_seat: 0 });
+  const [isLadiesOnly, setIsLadiesOnly] = useState(false); // State for the checkbox
   const [loading, setLoading] = useState(false);
 
-  // Load the Google Maps script
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries,
   });
 
-  // Redirect if not logged in
   useEffect(() => { if (!session) navigate('/'); }, [session, navigate]);
 
   const handleChange = (e) => {
@@ -55,10 +53,11 @@ const CreateRidePage = ({ session }) => {
           seats_available: parseInt(rideDetails.seats_available),
           cost_per_seat: parseFloat(rideDetails.cost_per_seat),
           creator_id: session.user.id,
+          is_ladies_only: isLadiesOnly, // Save the value to the database
         },
       ]);
       if (error) throw error;
-       showNotification('Ride created successfully!', 'success');
+      showNotification('Ride created successfully!', 'success');
       navigate('/');
     } catch (error) {
       showNotification(error.message, 'error');
@@ -76,7 +75,6 @@ const CreateRidePage = ({ session }) => {
           Create a New Ride
         </Typography>
         
-        {/* Replace TextFields with Autocomplete */}
         <Box sx={{ mb: 2 }}>
           <LocationAutocomplete label="From" onPlaceSelect={setFrom} />
         </Box>
@@ -87,6 +85,23 @@ const CreateRidePage = ({ session }) => {
         <TextField name="departure_time" label="Departure Time" type="datetime-local" value={rideDetails.departure_time} onChange={handleChange} fullWidth required margin="normal" InputLabelProps={{ shrink: true }} />
         <TextField name="seats_available" label="Seats Available" type="number" value={rideDetails.seats_available} onChange={handleChange} fullWidth required margin="normal" />
         <TextField name="cost_per_seat" label="Cost per Seat (₹)" type="number" value={rideDetails.cost_per_seat} onChange={handleChange} fullWidth margin="normal" />
+
+        {/* New Checkbox for Ladies-Only Rides */}
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isLadiesOnly}
+              onChange={(e) => setIsLadiesOnly(e.target.checked)}
+              name="ladiesOnly"
+              color="primary"
+            />
+          }
+          label="This is a ladies-only ride"
+        />
+        <Tooltip title="Only female students will be able to see and request to join this ride.">
+          <InfoOutlinedIcon sx={{ ml: 1, verticalAlign: 'middle', color: 'text.secondary' }} />
+        </Tooltip>
+
         <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }} disabled={loading}>
           {loading ? 'Creating...' : 'Create Ride'}
         </Button>
