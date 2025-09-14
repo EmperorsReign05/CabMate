@@ -1,25 +1,22 @@
-// src/pages/ProfilePage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useNotification } from '../context/NotificationContext';
-import { Container, Typography, Box, TextField, Button, CircularProgress } from '@mui/material';
+import { Container, Typography, Box, TextField, Button, CircularProgress, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 const ProfilePage = ({ session }) => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState('');
+  const [gender, setGender] = useState(''); // State for gender
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!session) {
       navigate('/login');
     }
   }, [session, navigate]);
 
-  // Fetch profile data
   useEffect(() => {
     if (session) {
       const fetchProfile = async () => {
@@ -27,16 +24,16 @@ const ProfilePage = ({ session }) => {
         try {
           const { data, error } = await supabase
             .from('profiles')
-            .select('full_name')
+            .select('full_name, gender') // Fetch gender along with name
             .eq('id', session.user.id)
-            .single(); // Using .single() is fine, we will handle the error
+            .single();
 
-          // This error is expected if the profile doesn't exist yet
           if (error && error.code !== 'PGRST116') {
             throw error;
           }
           if (data) {
             setFullName(data.full_name || '');
+            setGender(data.gender || '');
           }
         } catch (error) {
           showNotification('Could not fetch profile data.', 'error');
@@ -46,19 +43,22 @@ const ProfilePage = ({ session }) => {
       };
       fetchProfile();
     }
-  }, [session]);
+  }, [session, showNotification]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
+    if (!fullName || !gender) {
+      showNotification('Please fill out your full name and gender.', 'warning');
+      return;
+    }
     setLoading(true);
     try {
-      // --- THIS IS THE FIX ---
-      // Use upsert() instead of update(). It will create the profile if it doesn't exist.
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          id: session.user.id, // This is the primary key to find the row
+          id: session.user.id,
           full_name: fullName,
+          gender: gender, // Save gender to the database
           updated_at: new Date(),
         });
       
@@ -72,7 +72,7 @@ const ProfilePage = ({ session }) => {
   };
   
   if (!session) {
-    return null; // Don't render anything if there's no session
+    return null;
   }
   
   return (
@@ -98,6 +98,22 @@ const ProfilePage = ({ session }) => {
               required
               margin="normal"
             />
+            {/* New Gender Selection Field */}
+            <FormControl fullWidth required margin="normal">
+              <InputLabel id="gender-select-label">Gender</InputLabel>
+              <Select
+                labelId="gender-select-label"
+                id="gender-select"
+                value={gender}
+                label="Gender"
+                onChange={(e) => setGender(e.target.value)}
+              >
+                <MenuItem value={'male'}>Male</MenuItem>
+                <MenuItem value={'female'}>Female</MenuItem>
+                <MenuItem value={'other'}>Other</MenuItem>
+              </Select>
+            </FormControl>
+
             <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }} disabled={loading}>
               {loading ? 'Saving...' : 'Save Profile'}
             </Button>
