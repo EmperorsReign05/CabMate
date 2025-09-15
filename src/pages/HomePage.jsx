@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'; 
 import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; 
 import { supabase } from '../supabaseClient';
 import { useJsApiLoader } from '@react-google-maps/api';
 import LocationAutocomplete from '../components/LocationAutocomplete';
@@ -56,6 +57,7 @@ const commonRoutes = [
 ];
 
 const HomePage = () => {
+   const navigate = useNavigate();
   const [fromLocation, setFromLocation] = useState(null);
   const [toLocation, setToLocation] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
@@ -196,20 +198,21 @@ const HomePage = () => {
       )}
 
       {!loading && searched && (
-        <Box>
-          <Typography variant="h5" component="h2" gutterBottom>
-            Search Results
-          </Typography>
+         <Box>
+          <Typography variant="h5" component="h2" gutterBottom>Search Results</Typography>
           <Grid container spacing={2}>
             {searchResults.length === 0 ? (
-              <Typography sx={{ ml: 2, mt: 2 }}>
-                No rides found starting near your selected location.
-              </Typography>
+              <Box sx={{ textAlign: 'center', width: '100%', my: 4 }}>
+                <Typography sx={{ mb: 2 }}>No rides found for this route.</Typography>
+                <Button 
+                  variant="contained"
+                  onClick={() => navigate('/create', { state: { fromLocation, toLocation } })}
+                >
+                  Be the first to create one!
+                </Button>
+              </Box>
             ) : (
-              searchResults.map((ride) => (
-                <RideCard key={ride.id} ride={ride} />
-               
-              ))
+              searchResults.map((ride) => (<Grid item xs={12} sm={6} md={4} key={ride.id}><RideCard ride={ride} /></Grid>))
             )}
           </Grid>
         </Box>

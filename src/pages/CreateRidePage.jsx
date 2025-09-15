@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useJsApiLoader } from '@react-google-maps/api';
 import LocationAutocomplete from '../components/LocationAutocomplete';
@@ -11,9 +11,11 @@ const libraries = ['places'];
 
 const CreateRidePage = ({ session }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { showNotification } = useNotification();
-  const [from, setFrom] = useState(null);
-  const [to, setTo] = useState(null);
+ const [from, setFrom] = useState(location.state?.fromLocation || null);
+  const [to, setTo] = useState(location.state?.toLocation || null);
+
   const [rideDetails, setRideDetails] = useState({ departure_time: '', seats_available: 1, cost_per_seat: 0 });
   const [isLadiesOnly, setIsLadiesOnly] = useState(false);
   const [loading, setLoading] = useState(false);
