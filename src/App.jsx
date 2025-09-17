@@ -13,6 +13,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage';
 import DashboardPage from './pages/DashboardPage'; 
 import Background from './components/Background';
+import LocalCabsPage from './pages/LocalCabsPage';
 function App() {
 
   const [session, setSession] = useState(null);
@@ -42,6 +43,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/create" element={<CreateRidePage session={session} />} />
           <Route path="/ride/:id" element={<RideDetailPage session={session} />} />
+          <Route path="/local-cabs" element={<LocalCabsPage />} /> 
           <Route path="/my-rides" element={<MyRidesPage session={session} />} />
            <Route path="/profile" element={<ProfilePage session={session} />} />
            <Route path="/forgot-password" element={<ForgotPasswordPage />} />

@@ -30,6 +30,9 @@ const Header = ({ session }) => {
               <Button color="inherit" component={RouterLink} to="/my-rides">
                 My Rides
               </Button>
+              <Button color="inherit" component={RouterLink} to="/local-cabs">
+                Local Cabs
+              </Button>
                <Button color="inherit" component={RouterLink} to="/profile">
                 {session.user.email}
               </Button>
