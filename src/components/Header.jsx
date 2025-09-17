@@ -16,9 +16,30 @@ const Header = ({ session }) => {
     <AppBar position="static" sx={{ bgcolor: 'white', color: 'black', borderBottom: '1px solid #e0e0e0' }}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
-          <RouterLink to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <RouterLink
+          to="/"
+          style={{
+            textDecoration: 'none',
+            color: 'inherit',
+            display: 'flex',
+            alignItems: 'center',
+            flexGrow: 1
+          }}
+        >
+          <img
+            src="/pwa-192x192.png" 
+            alt="CabMate Logo"
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%', 
+              marginRight: '12px',
+            }}
+          />
+          <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
             CabMate
-          </RouterLink>
+          </Typography>
+        </RouterLink>
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
