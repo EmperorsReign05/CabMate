@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { Container, Typography, Button, Card, CardContent, Box, CircularProgress, List, ListItem, ListItemText, Divider, Chip, Stack } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
+import RideChat from '../components/RideChat';
 
 const RideDetailPage = ({ session }) => {
   const { id } = useParams();
@@ -109,6 +110,8 @@ const RideDetailPage = ({ session }) => {
   }
 
   const isCreator = session && session.user.id === creator?.id;
+    const isApprovedPassenger = userRequestStatus === 'approved';
+   const canViewChat = isCreator || isApprovedPassenger;
   const canRequest = session && !isCreator && ride.seats_available > 0 && !userRequestStatus;
 
   return (
@@ -178,6 +181,10 @@ const RideDetailPage = ({ session }) => {
           )}
         </CardContent>
       </Card>
+      {canViewChat && (
+        <RideChat rideId={ride.id} session={session} creatorId={creator.id} />
+      )}
+
     </Container>
   );
 };
