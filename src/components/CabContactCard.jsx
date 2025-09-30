@@ -20,7 +20,7 @@ const CabContactCard = ({ phone, price, locations, notes }) => {
 
         <Box sx={{ my: 2 }}>
           <Typography variant="caption" color="text.secondary">
-            From: {locations}
+            {locations}
           </Typography>
         </Box>
         

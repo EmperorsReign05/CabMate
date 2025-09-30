@@ -54,9 +54,12 @@ const LocationAutocomplete = ({ onPlaceSelect, label, value }) => {
     outline: `none`,
     textOverflow: `ellipses`,
   };
+   const options = {
+    componentRestrictions: { country: 'in' }, // 'in' is the country code for India
+  };
 
   return (
-    <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
+    <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} options={options} >
       <input
         type="text"
         placeholder={label}
