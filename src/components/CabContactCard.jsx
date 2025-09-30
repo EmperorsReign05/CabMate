@@ -9,9 +9,9 @@ const CabContactCard = ({ phone, price, locations, notes }) => {
         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
           ₹{price}
         </Typography>
-        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 2 }}>
-          Fixed Rate to MUJ
-        </Typography>
+        {/*<Typography variant="subtitle1" color="text.secondary" sx={{ mb: 2 }}>
+          Cab Booking
+        </Typography>*/}
         <Chip label={phone} color="success" sx={{ mb: 2, fontSize: '1rem' }} />
 
         <Typography variant="body2" sx={{ my: 2 }}>

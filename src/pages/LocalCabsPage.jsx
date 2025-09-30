@@ -5,21 +5,21 @@ import CabContactCard from '../components/CabContactCard';
 const cabData = [
   {
     phone: '+917240111339',
-    price: 700,
+    price: '700-900',
     locations: 'Popular locations: Airport, Sindhi Camp, Station, or Ajmeri Pulia',
     notes: '"New cab booking stall"'
   },
   {
     phone: '+919799845311',
-    price: 800,
+    price: '700-900',
     locations: 'Popular locations: Airport, Sindhi Camp, Station, or Ajmer Pulia',
-    notes: '"Confirm the number of passengers, generally the rate is for 3 people. Try negotiating, though prices are generally fixed."'
+    notes: '"Confirm the number of passengers. Try negotiating, though prices are generally fixed."'
   },
   {
     phone: '+919509027828',
-    price: 900,
+    price: '700-900',
     locations: 'Popular locations: Airport, Sindhi Camp, Station, or Ajmeri Pulia',
-    notes: '"Confirm the number of passengers, generally the rate is for 3 people. Try negotiating, though prices are generally fixed."'
+    notes: '"Confirm the number of passengers. Try negotiating, though prices are generally fixed."'
   }
   
 
