@@ -9,7 +9,7 @@ const Background = ({ children }) => {
       {/* This Box is the actual gradient layer. It sits behind everything else. */}
       <Box
         sx={{
-          position: 'absolute',
+          position: 'fixed',
           top: 0,
           left: 0,
           right: 0,

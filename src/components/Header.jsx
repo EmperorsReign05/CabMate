@@ -14,15 +14,15 @@ const Header = ({ session, profile }) => {
   return (
     // Wrap the AppBar in a Container to give it space from the edges
     <Container maxWidth="lg">
-      <AppBar
+          <AppBar
         position="sticky"
         sx={{
           // These styles create the modern, rounded, transparent look
           borderRadius: 4, // This makes the corners rounded (16px)
-          mt: 2, // Margin-top to detach it from the top edge
+          mt: 2, // No margin at the top
           backdropFilter: 'blur(8px)',
           backgroundColor: 'rgba(255, 255, 255, 0.7)',
-          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.17)',
+          boxShadow: '0 ',
           color: 'black',
         }}
       >
@@ -38,7 +38,7 @@ const Header = ({ session, profile }) => {
             </Typography>
           </RouterLink>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0,pt:0 }}>
             {session ? (
               <>
                 <Button color="inherit" component={RouterLink} to="/dashboard" startIcon={<Dashboard />}>Dashboard</Button>
