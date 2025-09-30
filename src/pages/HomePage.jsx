@@ -147,7 +147,15 @@ const HomePage = () => {
 
   return (
     <Container>
-      <Box sx={{ my: 4, p: 2, border: '1px solid lightgray', borderRadius: 2 }}>
+      <Box sx={{ 
+          my: 4, 
+          p: 3, // Increased padding
+          borderRadius: 4, // More rounded corners
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)', // A modern shadow
+          backdropFilter: 'blur(4px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))' // New gradient
+        }}>
         <Typography variant="h5" component="h1" gutterBottom>
           Find a Ride
         </Typography>
