@@ -11,7 +11,7 @@ export default defineConfig({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'College Carpool',
-        short_name: 'Carpool',
+        short_name: 'CabMate',
         description: 'Carpooling app for our college to save on fares.',
         theme_color: '#ffffff',
         icons: [
