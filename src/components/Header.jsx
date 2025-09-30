@@ -1,14 +1,20 @@
 // src/components/Header.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { AppBar, Toolbar, Typography, Button, Box, Container } from '@mui/material';
-import { Add, Dashboard } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Button, Box, Container, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Divider } from '@mui/material';
+import { Add, Dashboard, Menu as MenuIcon } from '@mui/icons-material';
 
 const Header = ({ session, profile }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
+  };
+
+  const toggleDrawer = (open) => () => {
+    setDrawerOpen(open);
   };
 
   return (
@@ -38,7 +44,8 @@ const Header = ({ session, profile }) => {
             </Typography>
           </RouterLink>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0,pt:0 }}>
+          {/* Desktop navigation */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1, flexShrink: 0, pt: 0 }}>
             {session ? (
               <>
                 <Button color="inherit" component={RouterLink} to="/dashboard" startIcon={<Dashboard />}>Dashboard</Button>
@@ -59,8 +66,70 @@ const Header = ({ session, profile }) => {
               },}}>Login</Button>
             )}
           </Box>
+
+          {/* Mobile hamburger */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <IconButton edge="end" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
+              <MenuIcon />
+            </IconButton>
+          </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Drawer for mobile */}
+      <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Box sx={{ width: 260, p: 1 }} role="presentation" onClick={toggleDrawer(false)} onKeyDown={toggleDrawer(false)}>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton component={RouterLink} to="/">
+                <ListItemText primary="Home" />
+              </ListItemButton>
+            </ListItem>
+            <Divider />
+            {session ? (
+              <>
+                <ListItem disablePadding>
+                  <ListItemButton component={RouterLink} to="/dashboard">
+                    <ListItemText primary="Dashboard" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component={RouterLink} to="/my-rides">
+                    <ListItemText primary="My Rides" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component={RouterLink} to="/local-cabs">
+                    <ListItemText primary="Local Cabs" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton component={RouterLink} to="/create">
+                    <ListItemText primary="Create New Ride" />
+                  </ListItemButton>
+                </ListItem>
+                <Divider sx={{ my: 1 }} />
+                <ListItem disablePadding>
+                  <ListItemButton component={RouterLink} to="/profile">
+                    <ListItemText primary={profile?.full_name ? profile.full_name : session.user.email} />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={handleLogout}>
+                    <ListItemText primary="Logout" />
+                  </ListItemButton>
+                </ListItem>
+              </>
+            ) : (
+              <ListItem disablePadding>
+                <ListItemButton component={RouterLink} to="/login">
+                  <ListItemText primary="Login" />
+                </ListItemButton>
+              </ListItem>
+            )}
+          </List>
+        </Box>
+      </Drawer>
     </Container>
   );
 };

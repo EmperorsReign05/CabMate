@@ -12,9 +12,9 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
   });
 
   return (
-    <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%',borderRadius: 4, border: '1px solid #e0e0e0', '&:hover': { boxShadow: 3 } }}>
+    <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: { xs: 160, sm: 200 }, borderRadius: 4, border: '1px solid #e0e0e0', '&:hover': { boxShadow: 3 } }}>
       <RouterLink to={`/ride/${ride.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-        <CardContent sx={{ flexGrow: 1, position: 'relative' }}>
+        <CardContent sx={{ flexGrow: 1, position: 'relative', display: 'flex', flexDirection: 'column' }}>
           
           {/* New Ladies-Only Chip */}
           {ride.is_ladies_only && (
@@ -51,7 +51,7 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
             </Box>
           </Box>
           
-          <Box sx={{ textAlign: 'right' }}>
+          <Box sx={{ textAlign: 'right', mt: 'auto' }}>
             <Typography variant="h6" component="span" color="primary" sx={{ fontWeight: 'bold' }}>
               ₹{ride.cost_per_seat}
             </Typography>
