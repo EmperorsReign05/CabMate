@@ -4,17 +4,25 @@ import CabContactCard from '../components/CabContactCard';
 
 const cabData = [
   {
+    phone: '+917240111339',
+    price: 700,
+    locations: 'Popular locations: Airport, Sindhi Camp, Station, or Ajmeri Pulia',
+    notes: '"New cab booking stall"'
+  },
+  {
     phone: '+919799845311',
     price: 800,
-    locations: 'Airport, Sindhi Camp, Station, or Ajmer Pulia',
-    notes: '"Mention you are from a carpool group to avail this rate. Confirm the number of passengers, generally the rate is for 3 people."'
+    locations: 'Popular locations: Airport, Sindhi Camp, Station, or Ajmer Pulia',
+    notes: '"Confirm the number of passengers, generally the rate is for 3 people. Try negotiating, though prices are generally fixed."'
   },
   {
     phone: '+919509027828',
     price: 900,
-    locations: 'Airport, Sindhi Camp, Station, or Ajmeri Pulia',
-    notes: '"Mention you are from a carpool group to avail this rate. Confirm the number of passengers, generally the rate is for 3 people."'
+    locations: 'Popular locations: Airport, Sindhi Camp, Station, or Ajmeri Pulia',
+    notes: '"Confirm the number of passengers, generally the rate is for 3 people. Try negotiating, though prices are generally fixed."'
   }
+  
+
 ];
 
 const LocalCabsPage = () => {
@@ -25,7 +33,7 @@ const LocalCabsPage = () => {
           Local Cab Contacts
         </Typography>
         <Typography color="text.secondary">
-          Fixed-rate cab options for rides to MUJ when carpooling isn't available.
+          Cab booking options for rides.
         </Typography>
       </Box>
 
