@@ -36,7 +36,7 @@ function App() {
     <BrowserRouter>
      
       <Header session={session} />
-      <main style={{ padding: '1rem' }}>
+      <main style={{ position: 'relative', zIndex: 1 }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/dashboard" element={<DashboardPage session={session} />} />

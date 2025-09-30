@@ -4,7 +4,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 
 const CabContactCard = ({ phone, price, locations, notes }) => {
   return (
-    <Card sx={{ border: '1px solid #e0e0e0', height: '100%' }}>
+    <Card sx={{ border: '1px solid #e0e0e0', borderRadius: 4, height: '100%' }}>
       <CardContent sx={{ textAlign: 'center' }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
           ₹{price}

@@ -1,10 +1,11 @@
+// src/pages/MyRidesPage.jsx
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { Container, Typography, Box, Grid, Card, CardContent, CardHeader, CircularProgress, Divider } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardContent, CardHeader, CircularProgress, Button } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
-import RideCard from '../components/RideCard'; 
+import RideCard from '../components/RideCard';
 
 const MyRidesPage = ({ session }) => {
   const navigate = useNavigate();
@@ -18,23 +19,11 @@ const MyRidesPage = ({ session }) => {
       navigate('/login');
       return;
     }
-
     const fetchMyRides = async () => {
       setLoading(true);
       const userId = session.user.id;
-
-      // Fetch rides created by the user
-      const { data: createdData, error: createdError } = await supabase
-        .from('rides')
-        .select('*')
-        .eq('creator_id', userId);
-      
-      // Fetch rides joined by the user
-      const { data: joinedData, error: joinedError } = await supabase
-        .from('ride_passengers')
-        .select('rides(*)')
-        .eq('user_id', userId)
-        .eq('status', 'approved'); // Only show approved rides
+      const { data: createdData, error: createdError } = await supabase.from('rides').select('*').eq('creator_id', userId);
+      const { data: joinedData, error: joinedError } = await supabase.from('ride_passengers').select('rides(*)').eq('user_id', userId).eq('status', 'approved');
 
       if (createdError || joinedError) {
         console.error('Error fetching my rides:', createdError || joinedError);
@@ -44,18 +33,16 @@ const MyRidesPage = ({ session }) => {
       }
       setLoading(false);
     };
-
     fetchMyRides();
   }, [session, navigate]);
 
   const handleDelete = async (rideId) => {
     if (window.confirm('Are you sure you want to delete this ride?')) {
       try {
-        const { error } = await supabase.from('rides').delete().eq('id', rideId);
-        if (error) throw error;
+        await supabase.from('rides').delete().eq('id', rideId);
         setCreatedRides(createdRides.filter(ride => ride.id !== rideId));
       } catch (error) {
-        showNotification('Error deleting ride: ' + error.message);
+        showNotification('Error deleting ride: ' + error.message, 'error');
       }
     }
   };
@@ -64,11 +51,26 @@ const MyRidesPage = ({ session }) => {
     return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>;
   }
 
+  const cardStyles = {
+    borderRadius: 4,
+    border: '1px solid rgba(255, 255, 255, 0.5)',
+    bgcolor: 'rgba(255, 255, 255, 0.7)',
+    backdropFilter: 'blur(4px)',
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <Card>
-          <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides I've Created</Typography>} />
+        <Card sx={cardStyles}>
+          {/* FIX: The 'action' prop is now correctly placed inside the CardHeader tag */}
+          <CardHeader
+            title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides I've Created</Typography>}
+            action={
+              <Button component={RouterLink} to="/create" variant="contained">
+                Create New Ride
+              </Button>
+            }
+          />
           <CardContent>
             {createdRides.length > 0 ? (
               <Grid container spacing={2}>
@@ -86,7 +88,7 @@ const MyRidesPage = ({ session }) => {
       </Box>
 
       <Box>
-        <Card>
+        <Card sx={cardStyles}>
           <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides I've Joined</Typography>} />
           <CardContent>
             {joinedRides.length > 0 ? (
