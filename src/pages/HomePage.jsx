@@ -180,7 +180,16 @@ const HomePage = () => {
           </Box>
           <Button
             variant="contained"
-            sx={{ height: '56px', width: { xs: '100%', md: 'auto' }, px: 4 }}
+            sx={{
+              height: '56px',
+              width: { xs: '100%', md: 'auto' },
+              px: 4,
+              // Add these lines to change the color
+              backgroundColor: '#ad57c1ff', // A deep purple color
+              '&:hover': {
+                backgroundColor: '#5d358eff', // A slightly darker purple for hover
+              },
+            }}
             onClick={handleSearch}
             disabled={loading}
           >
@@ -197,6 +206,24 @@ const HomePage = () => {
             />
           ))}
         </Stack>
+      </Box>
+
+      {/* Create Ride button under Find Rides section */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 3 }}>
+        <Button
+          component={RouterLink}
+          to="/create"
+          variant="contained"
+          sx={{
+            height: '35px',
+            width: { xs: '100%', md: 'auto' },
+            px: 4,
+            backgroundColor: '#ad57c1ff',
+            '&:hover': { backgroundColor: '#4A148C' },
+          }}
+        >
+          Create New Ride
+        </Button>
       </Box>
 
       {loading && (

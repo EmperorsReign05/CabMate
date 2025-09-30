@@ -50,10 +50,13 @@ const Header = ({ session, profile }) => {
                {/*<IconButton color="primary" component={RouterLink} to="/create" aria-label="create new ride" sx={{ border: '1px solid', borderColor: 'primary.main', borderRadius: '8px' }}>
                   <Add />
                 </IconButton>*/}
-                <Button variant="outlined" color="primary" onClick={handleLogout}>Logout</Button>
+                <Button variant="outlined" color="white" onClick={handleLogout} >Logout</Button>
               </>
             ) : (
-              <Button variant="contained" component={RouterLink} to="/login">Login</Button>
+              <Button variant="contained" component={RouterLink} to="/login" sx={{backgroundColor: '#ad57c1ff', // A deep purple color
+              '&:hover': {
+                backgroundColor: '#4A148C', // A slightly darker purple for hover
+              },}}>Login</Button>
             )}
           </Box>
         </Toolbar>

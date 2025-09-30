@@ -64,9 +64,18 @@ const MyRidesPage = ({ session }) => {
         <Card sx={cardStyles}>
           {/* FIX: The 'action' prop is now correctly placed inside the CardHeader tag */}
           <CardHeader
-            title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides I've Created</Typography>}
+            title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold', }}>Rides Created</Typography>}
             action={
-              <Button component={RouterLink} to="/create" variant="contained">
+              <Button component={RouterLink} to="/create" variant="contained" sx={{
+              height: '35px',
+              width: { xs: '100%', md: 'auto' },
+              px: 4,
+              // Add these lines to change the color
+              backgroundColor: '#ad57c1ff', // A deep purple color
+              '&:hover': {
+                backgroundColor: '#4A148C', // A slightly darker purple for hover
+              },
+            }}>
                 Create New Ride
               </Button>
             }
@@ -89,7 +98,7 @@ const MyRidesPage = ({ session }) => {
 
       <Box>
         <Card sx={cardStyles}>
-          <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides I've Joined</Typography>} />
+          <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides Joined</Typography>} />
           <CardContent>
             {joinedRides.length > 0 ? (
               <Grid container spacing={2}>

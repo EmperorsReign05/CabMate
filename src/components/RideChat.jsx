@@ -8,7 +8,7 @@ const RideChat = ({ rideId, session, creatorId }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [profiles, setProfiles] = useState({});
-  const messagesEndRef = useRef(null);
+  const containerRef = useRef(null);
 
   // This function will be called repeatedly to get new messages
   const fetchMessagesAndProfiles = async () => {
@@ -60,9 +60,11 @@ const RideChat = ({ rideId, session, creatorId }) => {
     return () => clearInterval(interval);
   }, [rideId]); // This effect runs only when the rideId changes
 
-  // Scroll to the bottom when new messages arrive
+  // Scroll to the bottom of the chat container when new messages arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const handleSubmit = async (e) => {
@@ -87,7 +89,7 @@ const RideChat = ({ rideId, session, creatorId }) => {
       <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
         Ride Chat
       </Typography>
-      <Box sx={{ height: '300px', overflowY: 'auto', mb: 2, border: '1px solid #e0e0e0', p: 1, borderRadius: 1 }}>
+      <Box ref={containerRef} sx={{ height: '300px', overflowY: 'auto', mb: 2, border: '1px solid #e0e0e0', p: 1, borderRadius: 1 }}>
         <List>
           {messages.map((message) => {
             const isYou = message.user_id === session.user.id;
@@ -107,7 +109,7 @@ const RideChat = ({ rideId, session, creatorId }) => {
               </ListItem>
             );
           })}
-          <div ref={messagesEndRef} />
+          {/* end spacer for scroll positioning */}
         </List>
       </Box>
       <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex' }}>
@@ -119,7 +121,10 @@ const RideChat = ({ rideId, session, creatorId }) => {
           placeholder="Type a message..."
           size="small"
         />
-        <Button type="submit" variant="contained" sx={{ ml: 1 }}>Send</Button>
+        <Button type="submit" variant="contained" sx={{ ml: 1 , backgroundColor: '#ad57c1ff', // A deep purple color
+              '&:hover': {
+                backgroundColor: '#4A148C', // A slightly darker purple for hover
+              },}}>Send</Button>
       </Box>
     </Paper>
   );

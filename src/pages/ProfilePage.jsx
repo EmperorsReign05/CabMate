@@ -9,7 +9,8 @@ const ProfilePage = ({ session }) => {
   const { showNotification } = useNotification();
   const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState('');
-  const [gender, setGender] = useState(''); // State for gender
+  const [gender, setGender] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(''); 
 
   useEffect(() => {
     if (!session) {
@@ -24,7 +25,7 @@ const ProfilePage = ({ session }) => {
         try {
           const { data, error } = await supabase
             .from('profiles')
-            .select('full_name, gender') // Fetch gender along with name
+            .select('full_name, gender, phone_number')
             .eq('id', session.user.id)
             .single();
 
@@ -34,6 +35,7 @@ const ProfilePage = ({ session }) => {
           if (data) {
             setFullName(data.full_name || '');
             setGender(data.gender || '');
+            setPhoneNumber(data.phone_number || '');
           }
         } catch (error) {
           showNotification('Could not fetch profile data.', 'error');
@@ -58,7 +60,8 @@ const ProfilePage = ({ session }) => {
         .upsert({
           id: session.user.id,
           full_name: fullName,
-          gender: gender, // Save gender to the database
+          gender: gender, 
+          phone_number: phoneNumber,
           updated_at: new Date(),
         });
       
@@ -98,6 +101,8 @@ const ProfilePage = ({ session }) => {
               required
               margin="normal"
             />
+             <TextField label="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} fullWidth margin="normal" type="tel" />
+
             {/* New Gender Selection Field */}
             <FormControl fullWidth required margin="normal">
               <InputLabel id="gender-select-label">Gender</InputLabel>
@@ -110,11 +115,14 @@ const ProfilePage = ({ session }) => {
               >
                 <MenuItem value={'male'}>Male</MenuItem>
                 <MenuItem value={'female'}>Female</MenuItem>
-                <MenuItem value={'other'}>Other</MenuItem>
+                
               </Select>
             </FormControl>
 
-            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }} disabled={loading}>
+            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 , backgroundColor: '#ad57c1ff', // A deep purple color
+              '&:hover': {
+                backgroundColor: '#4A148C', // A slightly darker purple for hover
+              },}} disabled={loading}>
               {loading ? 'Saving...' : 'Save Profile'}
             </Button>
           </>
@@ -125,3 +133,4 @@ const ProfilePage = ({ session }) => {
 };
 
 export default ProfilePage;
+

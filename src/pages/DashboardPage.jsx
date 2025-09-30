@@ -123,7 +123,10 @@ const DashboardPage = ({ session }) => {
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>Welcome back, {welcomeName}!</Typography>
           <Typography color="text.secondary">Here's what's happening with your rides.</Typography>
         </Box>
-        <Button variant="contained" startIcon={<Add />} component={RouterLink} to="/create">
+        <Button variant="contained" startIcon={<Add />} component={RouterLink} to="/create" sx={{backgroundColor: '#ad57c1ff', // A deep purple color
+              '&:hover': {
+                backgroundColor: '#4A148C', // A slightly darker purple for hover
+              },}}>
           Create New Ride
         </Button>
       </Box>
