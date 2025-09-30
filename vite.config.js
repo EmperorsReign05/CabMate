@@ -10,7 +10,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'College Carpool',
+        name: 'CabMate',
         short_name: 'CabMate',
         description: 'Carpooling app for our college to save on fares.',
         theme_color: '#ffffff',
