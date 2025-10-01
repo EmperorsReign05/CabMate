@@ -101,7 +101,16 @@ const CreateRidePage = ({ session }) => {
           </>
         )}
 
-        <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }} disabled={loading}>
+        <Button type="submit" variant="contained" color="primary" fullWidth sx={{mt: 2,
+              height: '35px',
+              width: '100%',
+              px: 4,
+              // Add these lines to change the color
+              backgroundColor: '#ad57c1ff', // A deep purple color
+              '&:hover': {
+                backgroundColor: '#4A148C', // A slightly darker purple for hover
+              },
+            }} disabled={loading}>
           {loading ? 'Creating...' : 'Create Ride'}
         </Button>
       </Box>
