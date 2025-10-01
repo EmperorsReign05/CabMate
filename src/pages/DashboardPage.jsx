@@ -12,7 +12,7 @@ const StatCard = ({ title, value, icon }) => (
   <Card>
     <CardContent>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
-        <Box sx={{ p: 1.5, bgcolor: 'primary.light', borderRadius: '50%', display: 'flex', mr: 2 }}>
+        <Box sx={{ p: 1.5, bgcolor: 'rgba(173, 87, 193, 0.15)', borderRadius: '50%', display: 'flex', mr: 2 }}>
           {icon}
         </Box>
         <Box>
@@ -131,15 +131,21 @@ const DashboardPage = ({ session }) => {
         </Button>
       </Box>
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}><StatCard title="Rides Created" value={stats.created} icon={<DirectionsCar color="primary" />} /></Grid>
-        <Grid item xs={12} sm={6} md={3}><StatCard title="Rides Joined" value={stats.joined} icon={<People color="primary" />} /></Grid>
-        <Grid item xs={12} sm={6} md={3}><StatCard title="Upcoming" value={stats.upcoming} icon={<Event color="primary" />} /></Grid>
-        <Grid item xs={12} sm={6} md={3}><StatCard title="Total Rides" value={stats.total} icon={<TrendingUp color="primary" />} /></Grid>
+        <Grid item xs={12} sm={6} md={3}><StatCard title="Rides Created" value={stats.created} icon={<DirectionsCar sx={{ color: '#ad57c1ff' }} />} /></Grid>
+        <Grid item xs={12} sm={6} md={3}><StatCard title="Rides Joined" value={stats.joined} icon={<People sx={{ color: '#ad57c1ff' }} />} /></Grid>
+        <Grid item xs={12} sm={6} md={3}><StatCard title="Upcoming" value={stats.upcoming} icon={<Event sx={{ color: '#ad57c1ff' }} />} /></Grid>
+        <Grid item xs={12} sm={6} md={3}><StatCard title="Total Rides" value={stats.total} icon={<TrendingUp sx={{ color: '#ad57c1ff' }} />} /></Grid>
       </Grid>
-      <Card>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
+      <Card sx={{my: 4, 
+          p: 3, // Increased padding
+          borderRadius: 4, // More rounded corners
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)', // A modern shadow
+          backdropFilter: 'blur(4px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))'}}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2  }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Upcoming Rides</Typography>
-            <Button component={RouterLink} to="/my-rides">View All</Button>
+            <Button component={RouterLink} to="/my-rides" variant="contained" sx={{backgroundColor: '#ad57c1ff', '&:hover': { backgroundColor: '#4A148C' }}}>View All</Button>
         </Box>
         <CardContent>
             {upcomingRides.length > 0 ? (
@@ -151,7 +157,7 @@ const DashboardPage = ({ session }) => {
             ) : (
                 <Box sx={{ textAlign: 'center', py: 6 }}>
                     <Typography color="text.secondary" sx={{ mb: 2 }}>No upcoming rides</Typography>
-                    <Button variant="contained" component={RouterLink} to="/create">Create Your First Ride</Button>
+                    <Button variant="contained" component={RouterLink} to="/create" sx={{backgroundColor: '#ad57c1ff', '&:hover': { backgroundColor: '#4A148C' }}}>Create Your First Ride</Button>
                 </Box>
             )}
         </CardContent>
