@@ -160,7 +160,7 @@ const HomePage = () => {
           Find a Ride
         </Typography>
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={1} alignItems="center">
-          <Box sx={{ width: '100%' }}>
+              <Box sx={{ width: '100%' }}>
             <LocationAutocomplete
               label="From"
               
@@ -171,7 +171,7 @@ const HomePage = () => {
           <IconButton onClick={handleSwap} aria-label="swap from and to">
             <SwapVertIcon />
           </IconButton>
-          <Box sx={{ width: '100%' }}>
+              <Box sx={{ width: '100%' }}>
             <LocationAutocomplete
               label="To"
               onPlaceSelect={setToLocation}
@@ -241,6 +241,10 @@ const HomePage = () => {
                 <Typography sx={{ mb: 2 }}>No rides found for this route.</Typography>
                 <Button 
                   variant="contained"
+                  sx={{
+                    backgroundColor: '#ad57c1ff',
+                    '&:hover': { backgroundColor: '#4A148C' },
+                  }}
                   onClick={() => navigate('/create', { state: { fromLocation, toLocation } })}
                 >
                   Be the first to create one!

@@ -49,7 +49,7 @@ const LocationAutocomplete = ({ onPlaceSelect, label, value }) => {
     width: `100%`,
     height: `56px`,
     padding: `0 12px`,
-    borderRadius: `4px`,
+    borderRadius: `12px`,
     fontSize: `1rem`,
     outline: `none`,
     textOverflow: `ellipses`,
