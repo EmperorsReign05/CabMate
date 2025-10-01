@@ -37,6 +37,9 @@ const LocationAutocomplete = ({ onPlaceSelect, label, value }) => {
         lng: place.geometry.location.lng(),
       };
 
+      // Update visible input to the bold name (shortName)
+      setInputValue(shortName);
+
       onPlaceSelect(details);
     } else {
       console.log('Autocomplete is not loaded yet!');
