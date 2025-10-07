@@ -177,7 +177,14 @@ const RideDetailPage = ({ session }) => {
           <Typography variant="h6">Seats Available: {ride.seats_available}</Typography>
 
           {canRequest && (
-            <Button variant="contained" onClick={handleRequestRide} disabled={isProcessing} sx={{ mt: 2, width: '100%' }}>
+            <Button variant="contained" onClick={handleRequestRide} disabled={isProcessing} sx={{ 
+              mt: 2, 
+              width: '100%',
+              backgroundColor: '#ad57c1ff',
+              '&:hover': {
+                backgroundColor: '#4A148C',
+              },
+            }}>
               {isProcessing ? 'Sending...' : 'Request to Join'}
             </Button>
           )}

@@ -29,7 +29,7 @@ const LoginPage = () => {
       } else { // Sign In
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate('/dashboard'); // Redirect to dashboard on successful login
+        navigate('/'); // Redirect to home page on successful login
       }
     } catch (error) {
       showNotification(error.error_description || error.message, 'error');
