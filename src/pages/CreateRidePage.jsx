@@ -103,7 +103,8 @@ const CreateRidePage = ({ session }) => {
 
         <Button type="submit" variant="contained" color="primary" fullWidth sx={{mt: 2,
               height: '35px',
-              width: '100%',
+              width: { xs: '100%', md: 'auto' },
+              
               px: 4,
               // Add these lines to change the color
               backgroundColor: '#ad57c1ff', // A deep purple color
