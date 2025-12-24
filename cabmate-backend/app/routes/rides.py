@@ -1,26 +1,39 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.database import rides_collection
 from app.schemas import RideCreate
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from bson import ObjectId
 
-router = APIRouter(prefix="/rides", tags=["Rides"])
+router = APIRouter(tags=["Rides"])
 
 
 @router.post("/")
 def create_ride(ride: RideCreate):
-    ride_doc = {
-        "from_location": ride.from_location,
-        "to_location": ride.to_location,
-        "departure_time": ride.departure_time,
-        "seats_available": ride.seats_available,
-        "price_per_seat": ride.price_per_seat,
-        "created_by": "mock-user-id",  # auth later
-        "created_at": datetime.utcnow()
-    }
+    try:
+        departure_time = ride.departure_time
 
-    result = rides_collection.insert_one(ride_doc)
-    return {"id": str(result.inserted_id)}
+        # ✅ Ensure timezone-aware UTC
+        if departure_time.tzinfo is None:
+            departure_time = departure_time.replace(tzinfo=timezone.utc)
+
+        expires_at = departure_time + timedelta(hours=2)
+
+        ride_doc = {
+            "from_location": ride.from_location,
+            "to_location": ride.to_location,
+            "departure_time": departure_time,
+            "expires_at": expires_at,
+            "seats_available": ride.seats_available,
+            "price_per_seat": ride.price_per_seat,
+            "created_at": datetime.now(timezone.utc),
+        }
+
+        result = rides_collection.insert_one(ride_doc)
+        return {"id": str(result.inserted_id)}
+
+    except Exception as e:
+        print("🔥 CREATE RIDE ERROR:", e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/")
