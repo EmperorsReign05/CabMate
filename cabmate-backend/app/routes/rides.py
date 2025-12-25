@@ -3,6 +3,7 @@ from app.database import rides_collection, ride_requests_collection
 from app.schemas import RideCreate, RideJoinRequest
 from datetime import datetime, timedelta, timezone
 from bson import ObjectId
+from bson.errors import InvalidId
 
 router = APIRouter(tags=["Rides"])
 
@@ -48,8 +49,8 @@ def get_rides(from_location: str = None, to_location: str = None):
 
     rides = []
     for ride in rides_collection.find(query):
-        ride["id"] = str(ride["_id"])
-        del ride["_id"]
+        ride["_id"] = str(ride["_id"])
+        
         rides.append(ride)
 
     return rides
@@ -93,41 +94,42 @@ def get_single_ride(ride_id: str):
     ride = rides_collection.find_one({"_id": ObjectId(ride_id)})
 
     if not ride:
-         raise HTTPException(status_code=404, detail="Ride not found")
+        raise HTTPException(status_code=404, detail="Ride not found")
 
-    ride["id"] = str(ride["_id"])
-    del ride["_id"]
+    ride["_id"] = str(ride["_id"])
     return ride
 
+
 @router.post("/{ride_id}/request")
-def request_to_join_ride(ride_id: str, payload: RideJoinRequest):
-    # 1. Validate ride exists
-    ride = rides_collection.find_one({"_id": ObjectId(ride_id)})
+def request_to_join(ride_id: str, body: dict):
+    user_id = body.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=400, detail="user_id required")
+
+    try:
+        ride_obj_id = ObjectId(ride_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid ride ID")
+
+    ride = rides_collection.find_one({"_id": ride_obj_id})
     if not ride:
         raise HTTPException(status_code=404, detail="Ride not found")
 
-    # 2. Prevent creator from joining own ride
-    if ride["created_by"] == payload.user_id:
-        raise HTTPException(status_code=400, detail="Cannot join your own ride")
+    if ride.get("created_by") == user_id:
+        raise HTTPException(status_code=400, detail="Creator cannot request")
 
-    # 3. Check seats
-    if ride["seats_available"] <= 0:
-        raise HTTPException(status_code=400, detail="No seats available")
-
-    # 4. Prevent duplicate requests
     existing = ride_requests_collection.find_one({
         "ride_id": ride_id,
-        "requester_id": payload.user_id
+        "requester_id": user_id
     })
     if existing:
-        raise HTTPException(status_code=400, detail="Request already exists")
+        raise HTTPException(status_code=400, detail="Already requested")
 
-    # 5. Create request
     ride_requests_collection.insert_one({
         "ride_id": ride_id,
-        "requester_id": payload.user_id,
+        "requester_id": user_id,
         "status": "pending",
-        "requested_at": datetime.utcnow()
+        "requested_at": datetime.now(timezone.utc)
     })
 
-    return {"message": "Join request submitted"}
+    return {"message": "Request sent"}
