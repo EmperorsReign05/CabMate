@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+//import { supabase } from '../supabaseClient';
 import { Container, Typography, Button, Card, CardContent, Box, CircularProgress, List, ListItem, ListItemText, Divider, Chip, Stack } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
 import RideChat from '../components/RideChat';
@@ -11,29 +11,35 @@ const RideDetailPage = ({ session }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [ride, setRide] = useState(null);
-  const [passengers, setPassengers] = useState([]);
-  const [pendingRequests, setPendingRequests] = useState([]);
-  const [creator, setCreator] = useState(null);
-  const [creatorProfile, setCreatorProfile] = useState(null);
+  //const [passengers, setPassengers] = useState([]);
+  //const [pendingRequests, setPendingRequests] = useState([]);
+  //const [creator, setCreator] = useState(null);
+  //const [creatorProfile, setCreatorProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const { showNotification } = useNotification();
-  const [userRequestStatus, setUserRequestStatus] = useState(null);
+  //const [userRequestStatus, setUserRequestStatus] = useState(null);
   
 
   const fetchRideDetails = useCallback(async () => {
-    const rideId = id;
-    setLoading(true);
-    try {
-      const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}`);
+  setLoading(true);
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/rides/${id}`);
+    if (!res.ok) throw new Error("Ride not found");
 
-if (!res.ok) {
-  throw new Error("Ride not found");
-}
-      const data = await res.json();
-      setRide(data);
+    const data = await res.json();
+    setRide(data);
 
-      // Fetch minimal creator profile first (more likely allowed by RLS)
+  } catch (error) {
+    console.error("Critical Fetch Error:", error);
+    showNotification('Could not fetch the requested ride.', 'error');
+  } finally {
+    setLoading(false);
+  }
+}, [id, showNotification]);
+
+
+      /*// Fetch minimal creator profile first (more likely allowed by RLS)
       const { data: creatorMinimal, error: creatorMinimalError } = await supabase
         .from('profiles')
         .select('id, full_name')
@@ -62,9 +68,9 @@ if (!res.ok) {
         .from('ride_passengers')
         .select('user_id, status, profiles(id, full_name)')
         .eq('ride_id', id);
-      if (passengerError) throw passengerError;
+      if (passengerError) throw passengerError;*/
 
-      const cleanPassengerData = passengerData.map(p => ({ ...p, profiles: p.profiles })).filter(p => p.user_id);
+      /*const cleanPassengerData = passengerData.map(p => ({ ...p, profiles: p.profiles })).filter(p => p.user_id);
 
       // Determine current user's status before optional enrichment
       if (session) {
@@ -104,14 +110,14 @@ if (!res.ok) {
     } finally {
       setLoading(false);
     }
-  }, [id, session, showNotification]);
+  }, [id, session, showNotification]);*/
 
   useEffect(() => {
     fetchRideDetails();
   }, [fetchRideDetails]);
 
 
-  const handleRequestRide = async () => {
+  /*const handleRequestRide = async () => {
     if (!session) {
       showNotification('You must be logged in to request a ride.', 'warning');
       navigate('/login');
@@ -151,7 +157,7 @@ if (!res.ok) {
     } finally {
       setIsProcessing(false);
     }
-  };
+  }; */
 
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>;
@@ -160,28 +166,29 @@ if (!res.ok) {
     return <Typography sx={{ textAlign: 'center', mt: 4 }}>Ride not found or you do not have permission to view it.</Typography>;
   }
 
-  const isCreator = session && session.user.id === creator?.id;
+  /*const isCreator = session && session.user.id === creator?.id;
   const isApprovedPassenger = userRequestStatus === 'approved';
   const canViewChat = isCreator || isApprovedPassenger;
-  const canRequest = session && !isCreator && ride.seats_available > 0 && !userRequestStatus;
+  const canRequest = session && !isCreator && ride.seats_available > 0 && !userRequestStatus;*/
 
   return (
     <Container maxWidth="md">
       <Card sx={{ mt: 4, p: 2 }}>
         <CardContent>
           
-          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-            Ride from {ride.from_display || ride.from} to {ride.to_display || ride.to}
-          </Typography>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
+  Ride from {ride.from_location} to {ride.to_location}
+</Typography>
+
           
-          {creator && <Typography variant="subtitle1" color="text.secondary">Created by: {creator.full_name || 'A user'}</Typography>}
+          {/*{creator && <Typography variant="subtitle1" color="text.secondary">Created by: {creator.full_name || 'A user'}</Typography>}*/}
           
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
             Departure: {new Date(ride.departure_time).toLocaleString()}
           </Typography>
           
           <Typography variant="h6">Seats Available: {ride.seats_available}</Typography>
-
+          {/*
           {canRequest && (
             <Button variant="contained" onClick={handleRequestRide} disabled={isProcessing} sx={{ 
               mt: 2, 
@@ -265,12 +272,12 @@ if (!res.ok) {
               <Typography>Email: {creatorProfile.email || 'Not available'}</Typography>
               <Typography>Phone: {creatorProfile.phone_number || 'Not provided'}</Typography>
             </Box>
-          )}
+          )} */}
         </CardContent>
       </Card>
-      {canViewChat && (
+      {/*{canViewChat && (
         <RideChat rideId={ride.id} session={session} creatorId={creator.id} />
-      )}
+      )}*/}
 
     </Container>
   );

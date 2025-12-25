@@ -39,7 +39,7 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
 
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                to to {ride.to_display || ride.to_location}
+                to {ride.to_display || ride.to_location}
 
               </Typography>
             </Box>
@@ -58,7 +58,7 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
           
           <Box sx={{ textAlign: 'right', mt: 'auto' }}>
             <Typography variant="h6" component="span" color="primary" sx={{ fontWeight: 'bold' }}>
-              ₹{ride.cost_per_seat}
+              ₹{ride.price_per_seat}
             </Typography>
             <Typography variant="body2" component="span" color="text.secondary">
               /seat
@@ -73,7 +73,7 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
             variant="contained"
             color="error"
             size="small"
-            onClick={() => onDelete(ride.id)}
+            onClick={() => onDelete(rideId)}
             fullWidth
             startIcon={<Delete />}
           >
