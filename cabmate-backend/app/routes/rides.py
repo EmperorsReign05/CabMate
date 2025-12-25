@@ -59,7 +59,7 @@ def get_single_ride(ride_id: str):
     ride = rides_collection.find_one({"_id": ObjectId(ride_id)})
 
     if not ride:
-        return {"error": "Ride not found"}
+         raise HTTPException(status_code=404, detail="Ride not found")
 
     ride["id"] = str(ride["_id"])
     del ride["_id"]

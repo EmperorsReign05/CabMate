@@ -22,8 +22,10 @@ const MyRidesPage = ({ session }) => {
     const fetchMyRides = async () => {
       setLoading(true);
       const userId = session.user.id;
-      const { data: createdData, error: createdError } = await supabase.from('rides').select('*').eq('creator_id', userId);
-      const { data: joinedData, error: joinedError } = await supabase.from('ride_passengers').select('rides(*)').eq('user_id', userId).eq('status', 'approved');
+      const { data: createdData, error: createdError } = await fetch("http://127.0.0.1:8000/rides/")
+//supabase.from('rides').select('*').eq('creator_id', userId);
+      const { data: joinedData, error: joinedError } = await fetch("http://127.0.0.1:8000/rides/")
+//supabase.from('ride_passengers').select('rides(*)').eq('user_id', userId).eq('status', 'approved');
 
       if (createdError || joinedError) {
         console.error('Error fetching my rides:', createdError || joinedError);

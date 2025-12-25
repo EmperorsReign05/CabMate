@@ -19,19 +19,25 @@ const RideDetailPage = ({ session }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { showNotification } = useNotification();
   const [userRequestStatus, setUserRequestStatus] = useState(null);
+  
 
   const fetchRideDetails = useCallback(async () => {
+    const rideId = id;
     setLoading(true);
     try {
-      const { data: rideData, error: rideError } = await supabase.from('rides').select('*').eq('id', id).single();
-      if (rideError) throw rideError;
-      setRide(rideData);
+      const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}`);
+
+if (!res.ok) {
+  throw new Error("Ride not found");
+}
+      const data = await res.json();
+      setRide(data);
 
       // Fetch minimal creator profile first (more likely allowed by RLS)
       const { data: creatorMinimal, error: creatorMinimalError } = await supabase
         .from('profiles')
         .select('id, full_name')
-        .eq('id', rideData.creator_id)
+        .eq('id', data.creator_id)
         .single();
       if (creatorMinimalError) throw creatorMinimalError;
       setCreator(creatorMinimal);

@@ -65,7 +65,7 @@ const HomePage = () => {
   const [searched, setSearched] = useState(false);
   const [fromInput, setFromInput] = useState('');
   const [toInput, setToInput] = useState('');
- useEffect(() => {
+ /*useEffect(() => {
     //Set up the channel
     const channel = supabase.channel('public:rides');
 
@@ -85,7 +85,7 @@ const HomePage = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, []); */
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -100,7 +100,7 @@ const HomePage = () => {
     setLoading(true);
     setSearched(true);
     try {
-      const { data, error } = await supabase.rpc('search_rides', {
+      /*const { data, error } = await supabase.rpc('search_rides', {
         origin_lat: from.lat,
         origin_lng: from.lng,
         dest_lat: to.lat,
@@ -109,7 +109,18 @@ const HomePage = () => {
       });
 
       if (error) throw error;
-      setSearchResults(data);
+      setSearchResults(data);*/
+      const res = await fetch(
+  `http://127.0.0.1:8000/rides/?from_location=${encodeURIComponent(from.address)}&to_location=${encodeURIComponent(to.address)}`
+);
+
+if (!res.ok) {
+  throw new Error("Failed to fetch rides");
+}
+
+const data = await res.json();
+setSearchResults(data);
+
     } catch (error) {
       console.error('Error searching for rides:', error.message);
       alert('Could not fetch rides.');
