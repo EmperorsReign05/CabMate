@@ -74,6 +74,20 @@ def search_rides(from_location: str, to_location: str):
 
     return rides
 
+@router.get("/my-created")
+def get_my_created_rides(user_id: str):
+    rides = list(
+        rides_collection.find(
+            {"created_by": user_id},
+            {"expires_at": 0}  # optional: hide expiry from frontend
+        )
+    )
+
+    for ride in rides:
+        ride["_id"] = str(ride["_id"])
+
+    return rides
+
 @router.get("/{ride_id}")
 def get_single_ride(ride_id: str):
     ride = rides_collection.find_one({"_id": ObjectId(ride_id)})

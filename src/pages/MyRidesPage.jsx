@@ -14,29 +14,32 @@ const MyRidesPage = ({ session }) => {
   const [loading, setLoading] = useState(true);
   const { showNotification } = useNotification();
 
-  useEffect(() => {
-    if (!session) {
-      navigate('/login');
-      return;
-    }
-    const fetchMyRides = async () => {
-      setLoading(true);
-      const userId = session.user.id;
-      const { data: createdData, error: createdError } = await fetch("http://127.0.0.1:8000/rides/")
-//supabase.from('rides').select('*').eq('creator_id', userId);
-      const { data: joinedData, error: joinedError } = await fetch("http://127.0.0.1:8000/rides/")
-//supabase.from('ride_passengers').select('rides(*)').eq('user_id', userId).eq('status', 'approved');
+ useEffect(() => {
+  if (!session) return;
 
-      if (createdError || joinedError) {
-        console.error('Error fetching my rides:', createdError || joinedError);
-      } else {
-        setCreatedRides(createdData);
-        setJoinedRides(joinedData.map(item => item.rides));
+  const fetchMyCreatedRides = async () => {
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/rides/my-created?user_id=${session.user.id}`
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch created rides");
       }
+
+      const data = await res.json();
+      setCreatedRides(data);
       setLoading(false);
-    };
-    fetchMyRides();
-  }, [session, navigate]);
+    } catch (err) {
+      console.error(err);
+      alert("Could not load your rides");
+      setLoading(false);
+    }
+  };
+
+  fetchMyCreatedRides();
+}, [session]);
+
 
   const handleDelete = async (rideId) => {
     if (window.confirm('Are you sure you want to delete this ride?')) {
@@ -86,7 +89,7 @@ const MyRidesPage = ({ session }) => {
             {createdRides.length > 0 ? (
               <Grid container spacing={2}>
                 {createdRides.map(ride => (
-                  <Grid item xs={12} sm={6} md={4} key={ride.id}>
+                  <Grid item xs={12} sm={6} md={4} key={ride._id}>
                     <RideCard ride={ride} isCreator={true} onDelete={handleDelete} />
                   </Grid>
                 ))}
@@ -105,7 +108,7 @@ const MyRidesPage = ({ session }) => {
             {joinedRides.length > 0 ? (
               <Grid container spacing={2}>
                 {joinedRides.map(ride => (
-                  <Grid item xs={12} sm={6} md={4} key={ride.id}>
+                  <Grid item xs={12} sm={6} md={4} key={ride._id}>
                     <RideCard ride={ride} />
                   </Grid>
                 ))}
