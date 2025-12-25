@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.database import rides_collection
-from app.schemas import RideCreate
+from app.database import rides_collection, ride_requests_collection
+from app.schemas import RideCreate, RideJoinRequest
 from datetime import datetime, timedelta, timezone
 from bson import ObjectId
 
@@ -98,3 +98,36 @@ def get_single_ride(ride_id: str):
     ride["id"] = str(ride["_id"])
     del ride["_id"]
     return ride
+
+@router.post("/{ride_id}/request")
+def request_to_join_ride(ride_id: str, payload: RideJoinRequest):
+    # 1. Validate ride exists
+    ride = rides_collection.find_one({"_id": ObjectId(ride_id)})
+    if not ride:
+        raise HTTPException(status_code=404, detail="Ride not found")
+
+    # 2. Prevent creator from joining own ride
+    if ride["created_by"] == payload.user_id:
+        raise HTTPException(status_code=400, detail="Cannot join your own ride")
+
+    # 3. Check seats
+    if ride["seats_available"] <= 0:
+        raise HTTPException(status_code=400, detail="No seats available")
+
+    # 4. Prevent duplicate requests
+    existing = ride_requests_collection.find_one({
+        "ride_id": ride_id,
+        "requester_id": payload.user_id
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="Request already exists")
+
+    # 5. Create request
+    ride_requests_collection.insert_one({
+        "ride_id": ride_id,
+        "requester_id": payload.user_id,
+        "status": "pending",
+        "requested_at": datetime.utcnow()
+    })
+
+    return {"message": "Join request submitted"}

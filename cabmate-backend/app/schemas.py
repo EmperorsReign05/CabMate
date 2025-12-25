@@ -12,3 +12,6 @@ class RideCreate(BaseModel):
 class RideResponse(RideCreate):
     id: str
     created_by: str
+
+class RideJoinRequest(BaseModel):
+    user_id: str
