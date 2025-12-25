@@ -93,18 +93,24 @@ const CreateRidePage = ({ session }) => {
     };
 
     try {
-      const res = await fetch(`${API_BASE}/rides/`, {
+      const res = await fetch("http://127.0.0.1:8000/rides/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload), 
       });
-
       if (!res.ok) {
+  const text = await res.text();
+  throw new Error(text);
+}
+
+const data = await res.json();
+console.log("Ride created:", data);
+      /*if (!res.ok) {
         const err = await res.json();
         throw new Error(err.detail || "Failed to create ride");
-      }
+      }*/
 
       showNotification("Ride created successfully!", "success");
       navigate("/dashboard");
