@@ -90,6 +90,7 @@ const CreateRidePage = ({ session }) => {
       seats_available: Number(rideDetails.seats_available),
       price_per_seat: Number(rideDetails.cost_per_seat),
       is_ladies_only: isLadiesOnly,
+      created_by: session.user.id 
     };
 
     try {

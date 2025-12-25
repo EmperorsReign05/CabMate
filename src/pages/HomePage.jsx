@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react'; 
 import { Link as RouterLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom'; 
-import { supabase } from '../supabaseClient';
+//import { supabase } from '../supabaseClient';
 import { useJsApiLoader } from '@react-google-maps/api';
 import LocationAutocomplete from '../components/LocationAutocomplete';
 import {
@@ -92,15 +92,15 @@ const HomePage = () => {
     libraries,
   });
 
-  const performSearch = useCallback(async (from, to) => {
+  /*const performSearch = useCallback(async (from, to) => {
     if (!from || !to) {
       alert('Please select both "From" and "To" locations.');
       return;
     }
     setLoading(true);
     setSearched(true);
-    try {
-      /*const { data, error } = await supabase.rpc('search_rides', {
+    /*try {
+      const { data, error } = await supabase.rpc('search_rides', {
         origin_lat: from.lat,
         origin_lng: from.lng,
         dest_lat: to.lat,
@@ -109,7 +109,7 @@ const HomePage = () => {
       });
 
       if (error) throw error;
-      setSearchResults(data);*/
+      setSearchResults(data);
       const res = await fetch(
   `http://127.0.0.1:8000/rides/?from_location=${encodeURIComponent(from.address)}&to_location=${encodeURIComponent(to.address)}`
 );
@@ -127,11 +127,39 @@ setSearchResults(data);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, []);*/
 
-  const handleSearch = () => {
-    performSearch(fromLocation, toLocation);
-  };
+const handleSearch = async () => {
+  if (!fromLocation || !toLocation) {
+    alert("Please select both locations");
+    return;
+  }
+
+  setLoading(true);
+  setSearched(true);
+
+  try {
+    const res = await fetch(
+      `http://127.0.0.1:8000/rides/search?from_location=${encodeURIComponent(
+        fromLocation.address
+      )}&to_location=${encodeURIComponent(toLocation.address)}`
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch rides");
+    }
+
+    const data = await res.json();
+    setSearchResults(data);
+  } catch (err) {
+    console.error(err);
+    alert("Could not fetch rides");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   const handleQuickSearch = (route) => {
     setFromLocation(route.from);
@@ -262,7 +290,7 @@ setSearchResults(data);
                 </Button>
               </Box>
             ) : (
-              searchResults.map((ride) => (<Grid item xs={12} sm={6} md={4} key={ride.id}><RideCard ride={ride} /></Grid>))
+              searchResults.map((ride) => (<Grid item xs={12} sm={6} md={4} key={ride._id}><RideCard ride={ride} /></Grid>))
             )}
           </Grid>
         </Box>

@@ -25,7 +25,8 @@ def create_ride(ride: RideCreate):
             "expires_at": expires_at,
             "seats_available": ride.seats_available,
             "price_per_seat": ride.price_per_seat,
-            "created_at": datetime.now(timezone.utc),
+            "created_by": ride.created_by,
+            "created_at": datetime.now(timezone.utc)
         }
 
         result = rides_collection.insert_one(ride_doc)
@@ -53,6 +54,25 @@ def get_rides(from_location: str = None, to_location: str = None):
 
     return rides
 
+
+
+
+@router.get("/search")
+def search_rides(from_location: str, to_location: str):
+    now = datetime.now(timezone.utc)
+
+    cursor = rides_collection.find({
+        "from_location": {"$regex": from_location, "$options": "i"},
+        "to_location": {"$regex": to_location, "$options": "i"},
+        "departure_time": {"$gt": now}
+    })
+
+    rides = []
+    for ride in cursor:
+        ride["_id"] = str(ride["_id"])
+        rides.append(ride)
+
+    return rides
 
 @router.get("/{ride_id}")
 def get_single_ride(ride_id: str):

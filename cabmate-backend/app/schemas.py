@@ -7,6 +7,7 @@ class RideCreate(BaseModel):
     departure_time: datetime
     seats_available: int
     price_per_seat: int
+    created_by: str
 
 class RideResponse(RideCreate):
     id: str
