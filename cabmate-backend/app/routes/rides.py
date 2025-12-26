@@ -133,3 +133,57 @@ def request_to_join(ride_id: str, body: dict):
     })
 
     return {"message": "Request sent"}
+
+@router.get("/{ride_id}/requests")
+def get_ride_requests(ride_id: str):
+    requests = list(
+        ride_requests_collection.find(
+            {"ride_id": ride_id},
+            {"_id": 0}
+        )
+    )
+    return requests
+
+@router.post("/{ride_id}/requests/{requester_id}/approve")
+def approve_request(ride_id: str, requester_id: str):
+    ride = rides_collection.find_one({"_id": ObjectId(ride_id)})
+    if not ride:
+        raise HTTPException(status_code=404, detail="Ride not found")
+
+    if ride["seats_available"] <= 0:
+        raise HTTPException(status_code=400, detail="No seats available")
+
+    result = ride_requests_collection.update_one(
+        {
+            "ride_id": ride_id,
+            "requester_id": requester_id,
+            "status": "pending"
+        },
+        {"$set": {"status": "approved"}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    rides_collection.update_one(
+        {"_id": ObjectId(ride_id)},
+        {"$inc": {"seats_available": -1}}
+    )
+
+    return {"message": "Request approved"}
+
+@router.post("/{ride_id}/requests/{requester_id}/reject")
+def reject_request(ride_id: str, requester_id: str):
+    result = ride_requests_collection.update_one(
+        {
+            "ride_id": ride_id,
+            "requester_id": requester_id,
+            "status": "pending"
+        },
+        {"$set": {"status": "rejected"}}
+    )
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found")
+
+    return {"message": "Request rejected"}
