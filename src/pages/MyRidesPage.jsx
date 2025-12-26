@@ -13,6 +13,9 @@ const MyRidesPage = ({ session }) => {
   const [joinedRides, setJoinedRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const { showNotification } = useNotification();
+  const [rideRequests, setRideRequests] = useState({});
+const [loadingRequests, setLoadingRequests] = useState(false);
+
  
 
  useEffect(() => {
@@ -40,6 +43,63 @@ const MyRidesPage = ({ session }) => {
 
   fetchMyCreatedRides();
 }, [session]);
+
+  const fetchRideRequests = async (rideId) => {
+  try {
+    setLoadingRequests(true);
+
+    const res = await fetch(
+      `http://127.0.0.1:8000/rides/${rideId}/requests`
+    );
+
+    if (!res.ok) throw new Error("Failed to fetch requests");
+
+    const data = await res.json();
+
+    setRideRequests((prev) => ({
+      ...prev,
+      [rideId]: data,
+    }));
+  } catch (err) {
+    alert("Could not load ride requests");
+  } finally {
+    setLoadingRequests(false);
+  }
+};
+  const handleApprove = async (rideId, requesterId) => {
+  await fetch(
+    `http://127.0.0.1:8000/rides/${rideId}/requests/${requesterId}/approve`,
+    { method: "POST" }
+  );
+
+  // Remove approved request from UI
+  setRideRequests((prev) => ({
+    ...prev,
+    [rideId]: prev[rideId].filter((r) => r.requester_id !== requesterId)
+,
+  }));
+
+  // Update seat count locally
+  setCreatedRides((prev) =>
+    prev.map((ride) =>
+      ride._id === rideId
+        ? { ...ride, seats_available: ride.seats_available - 1 }
+        : ride
+    )
+  );
+};
+  const handleReject = async (rideId, requesterId) => {
+  await fetch(
+    `http://127.0.0.1:8000/rides/${rideId}/requests/${requesterId}/reject`,
+    { method: "POST" }
+  );
+
+  setRideRequests((prev) => ({
+    ...prev,
+    [rideId]: prev[rideId].filter((r) => r.requester_id !== requesterId)
+,
+  }));
+};
 
 
   /*const handleDelete = async (rideId) => {
@@ -89,11 +149,66 @@ const MyRidesPage = ({ session }) => {
           <CardContent>
             {createdRides.length > 0 ? (
               <Grid container spacing={2}>
-                {createdRides.map(ride => (
-                  <Grid item xs={12} sm={6} md={4} key={ride._id}>
-                    <RideCard ride={ride} isCreator={true} /> {/*add ondelete*/}
-                  </Grid>
-                ))}
+                {createdRides.map((ride) => (
+  <Grid item xs={12} sm={6} md={4} key={ride._id}>
+    <Box sx={{ mt: 1 }}>
+    <RideCard ride={ride} isCreator />
+
+    <Button
+      size="small"
+      sx={{ mt: 1 }}
+      onClick={() => fetchRideRequests(ride._id)}
+    >
+      View Requests
+    </Button>
+    </Box>
+    {rideRequests[ride._id]?.length > 0 && (
+      <Box sx={{ mt: 1 }}>
+        {rideRequests[ride._id].map((req) => (
+          <Box
+            key={req._id}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
+            <Typography variant="body2">
+              {req.requester_id}
+            </Typography>
+
+            <Box>
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ mr: 1 }}
+                disabled={ride.seats_available === 0}
+                onClick={() =>
+                  handleApprove(ride._id, req.requester_id)
+                }
+              >
+                Approve
+              </Button>
+
+              <Button
+                size="small"
+                variant="outlined"
+                color="error"
+                onClick={() =>
+                  handleReject(ride._id, req.requester_id)
+                }
+              >
+                Reject
+              </Button>
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    )}
+  </Grid>
+))}
+
               </Grid>
             ) : (
               <Typography sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>You haven't created any rides yet.</Typography>

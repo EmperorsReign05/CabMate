@@ -134,16 +134,29 @@ def request_to_join(ride_id: str, body: dict):
 
     return {"message": "Request sent"}
 
+
+
 @router.get("/{ride_id}/requests")
 def get_ride_requests(ride_id: str):
-    requests = list(
-        ride_requests_collection.find(
-            {"ride_id": ride_id},
-            {"_id": 0}
+    try:
+        requests = list(
+            ride_requests_collection.find(
+                {
+                    "ride_id": ride_id,
+                    "status": "pending"
+                },
+                {"_id": 1, "requester_id": 1, "status": 1, "requested_at": 1}
+            )
         )
-    )
-    return requests
 
+        for r in requests:
+            r["_id"] = str(r["_id"])
+
+        return requests
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 @router.post("/{ride_id}/requests/{requester_id}/approve")
 def approve_request(ride_id: str, requester_id: str):
     ride = rides_collection.find_one({"_id": ObjectId(ride_id)})
@@ -187,3 +200,4 @@ def reject_request(ride_id: str, requester_id: str):
         raise HTTPException(status_code=404, detail="Request not found")
 
     return {"message": "Request rejected"}
+
