@@ -20,6 +20,8 @@ const RideDetailPage = ({ session }) => {
   const [loading, setLoading] = useState(true);
   const [requesting, setRequesting] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [hasRequested, setHasRequested] = useState(false);
+
 
   const user = session?.user ?? null;
 
@@ -49,8 +51,10 @@ const RideDetailPage = ({ session }) => {
 
 
   /** CREATOR CHECK */
-  const isCreator =
-    user && ride && user.id === ride.created_by;
+  //const isCreator =
+  // user && ride && user.id === ride.created_by;
+  const isCreator = session?.user?.id === ride?.created_by;
+
 
   /** REQUEST TO JOIN */
   const handleRequestToJoin = async () => {
@@ -71,7 +75,16 @@ const RideDetailPage = ({ session }) => {
       }
     );
 
-    if (!res.ok) throw new Error("Request failed");
+    if (res.status === 400) {
+  showNotification("You have already requested to join this ride.", "info");
+  setHasRequested(true);
+  return;
+}
+
+if (!res.ok) {
+  throw new Error("Failed to request ride");
+}
+
 
     setRequestSent(true);
     showNotification("Request sent successfully", "success");
@@ -118,23 +131,27 @@ console.log("ride:", ride);
           </Typography>
           
           <Button
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, backgroundColor: "#ad57c1ff" }}
-            disabled={
-              requesting ||
-              requestSent ||
-              isCreator ||
-              ride.seats_available === 0
-            }
-            onClick={handleRequestToJoin}
-          >
-            {isCreator
-              ? "YOU CREATED THIS RIDE"
-              : requestSent
-              ? "REQUEST SENT"
-              : "REQUEST TO JOIN"}
-          </Button>
+  fullWidth
+  variant="contained"
+  sx={{ mt: 3, backgroundColor: "#ad57c1ff" }}
+  disabled={
+    requesting ||
+    requestSent ||
+    hasRequested ||
+    isCreator ||
+    ride.seats_available === 0
+  }
+  onClick={handleRequestToJoin}
+>
+  {isCreator
+    ? "YOU CREATED THIS RIDE"
+    : hasRequested || requestSent
+    ? "REQUEST SENT"
+    : ride.seats_available === 0
+    ? "NO SEATS AVAILABLE"
+    : "REQUEST TO JOIN"}
+</Button>
+
         </CardContent>
       </Card>
     </Container>

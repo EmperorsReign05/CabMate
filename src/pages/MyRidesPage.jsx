@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+//import { supabase } from '../supabaseClient';
 import { Container, Typography, Box, Grid, Card, CardContent, CardHeader, CircularProgress, Button } from '@mui/material';
 import { useNotification } from '../context/NotificationContext';
 import RideCard from '../components/RideCard';
@@ -13,6 +13,7 @@ const MyRidesPage = ({ session }) => {
   const [joinedRides, setJoinedRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const { showNotification } = useNotification();
+ 
 
  useEffect(() => {
   if (!session) return;
@@ -41,7 +42,7 @@ const MyRidesPage = ({ session }) => {
 }, [session]);
 
 
-  const handleDelete = async (rideId) => {
+  /*const handleDelete = async (rideId) => {
     if (window.confirm('Are you sure you want to delete this ride?')) {
       try {
         await supabase.from('rides').delete().eq('id', rideId);
@@ -50,7 +51,7 @@ const MyRidesPage = ({ session }) => {
         showNotification('Error deleting ride: ' + error.message, 'error');
       }
     }
-  };
+  };*/
 
   if (loading) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>;
@@ -90,7 +91,7 @@ const MyRidesPage = ({ session }) => {
               <Grid container spacing={2}>
                 {createdRides.map(ride => (
                   <Grid item xs={12} sm={6} md={4} key={ride._id}>
-                    <RideCard ride={ride} isCreator={true} onDelete={handleDelete} />
+                    <RideCard ride={ride} isCreator={true} /> {/*add ondelete*/}
                   </Grid>
                 ))}
               </Grid>
