@@ -7,6 +7,12 @@ from bson.errors import InvalidId
 
 router = APIRouter(tags=["Rides"])
 
+def get_profile(user_id: str):
+    return profiles_collection.find_one(
+        {"_id": user_id},
+        {"_id": 0, "full_name": 1, "phone": 1}
+    )
+
 
 @router.post("/")
 def create_ride(ride: RideCreate):
@@ -50,8 +56,10 @@ def get_rides(from_location: str = None, to_location: str = None):
     rides = []
     for ride in rides_collection.find(query):
         ride["_id"] = str(ride["_id"])
-        
+        ride["creator"] = get_profile(ride["created_by"])
+        ride.pop("created_by", None)
         rides.append(ride)
+
 
     return rides
 
@@ -85,8 +93,8 @@ def get_my_created_rides(user_id: str):
     )
 
     for ride in rides:
-        ride["_id"] = str(ride["_id"])
-
+        ride["creator"] = get_profile(ride["created_by"])
+        ride.pop("created_by", None)
     return rides
 
 @router.get("/{ride_id}")
@@ -150,8 +158,8 @@ def get_ride_requests(ride_id: str):
         )
 
         for r in requests:
-            r["_id"] = str(r["_id"])
-
+            r["requester"] = get_profile(r["requester_id"])
+            r.pop("requester_id", None)
         return requests
 
     except Exception as e:
