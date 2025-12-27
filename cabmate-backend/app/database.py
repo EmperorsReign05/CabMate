@@ -19,6 +19,7 @@ db = client["cabmate"]
 # Select collection
 rides_collection = db["rides"]
 ride_requests_collection = db["ride_requests"]
+profiles_collection = db["profiles"]
 
 
 # ✅ Create TTL index safely (important)
