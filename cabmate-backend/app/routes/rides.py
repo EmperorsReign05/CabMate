@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.database import rides_collection, ride_requests_collection
+from app.database import rides_collection, ride_requests_collection, profiles_collection
 from app.schemas import RideCreate, RideJoinRequest
 from datetime import datetime, timedelta, timezone
 from bson import ObjectId
@@ -201,3 +201,27 @@ def reject_request(ride_id: str, requester_id: str):
 
     return {"message": "Request rejected"}
 
+@router.post("/profiles/init")
+def init_profile(profile: dict):
+    """
+    TEMP endpoint: create profile if it doesn't exist
+    """
+    user_id = profile.get("user_id")
+    full_name = profile.get("full_name")
+    phone = profile.get("phone")
+
+    if not user_id or not full_name or not phone:
+        raise HTTPException(status_code=400, detail="Missing fields")
+
+    existing = profiles_collection.find_one({"_id": user_id})
+    if existing:
+        return {"message": "Profile already exists"}
+
+    profiles_collection.insert_one({
+        "_id": user_id,          # IMPORTANT: string, not ObjectId
+        "full_name": full_name,
+        "phone": phone,
+        "created_at": datetime.utcnow()
+    })
+
+    return {"message": "Profile created"}
