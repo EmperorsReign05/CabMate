@@ -17,6 +17,13 @@ def serialize_mongo_doc(doc):
         doc["created_at"] = doc["created_at"].isoformat()
     return doc
 
+def serialize_ride_request(doc):
+    doc["_id"] = str(doc["_id"])
+    if "requested_at" in doc:
+        doc["requested_at"] = doc["requested_at"].isoformat()
+    return doc
+
+
 def get_profile(user_id: str):
     return profiles_collection.find_one(
         {"_id": user_id},
@@ -152,24 +159,9 @@ def request_to_join(ride_id: str, body: dict):
 
 @router.get("/{ride_id}/requests")
 def get_ride_requests(ride_id: str):
-    try:
-        requests = list(
-            ride_requests_collection.find(
-                {
-                    "ride_id": ride_id,
-                    "status": "pending"
-                },
-                {"_id": 1, "requester_id": 1, "status": 1, "requested_at": 1}
-            )
-        )
+    requests = list(ride_requests_collection.find({"ride_id": ride_id}))
+    return [serialize_ride_request(r) for r in requests]
 
-        for r in requests:
-            r["requester"] = get_profile(r["requester_id"])
-            r.pop("requester_id", None)
-        return requests
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
     
 @router.post("/{ride_id}/requests/{requester_id}/approve")
 def approve_request(ride_id: str, requester_id: str):
