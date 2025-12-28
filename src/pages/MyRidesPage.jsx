@@ -123,6 +123,12 @@ const [loadingRequests, setLoadingRequests] = useState(false);
     bgcolor: 'rgba(255, 255, 255, 0.7)',
     backdropFilter: 'blur(4px)',
   };
+  const openWhatsApp = (phone, name, from, to) => {
+  const message = encodeURIComponent(
+    `Hi ${name}, about the CabMate ride from ${from} to ${to}.`
+  );
+  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+};
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -201,6 +207,21 @@ const [loadingRequests, setLoadingRequests] = useState(false);
               >
                 Reject
               </Button>
+              <Button
+  size="small"
+  color="success"
+  onClick={() =>
+    openWhatsApp(
+      req.requester.phone,
+      req.requester.full_name,
+      ride.from_location,
+      ride.to_location
+    )
+  }
+>
+  CHAT
+</Button>
+
             </Box>
           </Box>
         ))}

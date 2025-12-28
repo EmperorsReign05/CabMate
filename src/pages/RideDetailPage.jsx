@@ -24,6 +24,12 @@ const RideDetailPage = ({ session }) => {
 
 
   const user = session?.user ?? null;
+  const openWhatsApp = (phone, from, to) => {
+  const message = encodeURIComponent(
+    `Hi, I found your CabMate ride from ${from} to ${to}.`
+  );
+  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+};
 
   /** FETCH RIDE */
   useEffect(() => {
@@ -151,6 +157,23 @@ console.log("ride:", ride);
     ? "NO SEATS AVAILABLE"
     : "REQUEST TO JOIN"}
 </Button>
+{ride?.creator?.phone && (
+  <Button
+    fullWidth
+    variant="outlined"
+    color="success"
+    sx={{ mt: 2 }}
+    onClick={() =>
+      openWhatsApp(
+        ride.creator.phone,
+        ride.from_location,
+        ride.to_location
+      )
+    }
+  >
+    CHAT ON WHATSAPP
+  </Button>
+)}
 
         </CardContent>
       </Card>

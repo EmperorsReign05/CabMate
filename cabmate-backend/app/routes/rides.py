@@ -4,8 +4,18 @@ from app.schemas import RideCreate, RideJoinRequest
 from datetime import datetime, timedelta, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
-
+from fastapi.encoders import jsonable_encoder
 router = APIRouter(tags=["Rides"])
+
+def serialize_mongo_doc(doc):
+    doc["_id"] = str(doc["_id"])
+    if "departure_time" in doc:
+        doc["departure_time"] = doc["departure_time"].isoformat()
+    if "expires_at" in doc:
+        doc["expires_at"] = doc["expires_at"].isoformat()
+    if "created_at" in doc:
+        doc["created_at"] = doc["created_at"].isoformat()
+    return doc
 
 def get_profile(user_id: str):
     return profiles_collection.find_one(
@@ -85,16 +95,12 @@ def search_rides(from_location: str, to_location: str):
 
 @router.get("/my-created")
 def get_my_created_rides(user_id: str):
-    rides = list(
-        rides_collection.find(
-            {"created_by": user_id},
-            {"expires_at": 0}  # optional: hide expiry from frontend
-        )
-    )
+    cursor = rides_collection.find({"created_by": user_id})
+    rides = []
 
-    for ride in rides:
-        ride["creator"] = get_profile(ride["created_by"])
-        ride.pop("created_by", None)
+    for ride in cursor:
+        rides.append(serialize_mongo_doc(ride))
+
     return rides
 
 @router.get("/{ride_id}")
