@@ -181,8 +181,9 @@ const [loadingRequests, setLoadingRequests] = useState(false);
             }}
           >
             <Typography variant="body2">
-              {req.requester_id}
-            </Typography>
+  {req.requester?.full_name || "Unknown user"}
+</Typography>
+
 
             <Box>
               <Button
@@ -210,14 +211,20 @@ const [loadingRequests, setLoadingRequests] = useState(false);
               <Button
   size="small"
   color="success"
-  onClick={() =>
-    openWhatsApp(
-      req.requester.phone,
-      req.requester.full_name,
-      ride.from_location,
-      ride.to_location
-    )
+  onClick={() => {
+  if (!req.requester?.phone) {
+    alert("Phone number not available");
+    return;
   }
+
+  openWhatsApp(
+    req.requester.phone,
+    req.requester.full_name,
+    ride.from_location,
+    ride.to_location
+  );
+}}
+
 >
   CHAT
 </Button>

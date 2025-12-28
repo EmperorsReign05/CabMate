@@ -17,11 +17,16 @@ def serialize_mongo_doc(doc):
         doc["created_at"] = doc["created_at"].isoformat()
     return doc
 
-def serialize_ride_request(doc):
-    doc["_id"] = str(doc["_id"])
-    if "requested_at" in doc:
-        doc["requested_at"] = doc["requested_at"].isoformat()
-    return doc
+def serialize_ride_request(r):
+    return {
+        "_id": r["_id"],
+        "ride_id": r["ride_id"],
+        "requester_id": r["requester_id"],
+        "status": r["status"],
+        "requested_at": r.get("requested_at"),
+        "requester": r.get("requester")  # 👈 ADD THIS
+    }
+
 
 
 def get_profile(user_id: str):
@@ -160,6 +165,14 @@ def request_to_join(ride_id: str, body: dict):
 @router.get("/{ride_id}/requests")
 def get_ride_requests(ride_id: str):
     requests = list(ride_requests_collection.find({"ride_id": ride_id}))
+    for r in requests:
+        profile = profiles_collection.find_one(
+        {"_id": r["requester_id"]},
+        {"_id": 0, "full_name": 1, "phone": 1}
+        )
+
+        r["_id"] = str(r["_id"])
+        r["requester"] = profile
     return [serialize_ride_request(r) for r in requests]
 
     
