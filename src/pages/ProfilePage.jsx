@@ -11,7 +11,7 @@ import PersonIcon from '@mui/icons-material/Person';
 
 const API_BASE = "http://127.0.0.1:8000";
 
-const ProfilePage = ({ session }) => {
+const ProfilePage = ({ session, onProfileUpdate}) => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   
@@ -53,7 +53,6 @@ const ProfilePage = ({ session }) => {
     setSaving(true);
 
     try {
-      // Corrected to POST to your MongoDB backend
       const response = await fetch(`${API_BASE}/profiles/${session.user.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -66,9 +65,15 @@ const ProfilePage = ({ session }) => {
       });
 
       if (response.ok) {
-        showNotification('Profile updated!', 'success');
-        // Force reload to dashboard so App.jsx re-runs the profile check
-        window.location.href = '/dashboard';
+        showNotification('Profile setup complete!', 'success');
+        
+        // 3. Tell App.jsx to refresh its 'hasProfile' state
+        if (onProfileUpdate) {
+          await onProfileUpdate(); 
+        }
+        
+        // 4. Now navigate; ProtectedRoute will now see hasProfile = true
+        navigate('/dashboard'); 
       } else {
         throw new Error('Failed to save profile');
       }
@@ -78,7 +83,7 @@ const ProfilePage = ({ session }) => {
       setSaving(false);
     }
   };
-
+  
   if (loading) return (
     <Box display="flex" justifyContent="center" mt={10}><CircularProgress sx={{color: pinkColor}}/></Box>
   );
