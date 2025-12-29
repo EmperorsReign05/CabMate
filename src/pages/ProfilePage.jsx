@@ -47,32 +47,22 @@ const ProfilePage = ({ session }) => {
     }
   }, [session, showNotification]);
 
-  const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-    if (!fullName || !gender) {
-      showNotification('Please fill out your full name and gender.', 'warning');
-      return;
-    }
-    setLoading(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: session.user.id,
-          full_name: fullName,
-          gender: gender, 
-          phone_number: phoneNumber,
-          updated_at: new Date(),
-        });
-      
-      if (error) throw error;
-      showNotification('Profile updated successfully!', 'success');
-    } catch (error) {
-      showNotification('Error updating profile.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handleUpdateProfile = async () => {
+  const user = session.user;
+
+  await fetch(`${API_BASE}/profiles/${user.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      full_name: fullName,
+      phone: phoneNumber,
+      email: user.email,
+    }),
+  });
+
+  navigate("/");
+};
+
   
   if (!session) {
     return null;
