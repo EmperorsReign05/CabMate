@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import rides
+from app.routes import rides, profiles
 
 app = FastAPI(title="CabMate Backend")
 
@@ -18,6 +18,7 @@ app.add_middleware(
 )
 
 app.include_router(rides.router, prefix="/rides", tags=["Rides"])
+app.include_router(profiles.router) 
 
 @app.get("/")
 def root():

@@ -15,6 +15,7 @@ import DashboardPage from './pages/DashboardPage';
 import Background from './components/Background';
 import LocalCabsPage from './pages/LocalCabsPage';
 function App() {
+  const API_BASE = "http://127.0.0.1:8000";
 
   const [session, setSession] = useState(null);
 
@@ -29,6 +30,26 @@ function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+  useEffect(() => {
+  if (!session?.user) return;
+
+  const user = session.user;
+
+  fetch(`${API_BASE}/profiles/${user.id}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      full_name: user.user_metadata?.full_name || "User",
+      phone: user.user_metadata?.phone || null,
+      email: user.email,
+    }),
+  }).catch(() => {
+    // silent fail — do not block UI
+  });
+}, [session]);
+
 
   return (
       <Background>
