@@ -14,10 +14,6 @@ def get_profile(user_id: str):
 
 @router.post("/{user_id}")
 def upsert_profile(user_id: str, payload: dict):
-    """
-    Create profile if not exists, otherwise update.
-    Safe to call on every login.
-    """
     profiles_collection.update_one(
         {"_id": user_id},
         {
@@ -25,6 +21,7 @@ def upsert_profile(user_id: str, payload: dict):
                 "full_name": payload.get("full_name"),
                 "phone": payload.get("phone"),
                 "email": payload.get("email"),
+                "gender": payload.get("gender"), # Added gender
                 "updated_at": datetime.now(timezone.utc),
             },
             "$setOnInsert": {
@@ -33,5 +30,6 @@ def upsert_profile(user_id: str, payload: dict):
         },
         upsert=True,
     )
-
     return {"ok": True}
+
+    
