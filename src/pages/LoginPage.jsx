@@ -17,7 +17,23 @@ const LoginPage = () => {
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
   };
+  const handleGoogleLogin = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin,
+    },
+  });
+};
 
+const handleGithubLogin = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider: "github",
+    options: {
+      redirectTo: window.location.origin,
+    },
+  });
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -64,6 +80,14 @@ const LoginPage = () => {
         <Typography component="h1" variant="h5" sx={{ mt: 2 }}>
           {tabIndex === 0 ? 'Sign In' : 'Create an Account'}
         </Typography>
+        <Button fullWidth onClick={handleGoogleLogin}>
+  Continue with Google
+</Button>
+
+<Button fullWidth onClick={handleGithubLogin}>
+  Continue with GitHub
+</Button>
+
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
@@ -117,6 +141,7 @@ const LoginPage = () => {
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
+              
               <Button
                 component={RouterLink}
                 to="/forgot-password"
