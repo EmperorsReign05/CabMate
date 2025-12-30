@@ -5,10 +5,10 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { 
   Container, Box, TextField, Button, Typography, 
-  Tabs, Tab, Paper, Divider, Stack, SvgIcon, Grid, Chip 
+  Tabs, Tab, Paper, Divider, Stack, SvgIcon, Grid 
 } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import PersonIcon from '@mui/icons-material/Person'; // Icon for guest
+import PersonIcon from '@mui/icons-material/Person';
 import { useNotification } from '../context/NotificationContext';
 
 // Custom Google Icon
@@ -46,11 +46,9 @@ const LoginPage = () => {
     });
   };
 
-  // ✅ NEW: Guest Login Function
   const handleGuestLogin = async () => {
     setLoading(true);
     try {
-      // Replace these with the actual credentials of a user you created in Supabase
       const { error } = await supabase.auth.signInWithPassword({ 
         email: 'guest@cabmate.com', 
         password: 'guest123456' 
@@ -89,17 +87,25 @@ const LoginPage = () => {
     <Container 
       maxWidth="xs" 
       sx={{ 
-        minHeight: 'calc(100vh - 100px)', 
+        // 1. Calculate height to exclude Header (approx 85px)
+        // This prevents the page from scrolling
+        height: 'calc(100vh - 90px)',
+        
+        // 2. Flexbox to center the card perfectly
         display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        pb: 4
+        flexDirection: 'column',
+        justifyContent: 'center', // Vertically center
+        alignItems: 'center',     // Horizontally center
+        
+        // Remove padding that was pushing it down
+        pt: 0, 
+        pb: 2
       }}
     >
       <Paper 
         elevation={6} 
         sx={{ 
-          p: 4, 
+          p: 3, 
           width: '100%', 
           borderRadius: 4, 
           bgcolor: 'rgba(255, 255, 255, 0.9)', 
@@ -112,47 +118,49 @@ const LoginPage = () => {
              {tabIndex === 0 ? 'Welcome Back' : 'Create Account'}
           </Typography>
 
+          {/* Compact Tabs */}
           <Tabs
             value={tabIndex}
             onChange={handleTabChange}
             variant="fullWidth"
             sx={{
               width: '100%',
-              mb: 3,
-              minHeight: '40px', 
+              mb: 2, 
+              minHeight: '36px', 
               '& .MuiTabs-indicator': { backgroundColor: pinkColor },
               '& .Mui-selected': { color: `${pinkColor} !important`, fontWeight: 'bold' },
             }}
           >
-            <Tab label="Sign In" sx={{ py: 1 }} />
-            <Tab label="Sign Up" sx={{ py: 1 }} />
+            <Tab label="Sign In" sx={{ py: 0.5, minHeight: '36px' }} />
+            <Tab label="Sign Up" sx={{ py: 0.5, minHeight: '36px' }} />
           </Tabs>
 
-          {/* ✅ RECRUITER FRIENDLY BUTTON */}
           <Button
             fullWidth
             variant="contained"
             onClick={handleGuestLogin}
             startIcon={<PersonIcon />}
             disabled={loading}
+            size="small"
             sx={{ 
-              mb: 3,
-              bgcolor: '#2e7d32', // Green for "Go"
+              mb: 2,
+              bgcolor: '#2e7d32', 
               color: 'white',
               fontWeight: 'bold',
               textTransform: 'none',
-              py: 1.2,
+              py: 1,
               '&:hover': { bgcolor: '#1b5e20' }
             }}
           >
             Log in as Guest
           </Button>
 
-          <Divider sx={{ width: '100%', mb: 3, color: 'text.secondary', fontSize: '0.875rem' }}>
+          <Divider sx={{ width: '100%', mb: 2, color: 'text.secondary', fontSize: '0.8rem' }}>
              Or continue with
           </Divider>
 
-          <Stack spacing={1.5} width="100%" sx={{ mb: 3 }}>
+          {/* Compact Social Buttons */}
+          <Stack direction="row" spacing={2} width="100%" sx={{ mb: 2 }}>
             <Button 
               fullWidth 
               variant="outlined" 
@@ -179,9 +187,9 @@ const LoginPage = () => {
             </Button>
           </Stack>
 
-          <Divider sx={{ width: '100%', mb: 3 }} />
+          <Divider sx={{ width: '100%', mb: 2 }} />
 
-          {/* Email Form */}
+          {/* Compact Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
             <TextField
               margin="dense"
@@ -223,9 +231,9 @@ const LoginPage = () => {
               variant="contained"
               disabled={loading}
               sx={{ 
-                mt: 3, 
-                mb: 2, 
-                py: 1.2,
+                mt: 2, 
+                mb: 1, 
+                py: 1,
                 borderRadius: 2,
                 backgroundColor: pinkColor, 
                 fontWeight: 'bold',
@@ -243,7 +251,7 @@ const LoginPage = () => {
                   component={RouterLink}
                   to="/forgot-password"
                   size="small"
-                  sx={{ textTransform: 'none', color: 'text.secondary' }}
+                  sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}
                 >
                   Forgot password?
                 </Button>
