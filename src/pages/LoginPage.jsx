@@ -5,9 +5,10 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { 
   Container, Box, TextField, Button, Typography, 
-  Tabs, Tab, Paper, Divider, Stack, SvgIcon, Grid
+  Tabs, Tab, Paper, Divider, Stack, SvgIcon, Grid, Chip 
 } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import PersonIcon from '@mui/icons-material/Person'; // Icon for guest
 import { useNotification } from '../context/NotificationContext';
 
 // Custom Google Icon
@@ -25,7 +26,7 @@ const LoginPage = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const navigate = useNavigate();
 
-  const pinkColor = '#ad57c1ff'; // Your Brand Color
+  const pinkColor = '#ad57c1ff'; 
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -43,6 +44,25 @@ const LoginPage = () => {
       provider: "github",
       options: { redirectTo: window.location.origin },
     });
+  };
+
+  // ✅ NEW: Guest Login Function
+  const handleGuestLogin = async () => {
+    setLoading(true);
+    try {
+      // Replace these with the actual credentials of a user you created in Supabase
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email: 'guest@cabmate.com', 
+        password: 'guest123456' 
+      });
+      if (error) throw error;
+      showNotification('Welcome, Guest!', 'success');
+      navigate('/dashboard');
+    } catch (error) {
+      showNotification('Guest login failed. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -69,7 +89,6 @@ const LoginPage = () => {
     <Container 
       maxWidth="xs" 
       sx={{ 
-        // This centers the card vertically in the remaining screen space
         minHeight: 'calc(100vh - 100px)', 
         display: 'flex', 
         alignItems: 'center', 
@@ -93,7 +112,6 @@ const LoginPage = () => {
              {tabIndex === 0 ? 'Welcome Back' : 'Create Account'}
           </Typography>
 
-          {/* Compact Tabs */}
           <Tabs
             value={tabIndex}
             onChange={handleTabChange}
@@ -101,7 +119,7 @@ const LoginPage = () => {
             sx={{
               width: '100%',
               mb: 3,
-              minHeight: '40px', // Makes tabs slightly more compact
+              minHeight: '40px', 
               '& .MuiTabs-indicator': { backgroundColor: pinkColor },
               '& .Mui-selected': { color: `${pinkColor} !important`, fontWeight: 'bold' },
             }}
@@ -110,7 +128,30 @@ const LoginPage = () => {
             <Tab label="Sign Up" sx={{ py: 1 }} />
           </Tabs>
 
-          {/* Social Buttons */}
+          {/* ✅ RECRUITER FRIENDLY BUTTON */}
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleGuestLogin}
+            startIcon={<PersonIcon />}
+            disabled={loading}
+            sx={{ 
+              mb: 3,
+              bgcolor: '#2e7d32', // Green for "Go"
+              color: 'white',
+              fontWeight: 'bold',
+              textTransform: 'none',
+              py: 1.2,
+              '&:hover': { bgcolor: '#1b5e20' }
+            }}
+          >
+            Log in as Guest
+          </Button>
+
+          <Divider sx={{ width: '100%', mb: 3, color: 'text.secondary', fontSize: '0.875rem' }}>
+             Or continue with
+          </Divider>
+
           <Stack spacing={1.5} width="100%" sx={{ mb: 3 }}>
             <Button 
               fullWidth 
@@ -118,14 +159,11 @@ const LoginPage = () => {
               startIcon={<GoogleIcon />}
               onClick={handleGoogleLogin}
               sx={{ 
-                borderColor: '#e0e0e0', 
-                color: '#666', 
-                textTransform: 'none',
-                bgcolor: 'white',
+                borderColor: '#e0e0e0', color: '#666', textTransform: 'none', bgcolor: 'white',
                 '&:hover': { bgcolor: '#f5f5f5', borderColor: '#bdbdbd' }
               }}
             >
-              Continue with Google
+              Google
             </Button>
             <Button 
               fullWidth 
@@ -133,30 +171,27 @@ const LoginPage = () => {
               startIcon={<GitHubIcon />}
               onClick={handleGithubLogin}
               sx={{ 
-                borderColor: '#e0e0e0', 
-                color: '#666', 
-                textTransform: 'none',
-                bgcolor: 'white',
+                borderColor: '#e0e0e0', color: '#666', textTransform: 'none', bgcolor: 'white',
                 '&:hover': { bgcolor: '#f5f5f5', borderColor: '#bdbdbd' }
               }}
             >
-              Continue with GitHub
+              GitHub
             </Button>
           </Stack>
 
-          <Divider sx={{ width: '100%', mb: 3, color: 'text.secondary', fontSize: '0.875rem' }}>OR</Divider>
+          <Divider sx={{ width: '100%', mb: 3 }} />
 
           {/* Email Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
             <TextField
-              margin="dense" // More compact spacing
+              margin="dense"
               required
               fullWidth
               id="email"
               label="Email Address"
               name="email"
               autoComplete="email"
-              size="small" // Smaller height inputs
+              size="small"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               sx={{
