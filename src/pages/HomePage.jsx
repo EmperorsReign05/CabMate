@@ -13,7 +13,6 @@ import RideCard from '../components/RideCard';
 
 const libraries = ['places'];
 
-// Modern color palette
 const THEME = {
   primary: '#ad57c1ff',
   primaryDark: '#7b1fa2',
@@ -128,7 +127,6 @@ const HomePage = () => {
   return (
     <Box sx={{ minHeight: '90vh', pb: 8 }}>
       
-      {/* 1. HERO SECTION */}
       <Container maxWidth="lg">
         <Box sx={{ pt: 8, pb: 4, textAlign: 'center' }}>
             <Fade in={true} timeout={1000}>
@@ -151,24 +149,24 @@ const HomePage = () => {
             </Fade>
         </Box>
 
-        {/* 2. MAIN SEARCH CARD */}
+        {/* search section*/}
         <Zoom in={true} style={{ transitionDelay: '300ms' }}>
           <Paper 
             elevation={0}
             sx={{ 
                 p: { xs: 3, md: 5 },
-                borderRadius: '32px', // Ultra rounded
+                borderRadius: '32px', 
                 background: THEME.glass,
                 backdropFilter: 'blur(20px)',
                 border: THEME.glassBorder,
-                boxShadow: '0 20px 80px rgba(173, 87, 193, 0.15)', // Purple glow shadow
+                boxShadow: '0 20px 80px rgba(173, 87, 193, 0.15)', 
                 maxWidth: '900px',
                 mx: 'auto',
                 position: 'relative',
                 overflow: 'hidden'
             }}
           >
-            {/* Decorative background blob */}
+            
             <Box sx={{
                 position: 'absolute',
                 top: '-50%',
@@ -227,7 +225,7 @@ const HomePage = () => {
               </Button>
             </Stack>
 
-            {/* Quick Chips */}
+            
             <Box sx={{ mt: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1.5, position: 'relative', zIndex: 1 }}>
                 <Typography variant="body2" color="text.secondary" fontWeight="600" mr={1}>
                     Popular:
@@ -253,7 +251,7 @@ const HomePage = () => {
           </Paper>
         </Zoom>
         
-        {/* 3. CTA SECTION */}
+        
         <Box sx={{ textAlign: 'center', mt: 6 }}>
             <Button
                 component={RouterLink}
@@ -276,7 +274,7 @@ const HomePage = () => {
             </Button>
         </Box>
 
-        {/* 4. RESULTS SECTION */}
+        {/* results section */}
         {!loading && searched && (
             <Box sx={{ mt: 8 }}>
                 <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ pl: 1 }}>
