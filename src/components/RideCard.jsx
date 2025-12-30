@@ -1,28 +1,20 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, Card, CardContent, Typography, Button, CardActions, Chip, Divider, Stack } from '@mui/material';
-import { Schedule, People, Delete, Woman, ArrowForward, Circle, LocationOn } from '@mui/icons-material';
+import { People, Delete, Woman, Circle, LocationOn } from '@mui/icons-material';
 
 // Helper function to get Short Name
 const getShortLocation = (address) => {
   if (!address) return "Unknown";
-
-  // Normalize string for easier matching
   const lowerAddr = address.toLowerCase();
-
-  // Match known locations from your Common Routes
   if (lowerAddr.includes("ghs hostel")) return "GHS Hostel";
   if (lowerAddr.includes("airport")) return "Jaipur Airport";
   if (lowerAddr.includes("sindhi camp")) {
-    // Distinguish between the Bus Station and Railway Station if they share keywords, 
-    // or just catch specific unique parts.
     if (lowerAddr.includes("wq9q") || lowerAddr.includes("railway")) {
       return "Jaipur Junction";
     }
     return "Sindhi Camp";
   }
-  
-  // Fallback for custom locations: return the first part (e.g., "Malviya Nagar")
   return address.split(',')[0];
 };
 
@@ -45,32 +37,35 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column', 
-        borderRadius: 4, 
-        border: 'none',
-        background: 'rgba(255, 255, 255, 0.9)', 
-        backdropFilter: 'blur(10px)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.05)', 
-        transition: 'transform 0.2s, box-shadow 0.2s',
+        borderRadius: '24px', // Ultra rounded corners
+        border: '1px solid rgba(255, 255, 255, 0.6)', // Glass border
+        background: 'rgba(255, 255, 255, 0.75)', // Glassy background
+        backdropFilter: 'blur(16px)', // Blur effect behind the card
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.05)', // Soft, deep shadow
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)', // Smooth physics-like transition
+        overflow: 'visible', // Allows the hover glow to spill out
         '&:hover': { 
-          transform: 'translateY(-4px)',
-          boxShadow: '0 12px 24px rgba(173, 87, 193, 0.2)' 
+          transform: 'translateY(-8px)', // Big lift on hover
+          boxShadow: '0 20px 40px rgba(173, 87, 193, 0.25)', // Purple ambient glow
+          borderColor: '#ad57c1',
         } 
       }}
     >
-      <RouterLink to={`/ride/${rideId}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1 }}>
-        <CardContent sx={{ p: 2.5, pb: 1, flexGrow: 1 }}>
+      <RouterLink to={`/ride/${rideId}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        <CardContent sx={{ p: 3, pb: 1, flexGrow: 1 }}>
           
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          {/* HEADER: Time & Date */}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
             <Box>
-               <Typography variant="h5" sx={{ fontWeight: '800', color: '#333' }}>
+               <Typography variant="h4" sx={{ fontWeight: '800', color: '#2c3e50', letterSpacing: '-1px', lineHeight: 1 }}>
                  {timeStr}
                </Typography>
-               <Typography variant="body2" sx={{ fontWeight: '500', color: '#333', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+               <Typography variant="body2" sx={{ fontWeight: '600', color: '#ad57c1', textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', mt: 0.5 }}>
                  {dateStr}
                </Typography>
             </Box>
             
-            <Stack direction="row" spacing={1}>
+            <Stack direction="column" alignItems="flex-end" spacing={1}>
                 {ride.is_ladies_only && (
                     <Chip 
                         icon={<Woman sx={{ fontSize: 16 }} />} 
@@ -88,40 +83,44 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
             </Stack>
           </Box>
 
-          <Divider sx={{ mb: 2, borderStyle: 'dashed' }} />
-
-          <Box sx={{ position: 'relative', pl: 1 }}>
+          {/* ROUTE VISUALIZATION */}
+          <Box sx={{ position: 'relative', pl: 1, mb: 2 }}>
+            
+            {/* The Vertical Line */}
             <Box 
                 sx={{ 
                     position: 'absolute', 
-                    top: 10, 
-                    bottom: 28, 
-                    left: '13px', // Half of 24px width (12px) - 1px (half line width)
+                    top: 12, 
+                    bottom: 32, 
+                    left: '16px', 
                     width: '2px', 
-                    bgcolor: '#e0e0e0',
+                    borderRadius: '2px',
+                    background: 'linear-gradient(to bottom, #ad57c1 0%, #e0e0e0 100%)', // Gradient line
                     zIndex: 0
-                }}
+                }} 
             />
 
-            {/* FROM LOCATION */}
-            <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2, position: 'relative', zIndex: 1 }}>
-              <Circle sx={{ fontSize: 14, color: '#ad57c1ff', mt: 0.5, mr: 1.5, bgcolor: 'white', borderRadius: '50%' }} />
+            {/* FROM ROW */}
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2.5, position: 'relative', zIndex: 1 }}>
+              <Box sx={{ width: '24px', display: 'flex', justifyContent: 'center', mt: 0.5, mr: 2 }}>
+                <Circle sx={{ fontSize: 14, color: '#ad57c1', bgcolor: 'white', borderRadius: '50%', boxShadow: '0 0 0 4px rgba(255,255,255,0.8)' }} />
+              </Box>
               <Box>
-                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>From</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-                  {/* ✅ USE HELPER FUNCTION HERE */}
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, letterSpacing: '0.5px' }}>FROM</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2, fontSize: '1.1rem' }}>
                   {getShortLocation(ride.from_location)}
                 </Typography>
               </Box>
             </Box>
 
-            {/* TO LOCATION */}
+            {/* TO ROW */}
             <Box sx={{ display: 'flex', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
-              <LocationOn sx={{ fontSize: 18, color: '#ff5252', mt: 0.2, mr: 1, ml: -0.2 }} />
+              <Box sx={{ width: '24px', display: 'flex', justifyContent: 'center', mt: 0.2, mr: 2 }}>
+                <LocationOn sx={{ fontSize: 22, color: '#ff5252', filter: 'drop-shadow(0 2px 4px rgba(255,82,82,0.3))' }} />
+              </Box>
               <Box>
-                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>To</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-                   {/* ✅ USE HELPER FUNCTION HERE */}
+                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, letterSpacing: '0.5px' }}>TO</Typography>
+                <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2, fontSize: '1.1rem' }}>
                    {getShortLocation(ride.to_location)}
                 </Typography>
               </Box>
@@ -130,17 +129,32 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
 
         </CardContent>
         
-        <Box sx={{ p: 2, pt: 0, mt: 'auto', display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-            <Box sx={{ textAlign: 'right' }}>
-                <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold', color: '#ad57c1ff' }}>
+        {/* FOOTER: Price Badge */}
+        <Box sx={{ p: 3, pt: 0, mt: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
+            <Box sx={{ 
+                background: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)', // Gradient background
+                borderRadius: '50px',
+                px: 2.5,
+                py: 0.8,
+                boxShadow: '0 4px 12px rgba(173, 87, 193, 0.4)',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: 0.5
+            }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
                 ₹{ride.price_per_seat}
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: 0.9, fontWeight: 500 }}>
+                /seat
                 </Typography>
             </Box>
         </Box>
       </RouterLink>
 
+      {/* CREATOR ACTIONS */}
       {isCreator && (
-        <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
+        <CardActions sx={{ px: 3, pb: 3, pt: 0 }}>
           <Button
             variant="outlined"
             color="error"
@@ -151,7 +165,13 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
             }}
             fullWidth
             startIcon={<Delete />}
-            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            sx={{ 
+                borderRadius: 3, 
+                textTransform: 'none', 
+                fontWeight: 700,
+                borderWidth: '2px',
+                '&:hover': { borderWidth: '2px', bgcolor: 'rgba(211, 47, 47, 0.05)' }
+            }}
           >
             Delete
           </Button>
