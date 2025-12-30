@@ -267,7 +267,7 @@ const HomePage = () => {
                     '&:hover': { bgcolor: '#fff', color: THEME.primary, boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }
                 }}
             >
-                Driving somewhere? Publish a ride
+                Going somewhere? Publish a ride
             </Button>
         </Box>
 
