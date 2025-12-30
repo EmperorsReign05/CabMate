@@ -5,7 +5,9 @@ from datetime import datetime, timedelta, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi.encoders import jsonable_encoder
-router = APIRouter(tags=["Rides"])
+
+# ✅ FIX: Added prefix="/rides" so routes match the frontend calls
+router = APIRouter(prefix="/rides", tags=["Rides"])
 
 def serialize_mongo_doc(doc):
     doc["_id"] = str(doc["_id"])
@@ -19,15 +21,13 @@ def serialize_mongo_doc(doc):
 
 def serialize_ride_request(r):
     return {
-        "_id": r["_id"],
+        "_id": str(r["_id"]),
         "ride_id": r["ride_id"],
         "requester_id": r["requester_id"],
         "status": r["status"],
         "requested_at": r.get("requested_at"),
-        "requester": r.get("requester")  # 👈 ADD THIS
+        "requester": r.get("requester")
     }
-
-
 
 def get_profile(user_id: str):
     return profiles_collection.find_one(
@@ -35,13 +35,10 @@ def get_profile(user_id: str):
         {"_id": 0, "full_name": 1, "phone": 1}
     )
 
-
 @router.post("/")
 def create_ride(ride: RideCreate):
     try:
         departure_time = ride.departure_time
-
-        # ✅ Ensure timezone-aware UTC
         if departure_time.tzinfo is None:
             departure_time = departure_time.replace(tzinfo=timezone.utc)
 
@@ -65,66 +62,91 @@ def create_ride(ride: RideCreate):
         print("🔥 CREATE RIDE ERROR:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/")
 def get_rides(from_location: str = None, to_location: str = None):
     query = {}
-
     if from_location:
         query["from_location"] = from_location
     if to_location:
         query["to_location"] = to_location
 
     rides = []
-    for ride in rides_collection.find(query):
+    # Sort by departure time to show nearest rides first
+    for ride in rides_collection.find(query).sort("departure_time", 1):
         ride["_id"] = str(ride["_id"])
         ride["creator"] = get_profile(ride["created_by"])
         ride.pop("created_by", None)
-        rides.append(ride)
-
-
+        rides.append(serialize_mongo_doc(ride))
     return rides
-
-
-
 
 @router.get("/search")
 def search_rides(from_location: str, to_location: str):
     now = datetime.now(timezone.utc)
-
     cursor = rides_collection.find({
         "from_location": {"$regex": from_location, "$options": "i"},
         "to_location": {"$regex": to_location, "$options": "i"},
         "departure_time": {"$gt": now}
     })
-
     rides = []
     for ride in cursor:
-        ride["_id"] = str(ride["_id"])
-        rides.append(ride)
-
+        rides.append(serialize_mongo_doc(ride))
     return rides
 
 @router.get("/my-created")
 def get_my_created_rides(user_id: str):
     cursor = rides_collection.find({"created_by": user_id})
     rides = []
-
     for ride in cursor:
         rides.append(serialize_mongo_doc(ride))
-
     return rides
 
+# ✅ FIX: Moved this specific route BEFORE the generic /{ride_id} to avoid conflicts
+@router.get("/user/{user_id}")
+def get_user_dashboard_rides(user_id: str):
+    """
+    Fetches all rides created by the user AND rides they have joined (approved).
+    """
+    # 1. Created Rides
+    created_rides = []
+    cursor_created = rides_collection.find({"created_by": user_id})
+    for ride in cursor_created:
+        ride["_id"] = str(ride["_id"])
+        ride["creator"] = get_profile(ride.get("created_by")) # Consistency with get_rides
+        created_rides.append(serialize_mongo_doc(ride))
+
+    # 2. Joined Rides (Fetch approved requests first)
+    requests = ride_requests_collection.find({"requester_id": user_id, "status": "approved"})
+    joined_ride_ids = [ObjectId(req["ride_id"]) for req in requests]
+    
+    joined_rides = []
+    if joined_ride_ids:
+        cursor_joined = rides_collection.find({"_id": {"$in": joined_ride_ids}})
+        for ride in cursor_joined:
+            ride["_id"] = str(ride["_id"])
+            ride["creator"] = get_profile(ride.get("created_by"))
+            joined_rides.append(serialize_mongo_doc(ride))
+
+    return jsonable_encoder({"created": created_rides, "joined": joined_rides})
+
+@router.get("/stats/total")
+def get_total_rides_count():
+    count = rides_collection.count_documents({})
+    return {"count": count}
+
+# Generic ID route should be last
 @router.get("/{ride_id}")
 def get_single_ride(ride_id: str):
-    ride = rides_collection.find_one({"_id": ObjectId(ride_id)})
+    try:
+        obj_id = ObjectId(ride_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid ID format")
 
+    ride = rides_collection.find_one({"_id": obj_id})
     if not ride:
         raise HTTPException(status_code=404, detail="Ride not found")
 
     ride["_id"] = str(ride["_id"])
     return ride
-
 
 @router.post("/{ride_id}/request")
 def request_to_join(ride_id: str, body: dict):
@@ -160,25 +182,26 @@ def request_to_join(ride_id: str, body: dict):
 
     return {"message": "Request sent"}
 
-
-
 @router.get("/{ride_id}/requests")
 def get_ride_requests(ride_id: str):
     requests = list(ride_requests_collection.find({"ride_id": ride_id}))
     for r in requests:
         profile = profiles_collection.find_one(
-        {"_id": r["requester_id"]},
-        {"_id": 0, "full_name": 1, "phone": 1}
+            {"_id": r["requester_id"]},
+            {"_id": 0, "full_name": 1, "phone": 1}
         )
-
-        r["_id"] = str(r["_id"])
         r["requester"] = profile
+        
     return [serialize_ride_request(r) for r in requests]
 
-    
 @router.post("/{ride_id}/requests/{requester_id}/approve")
 def approve_request(ride_id: str, requester_id: str):
-    ride = rides_collection.find_one({"_id": ObjectId(ride_id)})
+    try:
+        obj_ride_id = ObjectId(ride_id)
+    except:
+         raise HTTPException(status_code=400, detail="Invalid Ride ID")
+
+    ride = rides_collection.find_one({"_id": obj_ride_id})
     if not ride:
         raise HTTPException(status_code=404, detail="Ride not found")
 
@@ -198,7 +221,7 @@ def approve_request(ride_id: str, requester_id: str):
         raise HTTPException(status_code=404, detail="Request not found")
 
     rides_collection.update_one(
-        {"_id": ObjectId(ride_id)},
+        {"_id": obj_ride_id},
         {"$inc": {"seats_available": -1}}
     )
 
@@ -222,25 +245,5 @@ def reject_request(ride_id: str, requester_id: str):
 
 @router.post("/profiles/init")
 def init_profile(profile: dict):
-    """
-    TEMP endpoint: create profile if it doesn't exist
-    """
-    user_id = profile.get("user_id")
-    full_name = profile.get("full_name")
-    phone = profile.get("phone")
-
-    if not user_id or not full_name or not phone:
-        raise HTTPException(status_code=400, detail="Missing fields")
-
-    existing = profiles_collection.find_one({"_id": user_id})
-    if existing:
-        return {"message": "Profile already exists"}
-
-    profiles_collection.insert_one({
-        "_id": user_id,          # IMPORTANT: string, not ObjectId
-        "full_name": full_name,
-        "phone": phone,
-        "created_at": datetime.utcnow()
-    })
-
-    return {"message": "Profile created"}
+    # Temp endpoint kept for compatibility, but logical work is done in profiles.py
+    return {"message": "Use profiles.py endpoint instead"}
