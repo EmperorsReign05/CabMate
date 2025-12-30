@@ -94,13 +94,13 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
             <Box 
                 sx={{ 
                     position: 'absolute', 
-                    top: 8, 
-                    bottom: 24, 
-                    left: 7, 
+                    top: 10, 
+                    bottom: 28, 
+                    left: '13px', // Half of 24px width (12px) - 1px (half line width)
                     width: '2px', 
                     bgcolor: '#e0e0e0',
                     zIndex: 0
-                }} 
+                }}
             />
 
             {/* FROM LOCATION */}
