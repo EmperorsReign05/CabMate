@@ -243,6 +243,35 @@ def reject_request(ride_id: str, requester_id: str):
 
     return {"message": "Request rejected"}
 
+# Add this to app/routes/rides.py
+
+@router.delete("/{ride_id}")
+def delete_ride(ride_id: str, user_id: str):
+    try:
+        obj_id = ObjectId(ride_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid Ride ID")
+
+    # 1. Find the ride
+    ride = rides_collection.find_one({"_id": obj_id})
+    if not ride:
+        raise HTTPException(status_code=404, detail="Ride not found")
+
+    # 2. Check ownership (Security)
+    if ride.get("created_by") != user_id:
+        raise HTTPException(status_code=403, detail="You can only delete your own rides")
+
+    # 3. Delete the ride
+    delete_result = rides_collection.delete_one({"_id": obj_id})
+    
+    # 4. Optional: Delete associated requests to keep DB clean
+    ride_requests_collection.delete_many({"ride_id": ride_id})
+
+    if delete_result.deleted_count == 1:
+        return {"message": "Ride deleted successfully"}
+    
+    raise HTTPException(status_code=500, detail="Failed to delete ride")
+
 @router.post("/profiles/init")
 def init_profile(profile: dict):
     # Temp endpoint kept for compatibility, but logical work is done in profiles.py
