@@ -51,8 +51,8 @@ const Header = ({ session, profile }) => {
                 <Button color="inherit" component={RouterLink} to="/dashboard" startIcon={<Dashboard />}>Dashboard</Button>
                 <Button color="inherit" component={RouterLink} to="/my-rides">My Rides</Button>
                 <Button color="inherit" component={RouterLink} to="/local-cabs">Local Cabs</Button>
-                <Button color="inherit" component={RouterLink} to="/profile">
-                  {profile?.full_name ? profile.full_name.split(' ')[0] : session.user.email}
+                <Button color="inherit" component={RouterLink} to="/profile">My Profile
+                  {/*profile?.full_name ? profile.full_name.split(' ')[0] : session.user.email*/}
                 </Button>
                {/*<IconButton color="primary" component={RouterLink} to="/create" aria-label="create new ride" sx={{ border: '1px solid', borderColor: 'primary.main', borderRadius: '8px' }}>
                   <Add />
@@ -126,7 +126,7 @@ const Header = ({ session, profile }) => {
                 <Divider sx={{ my: 1 }} />
                 <ListItem disablePadding>
                   <ListItemButton component={RouterLink} to="/profile">
-                    <ListItemText primary={profile?.full_name ? profile.full_name : session.user.email} />
+                    <ListItemText primary="My Profile" />
                   </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
