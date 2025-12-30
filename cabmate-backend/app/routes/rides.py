@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi.encoders import jsonable_encoder
+import re
 
 # ✅ FIX: Added prefix="/rides" so routes match the frontend calls
 router = APIRouter(prefix="/rides", tags=["Rides"])
@@ -82,9 +83,11 @@ def get_rides(from_location: str = None, to_location: str = None):
 @router.get("/search")
 def search_rides(from_location: str, to_location: str):
     now = datetime.now(timezone.utc)
+    safe_from = re.escape(from_location)
+    safe_to = re.escape(to_location)
     cursor = rides_collection.find({
-        "from_location": {"$regex": from_location, "$options": "i"},
-        "to_location": {"$regex": to_location, "$options": "i"},
+        "from_location": {"$regex": safe_from, "$options": "i"},
+        "to_location": {"$regex": safe_to, "$options": "i"},
         "departure_time": {"$gt": now}
     })
     rides = []
