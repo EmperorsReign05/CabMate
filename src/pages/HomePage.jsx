@@ -49,9 +49,9 @@ const commonRoutes = [
       lat: 26.84191836301402, lng: 75.56236340893899
     },
     to: {
-      address: "Sindhi Camp Bus Stand",
+      address: "Sindhi Camp Bus Station Jaipur",
       shortName: "Sindhi Camp",
-      lat: 26.923614455298253, lng: 75.80057210709235 
+      lat: 26.924389960352105, lng: 75.80074728010615 
     }
   }
 ];

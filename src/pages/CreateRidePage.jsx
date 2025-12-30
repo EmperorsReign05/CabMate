@@ -13,12 +13,58 @@ import {
   FormControlLabel,
   Checkbox,
   Tooltip,
+  Stack,
+  Chip,
+  IconButton
 } from "@mui/material";
 import { useNotification } from "../context/NotificationContext";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import SwapVertIcon from '@mui/icons-material/SwapVert'; 
 
 const libraries = ["places"];
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
+const commonRoutes = [
+  {
+    label: "Hostel to Station",
+    from: {
+      address: "GHS Hostel campus, Jaipur, Dahmi Kalan, Rajasthan 303007, India",
+      shortName: "GHS Hostel",
+      lat: 26.84191836301402, lng: 75.56236340893899
+    },
+    to: {
+      address: "WQ9Q+5V9, Kanti Nagar, Sindhi Camp, Jaipur, Rajasthan 302006, India",
+      shortName: "Jaipur Junction",
+      lat: 26.91814083720423, lng: 75.78976998195542
+    }
+  },
+  {
+    label: "Hostel to Airport",
+    from: {
+      address: "GHS Hostel campus, Jaipur, Dahmi Kalan, Rajasthan 303007, India",
+      shortName: "GHS Hostel",
+      lat: 26.84191836301402, lng: 75.56236340893899
+    },
+    to: {
+      address: "Airport Rd, Sanganer, Jaipur, Rajasthan 302029, India",
+      shortName: "Jaipur Airport",
+      lat: 26.828500360798287, lng: 75.80639863352846
+    }
+  },
+  {
+    label: "Hostel to Sindhi Camp",
+    from: {
+      address: "GHS Hostel, Manipal University Jaipur",
+      shortName: "GHS Hostel",
+      lat: 26.84191836301402, lng: 75.56236340893899
+    },
+    to: {
+      address: "Sindhi Camp Bus Station Jaipur",
+      shortName: "Sindhi Camp",
+      lat: 26.924389960352105, lng: 75.80074728010615 
+    }
+  }
+];
 
 const CreateRidePage = ({ session }) => {
   const navigate = useNavigate();
@@ -44,7 +90,6 @@ const CreateRidePage = ({ session }) => {
     libraries,
   });
 
-  // Fetch user profile (Supabase is still fine for auth/profile)
   useEffect(() => {
     if (!session) {
       navigate("/login");
@@ -71,6 +116,17 @@ const CreateRidePage = ({ session }) => {
 
   const handleChange = (e) => {
     setRideDetails({ ...rideDetails, [e.target.name]: e.target.value });
+  };
+
+  const handleCommonRoute = (route) => {
+    setFrom(route.from);
+    setTo(route.to);
+  };
+
+  const handleSwap = () => {
+    const temp = from;
+    setFrom(to);
+    setTo(temp);
   };
 
   const handleSubmit = async (e) => {
@@ -102,17 +158,12 @@ const CreateRidePage = ({ session }) => {
         body: JSON.stringify(payload), 
       });
       if (!res.ok) {
-  const text = await res.text();
-  throw new Error(text);
-}
+        const text = await res.text();
+        throw new Error(text);
+      }
 
-const data = await res.json();
-console.log("Ride created:", data);
-      /*if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || "Failed to create ride");
-      }*/
-
+      const data = await res.json();
+      console.log("Ride created:", data);
       showNotification("Ride created successfully!", "success");
       navigate("/dashboard");
     } catch (error) {
@@ -127,17 +178,68 @@ console.log("Ride created:", data);
 
   return (
     <Container maxWidth="sm">
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4 }}>
+      {/* Reduced Top Margin from 4 to 2 to prevent scrolling */}
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
         <Typography variant="h4" gutterBottom>
           Create a New Ride
         </Typography>
 
-        <Box sx={{ mb: 2 }}>
-          <LocationAutocomplete label="From" onPlaceSelect={setFrom} />
-        </Box>
+        {/* Updated Chips Styling */}
+        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
+          {commonRoutes.map((route) => (
+            <Chip
+              key={route.label}
+              label={route.label}
+              onClick={() => handleCommonRoute(route)}
+              clickable
+              variant="outlined"
+              sx={{
+                borderColor: '#ad57c1ff',
+                color: '#ad57c1ff',
+                fontWeight: 'bold',
+                '&:hover': {
+                   borderColor: '#4A148C',
+                   color: '#4A148C',
+                   backgroundColor: 'rgba(173, 87, 193, 0.05)'
+                }
+              }}
+            />
+          ))}
+        </Stack>
 
-        <Box sx={{ mb: 2 }}>
-          <LocationAutocomplete label="To" onPlaceSelect={setTo} />
+        <Box sx={{ position: 'relative' }}>
+          <Box sx={{ mb: 1 }}>
+            <LocationAutocomplete 
+              label="From" 
+              onPlaceSelect={setFrom} 
+              value={from} 
+            />
+          </Box>
+
+          {/* Adjusted Swap Button Spacing */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
+            <IconButton 
+              onClick={handleSwap} 
+              aria-label="swap locations"
+              sx={{ 
+                bgcolor: 'background.paper', 
+                border: '1px solid #ad57c1ff',
+                color: '#ad57c1ff',
+                '&:hover': { bgcolor: '#f5f5f5' },
+                zIndex: 1
+              }}
+            >
+              <SwapVertIcon />
+            </IconButton>
+          </Box>
+
+          <Box sx={{ mb: 2 }}>
+            <LocationAutocomplete 
+              label="To" 
+              onPlaceSelect={setTo} 
+              value={to} 
+            />
+          </Box>
         </Box>
 
         <TextField
@@ -150,6 +252,7 @@ console.log("Ride created:", data);
           required
           margin="normal"
           InputLabelProps={{ shrink: true }}
+          size="small" // Making input slightly smaller to save vertical space
         />
 
         <TextField
@@ -161,6 +264,7 @@ console.log("Ride created:", data);
           fullWidth
           required
           margin="normal"
+          size="small"
         />
 
         <TextField
@@ -171,16 +275,22 @@ console.log("Ride created:", data);
           onChange={handleChange}
           fullWidth
           margin="normal"
+          size="small"
         />
 
-        {/* Ladies-only option */}
         {userProfile.gender === "female" && (
-          <>
+          <Box sx={{ mt: 1, display: 'flex', alignItems: 'center' }}>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={isLadiesOnly}
                   onChange={(e) => setIsLadiesOnly(e.target.checked)}
+                  sx={{
+                    color: '#ad57c1ff',
+                    '&.Mui-checked': {
+                      color: '#ad57c1ff',
+                    },
+                  }}
                 />
               }
               label="This is a ladies-only ride"
@@ -190,7 +300,7 @@ console.log("Ride created:", data);
                 sx={{ ml: 1, verticalAlign: "middle", color: "text.secondary" }}
               />
             </Tooltip>
-          </>
+          </Box>
         )}
 
         <Button
@@ -199,10 +309,11 @@ console.log("Ride created:", data);
           fullWidth
           disabled={loading}
           sx={{
-            mt: 2,
-            height: "40px",
+            mt: 3,
+            height: "45px",
             backgroundColor: "#ad57c1ff",
             "&:hover": { backgroundColor: "#4A148C" },
+            fontWeight: 'bold'
           }}
         >
           {loading ? "Creating..." : "Create Ride"}
