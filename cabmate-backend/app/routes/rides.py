@@ -6,6 +6,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi.encoders import jsonable_encoder
 import re
+from typing import Optional
 
 # ✅ FIX: Added prefix="/rides" so routes match the frontend calls
 router = APIRouter(prefix="/rides", tags=["Rides"])
@@ -81,15 +82,22 @@ def get_rides(from_location: str = None, to_location: str = None):
     return rides
 
 @router.get("/search")
-def search_rides(from_location: str, to_location: str):
+def search_rides(from_location: str = None, to_location: str = None):
     now = datetime.now(timezone.utc)
-    safe_from = re.escape(from_location)
-    safe_to = re.escape(to_location)
-    cursor = rides_collection.find({
-        "from_location": {"$regex": safe_from, "$options": "i"},
-        "to_location": {"$regex": safe_to, "$options": "i"},
-        "departure_time": {"$gt": now}
-    })
+    
+    # 1. Start with the base query (always filter by time)
+    query = {"departure_time": {"$gt": now}}
+
+    # 2. Add filters only if the user provided them
+    if from_location:
+        query["from_location"] = {"$regex": re.escape(from_location), "$options": "i"}
+    
+    if to_location:
+        query["to_location"] = {"$regex": re.escape(to_location), "$options": "i"}
+
+    # 3. Execute the query
+    cursor = rides_collection.find(query)
+    
     rides = []
     for ride in cursor:
         rides.append(serialize_mongo_doc(ride))

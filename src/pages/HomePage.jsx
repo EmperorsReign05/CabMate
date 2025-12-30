@@ -130,8 +130,9 @@ setSearchResults(data);
   }, []);*/
 
 const handleSearch = async () => {
-  if (!fromLocation || !toLocation) {
-    alert("Please select both locations");
+  // 1. Change validation: Check if AT LEAST ONE is present
+  if (!fromLocation && !toLocation) {
+    alert("Please select at least one location");
     return;
   }
 
@@ -139,10 +140,14 @@ const handleSearch = async () => {
   setSearched(true);
 
   try {
+    // 2. Build params dynamically
+    const params = new URLSearchParams();
+    if (fromLocation) params.append("from_location", fromLocation.address);
+    if (toLocation) params.append("to_location", toLocation.address);
+
+    // 3. Use the dynamic params string
     const res = await fetch(
-      `http://127.0.0.1:8000/rides/search?from_location=${encodeURIComponent(
-        fromLocation.address
-      )}&to_location=${encodeURIComponent(toLocation.address)}`
+      `http://127.0.0.1:8000/rides/search?${params.toString()}`
     );
 
     if (!res.ok) {
