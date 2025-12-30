@@ -21,12 +21,9 @@ import { NotificationProvider } from "./context/NotificationContext";
 
 const API_BASE = "http://127.0.0.1:8000";
 
-// 1. CLEAN PROTECTED ROUTE
-// This is the ONLY place that should handle redirects for protected pages.
 function ProtectedRoute({ session, profileChecked, hasProfile, children }) {
   if (!session) return <Navigate to="/login" replace />;
   
-  // Show loading spinner while we wait for MongoDB check
   if (!profileChecked) {
     return (
       <Box display="flex" justifyContent="center" mt={5}>
@@ -34,8 +31,6 @@ function ProtectedRoute({ session, profileChecked, hasProfile, children }) {
       </Box>
     );
   } 
-
-  // If check is done and profile is missing, send to setup
   if (!hasProfile) {
     return <Navigate to="/profile" replace />;
   }
@@ -48,17 +43,14 @@ function App() {
   const [hasProfile, setHasProfile] = useState(false);
   const [profileChecked, setProfileChecked] = useState(false);
   
-  // 2. VERIFY PROFILE FUNCTION
   const verifyProfile = async (user) => {
     if (!user) return;
     try {
       const res = await fetch(`${API_BASE}/profiles/${user.id}`);
       if (res.ok) {
         const profile = await res.json();
-        // Strict check: must have name and phone
         setHasProfile(!!(profile?.full_name && profile?.phone));
       } else {
-        // If 404 or error, assume no profile
         setHasProfile(false);
       }
     } catch (err) {
@@ -73,7 +65,7 @@ function App() {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       if (data.session) verifyProfile(data.session.user);
-      else setProfileChecked(true); // No session = check done
+      else setProfileChecked(true); 
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -108,18 +100,16 @@ function App() {
   );
 }
 
-// 3. CLEAN APP ROUTES
-// Removed the redundant useEffect that was causing the loop
 function AppRoutes({ session, profileChecked, hasProfile, verifyProfile }) {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/*Public Routes*/}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/update-password" element={<UpdatePasswordPage />} />
 
-      {/* Profile Route - accessible to logged in users */}
+      {/*Profile Route-accessible to logged in users*/}
       <Route
         path="/profile"
         element={
@@ -134,7 +124,7 @@ function AppRoutes({ session, profileChecked, hasProfile, verifyProfile }) {
         }
       />
 
-      {/* Protected Routes */}
+      {/*Protected Routes*/}
       <Route
         path="/dashboard"
         element={
