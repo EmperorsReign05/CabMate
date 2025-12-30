@@ -258,7 +258,14 @@ const CreateRidePage = ({ session }) => {
           required
           margin="normal"
           InputLabelProps={{ shrink: true }}
-          size="small" // Making input slightly smaller to save vertical space
+          size="small" 
+          onClick={(e) => {
+          const input = document.querySelector('input[name="departure_time"]');
+            // Check if the browser supports showPicker (modern browsers)
+            if (input && input.showPicker) {
+              input.showPicker();
+            }
+          }}// Making input slightly smaller to save vertical space
         />
 
         <TextField
