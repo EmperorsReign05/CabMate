@@ -115,7 +115,13 @@ const CreateRidePage = ({ session }) => {
   }, [session, navigate]);
 
   const handleChange = (e) => {
-    setRideDetails({ ...rideDetails, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Block negative values immediately
+    if (name === "seats_available" && value < 1 && value !== "") return;
+    if (name === "cost_per_seat" && value < 0 && value !== "") return;
+
+    setRideDetails({ ...rideDetails, [name]: value });
   };
 
   const handleCommonRoute = (route) => {
