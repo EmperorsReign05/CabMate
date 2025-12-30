@@ -18,25 +18,25 @@ const commonRoutes = [
   {
     label: "Hostel to Station",
     from: {
-      address: "GHS Hostel, Manipal University Jaipur",
+      address: "GHS Hostel campus, Jaipur, Dahmi Kalan, Rajasthan 303007, India",
       shortName: "GHS Hostel",
-      lat: 26.841833083482314, lng: 75.56287323121721
+      lat: 26.84191836301402, lng: 75.56236340893899
     },
     to: {
-      address: "Jaipur Junction, Jaipur, Rajasthan",
+      address: "WQ9Q+5V9, Kanti Nagar, Sindhi Camp, Jaipur, Rajasthan 302006, India",
       shortName: "Jaipur Junction",
-      lat: 26.91806430588278, lng: 75.79018840654534
+      lat: 26.91814083720423, lng: 75.78976998195542
     }
   },
   {
     label: "Hostel to Airport",
     from: {
-      address: "GHS Hostel, Manipal University Jaipur",
+      address: "GHS Hostel campus, Jaipur, Dahmi Kalan, Rajasthan 303007, India",
       shortName: "GHS Hostel",
-      lat: 26.841833083482314, lng: 75.56287323121721
+      lat: 26.84191836301402, lng: 75.56236340893899
     },
     to: {
-      address: "Jaipur International Airport, Jaipur",
+      address: "Airport Rd, Sanganer, Jaipur, Rajasthan 302029, India",
       shortName: "Jaipur Airport",
       lat: 26.828500360798287, lng: 75.80639863352846
     }
@@ -46,7 +46,7 @@ const commonRoutes = [
     from: {
       address: "GHS Hostel, Manipal University Jaipur",
       shortName: "GHS Hostel",
-      lat: 26.841833083482314, lng: 75.56287323121721
+      lat: 26.84191836301402, lng: 75.56236340893899
     },
     to: {
       address: "Sindhi Camp Bus Stand",
