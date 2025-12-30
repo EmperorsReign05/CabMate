@@ -1,15 +1,18 @@
-// src/pages/MyRidesPage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { Container, Typography, Box, Grid, Card, CardContent, CardHeader, CircularProgress, Button } from '@mui/material';
+import { 
+  Container, Typography, Box, Grid, Card, CardContent, 
+  CardHeader, CircularProgress, Button, Avatar, Chip, Stack 
+} from '@mui/material';
+// ✅ NEW ICONS IMPORT
+import { CheckCircleOutline, HighlightOff, WhatsApp, Person } from '@mui/icons-material';
 import { useNotification } from '../context/NotificationContext';
 import RideCard from '../components/RideCard';
 
 const MyRidesPage = ({ session }) => {
   const navigate = useNavigate();
   const [createdRides, setCreatedRides] = useState([]);
-  const [joinedRides, setJoinedRides] = useState([]); // This state was previously empty!
+  const [joinedRides, setJoinedRides] = useState([]);
   const [loading, setLoading] = useState(true);
   const { showNotification } = useNotification();
   const [rideRequests, setRideRequests] = useState({});
@@ -20,7 +23,6 @@ const MyRidesPage = ({ session }) => {
 
     const fetchAllMyRides = async () => {
       try {
-        // ✅ CHANGE 1: Use the /user/ endpoint to get BOTH created and joined rides
         const res = await fetch(
           `http://127.0.0.1:8000/rides/user/${session.user.id}`
         );
@@ -30,11 +32,8 @@ const MyRidesPage = ({ session }) => {
         }
 
         const data = await res.json();
-        
-        // ✅ CHANGE 2: Set both states from the response
         setCreatedRides(data.created || []); 
         setJoinedRides(data.joined || []);
-        
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -121,7 +120,6 @@ const MyRidesPage = ({ session }) => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* SECTION 1: RIDES CREATED */}
       <Box sx={{ mb: 4 }}>
         <Card sx={cardStyles}>
           <CardHeader
@@ -129,48 +127,130 @@ const MyRidesPage = ({ session }) => {
             action={
               <Button component={RouterLink} to="/create" variant="contained" sx={{
                 height: '35px',
-                width: { xs: '100%', md: 'auto' },
-                px: 4,
+                px: 3,
+                borderRadius: 2,
+                textTransform: 'none',
                 backgroundColor: '#ad57c1ff',
+                fontWeight: 'bold',
                 '&:hover': { backgroundColor: '#4A148C' },
               }}>
-                Create New Ride
+                + Create New
               </Button>
             }
           />
           <CardContent>
             {createdRides.length > 0 ? (
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 {createdRides.map((ride) => (
                   <Grid item xs={12} sm={6} md={4} key={ride._id}>
-                    <Box sx={{ mt: 1 }}>
+                    <Box sx={{ mb: 2 }}>
                       <RideCard 
                         ride={ride} 
                         isCreator={true} 
                         onDelete={handleDelete} 
                       />
-
+                      
                       <Button
                         size="small"
-                        sx={{ mt: 1 }}
+                        sx={{ mt: 1, textTransform: 'none', color: '#666' }}
                         onClick={() => fetchRideRequests(ride._id)}
                       >
-                        View Requests
+                        {rideRequests[ride._id] ? 'Hide Requests' : 'View Requests'}
                       </Button>
                     </Box>
+
+                    {/* REQUESTS LIST - MODERNIZED */}
                     {rideRequests[ride._id]?.length > 0 && (
-                      <Box sx={{ mt: 1 }}>
+                      <Box sx={{ 
+                        mt: 1, 
+                        p: 2, 
+                        bgcolor: 'white', 
+                        borderRadius: 3, 
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)' 
+                      }}>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold', mb: 1, display: 'block' }}>
+                          PENDING REQUESTS
+                        </Typography>
+                        
                         {rideRequests[ride._id].map((req) => (
-                          <Box key={req._id} sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                            <Typography variant="body2">{req.requester?.full_name || "Unknown user"}</Typography>
-                            <Box>
-                              <Button size="small" variant="contained" sx={{ mr: 1 }} disabled={ride.seats_available === 0} onClick={() => handleApprove(ride._id, req.requester_id)}>Approve</Button>
-                              <Button size="small" variant="outlined" color="error" onClick={() => handleReject(ride._id, req.requester_id)}>Reject</Button>
-                              <Button size="small" color="success" onClick={() => {
-                                if (!req.requester?.phone) { alert("Phone number not available"); return; }
-                                openWhatsApp(req.requester.phone, req.requester.full_name, ride.from_location, ride.to_location);
-                              }}>CHAT</Button>
+                          <Box key={req._id} sx={{ 
+                            display: "flex", 
+                            flexDirection: "column", 
+                            gap: 1.5, 
+                            mb: 2, 
+                            pb: 2, 
+                            borderBottom: '1px dashed #eee' 
+                          }}>
+                            {/* Requester Info */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Avatar sx={{ width: 24, height: 24, bgcolor: '#ad57c1ff' }}>
+                                    <Person sx={{ fontSize: 16 }} />
+                                </Avatar>
+                                <Typography variant="body2" fontWeight="600">
+                                    {req.requester?.full_name || "Unknown user"}
+                                </Typography>
                             </Box>
+
+                            {/* MODERN ACTION BUTTONS */}
+                            <Stack direction="row" spacing={1}>
+                              {/* 1. APPROVE BUTTON */}
+                              <Button 
+                                variant="contained" 
+                                size="small" 
+                                startIcon={<CheckCircleOutline />}
+                                onClick={() => handleApprove(ride._id, req.requester_id)}
+                                disabled={ride.seats_available === 0}
+                                sx={{ 
+                                    flex: 1,
+                                    bgcolor: '#00c853', // Vibrant Green
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    textTransform: 'none',
+                                    borderRadius: 2,
+                                    boxShadow: '0 2px 8px rgba(0,200,83,0.2)',
+                                    '&:hover': { bgcolor: '#009624' }
+                                }}
+                              >
+                                Approve
+                              </Button>
+
+                              {/* 2. REJECT BUTTON */}
+                              <Button 
+                                variant="outlined" 
+                                size="small" 
+                                color="error"
+                                onClick={() => handleReject(ride._id, req.requester_id)}
+                                sx={{ 
+                                    minWidth: '40px',
+                                    borderRadius: 2,
+                                    borderColor: '#ffcdd2',
+                                    color: '#e53935',
+                                    '&:hover': { bgcolor: '#ffebee', borderColor: '#ef5350' }
+                                }}
+                              >
+                                <HighlightOff />
+                              </Button>
+
+                              {/* 3. CHAT BUTTON */}
+                              <Button 
+                                variant="contained" 
+                                size="small" 
+                                onClick={() => {
+                                    if (!req.requester?.phone) { alert("Phone number not available"); return; }
+                                    openWhatsApp(req.requester.phone, req.requester.full_name, ride.from_location, ride.to_location);
+                                }}
+                                sx={{ 
+                                    minWidth: '40px',
+                                    bgcolor: '#25D366', // WhatsApp Green
+                                    color: 'white',
+                                    borderRadius: 2,
+                                    boxShadow: '0 2px 8px rgba(37, 211, 102, 0.2)',
+                                    '&:hover': { bgcolor: '#128C7E' }
+                                }}
+                              >
+                                <WhatsApp />
+                              </Button>
+                            </Stack>
                           </Box>
                         ))}
                       </Box>
@@ -190,9 +270,8 @@ const MyRidesPage = ({ session }) => {
         <Card sx={cardStyles}>
           <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides Joined</Typography>} />
           <CardContent>
-            {/* ✅ UPDATED LOGIC: Correctly renders joinedRides */}
             {joinedRides.length > 0 ? (
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 {joinedRides.map(ride => (
                   <Grid item xs={12} sm={6} md={4} key={ride._id}>
                     <RideCard ride={ride} />
