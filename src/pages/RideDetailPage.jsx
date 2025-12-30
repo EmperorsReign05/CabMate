@@ -144,6 +144,23 @@ const RideDetailPage = ({ session }) => {
             Seats Available: {ride.seats_available}
           </Typography>
 
+          {ride.remark && (
+  <Box sx={{ 
+      mt: 3, 
+      p: 2, 
+      bgcolor: 'rgba(173, 87, 193, 0.08)', 
+      borderRadius: 2, 
+      border: '1px dashed rgba(173, 87, 193, 0.3)' 
+  }}>
+      <Typography variant="caption" sx={{ fontWeight: 'bold', color: '#ad57c1', textTransform: 'uppercase' }}>
+          Note from Ride Creator
+      </Typography>
+      <Typography variant="body1" sx={{ color: '#4a4a4a', mt: 0.5 }}>
+          "{ride.remark}"
+      </Typography>
+  </Box>
+)}
+
           <Button
             fullWidth
             variant="contained"
