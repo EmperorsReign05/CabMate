@@ -1,0 +1,5 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(180deg, #f7eaff 0%, #fde2ea 100%); /* Keeps your pink theme */
+  min-height: 100vh;
+}
