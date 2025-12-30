@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Box } from "@mui/material"; // Added Box for better layout
 import Header from "./components/Header";
 import Background from "./components/Background";
 
+// Import Pages
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -20,18 +21,21 @@ import { NotificationProvider } from "./context/NotificationContext";
 
 const API_BASE = "http://127.0.0.1:8000";
 
-// src/App.jsx - Improved ProtectedRoute
+// 1. CLEAN PROTECTED ROUTE
+// This is the ONLY place that should handle redirects for protected pages.
 function ProtectedRoute({ session, profileChecked, hasProfile, children }) {
   if (!session) return <Navigate to="/login" replace />;
   
+  // Show loading spinner while we wait for MongoDB check
   if (!profileChecked) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
-        <CircularProgress /> 
-      </div>
+      <Box display="flex" justifyContent="center" mt={5}>
+        <CircularProgress />
+      </Box>
     );
   } 
 
+  // If check is done and profile is missing, send to setup
   if (!hasProfile) {
     return <Navigate to="/profile" replace />;
   }
@@ -39,24 +43,26 @@ function ProtectedRoute({ session, profileChecked, hasProfile, children }) {
   return children;
 }
 
-/* ---------------- APP ---------------- */
-
 function App() {
   const [session, setSession] = useState(null);
   const [hasProfile, setHasProfile] = useState(false);
   const [profileChecked, setProfileChecked] = useState(false);
   
+  // 2. VERIFY PROFILE FUNCTION
   const verifyProfile = async (user) => {
     if (!user) return;
     try {
       const res = await fetch(`${API_BASE}/profiles/${user.id}`);
       if (res.ok) {
         const profile = await res.json();
+        // Strict check: must have name and phone
         setHasProfile(!!(profile?.full_name && profile?.phone));
       } else {
+        // If 404 or error, assume no profile
         setHasProfile(false);
       }
     } catch (err) {
+      console.error("Profile Check Failed (Likely CORS or Network):", err);
       setHasProfile(false);
     } finally {
       setProfileChecked(true);
@@ -67,6 +73,7 @@ function App() {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       if (data.session) verifyProfile(data.session.user);
+      else setProfileChecked(true); // No session = check done
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -75,14 +82,12 @@ function App() {
         verifyProfile(session.user);
       } else {
         setHasProfile(false);
-        setProfileChecked(false);
+        setProfileChecked(true);
       }
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
-
-  // Removed redundant useEffect that was causing double checks
 
   return (
     <Background>
@@ -90,7 +95,6 @@ function App() {
         <BrowserRouter>
           <Header session={session} />
           <main style={{ position: "relative", zIndex: 1 }}>
-            {/* PASS verifyProfile HERE */}
             <AppRoutes 
               session={session} 
               profileChecked={profileChecked} 
@@ -104,42 +108,25 @@ function App() {
   );
 }
 
-// RECEIVE verifyProfile HERE
+// 3. CLEAN APP ROUTES
+// Removed the redundant useEffect that was causing the loop
 function AppRoutes({ session, profileChecked, hasProfile, verifyProfile }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (!profileChecked) return;
-    if (!session) return;
-    if (hasProfile) return;
-    
-    const currentPath = location.pathname;
-    if (currentPath === '/profile' || 
-        currentPath === '/login' || 
-        currentPath === '/forgot-password' || 
-        currentPath === '/update-password') {
-      return;
-    }
-    
-    navigate('/profile', { replace: true });
-  }, [session, profileChecked, hasProfile, location.pathname, navigate]);
-
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/update-password" element={<UpdatePasswordPage />} />
 
-      {/* PROFILE */}
+      {/* Profile Route - accessible to logged in users */}
       <Route
         path="/profile"
         element={
           session ? (
             <ProfilePage 
               session={session}
-              onProfileUpdate={() => verifyProfile(session.user)} // Now this works!
+              onProfileUpdate={() => verifyProfile(session.user)}
             />
           ) : (
             <Navigate to="/login" replace />
@@ -147,7 +134,7 @@ function AppRoutes({ session, profileChecked, hasProfile, verifyProfile }) {
         }
       />
 
-      {/* PROTECTED */}
+      {/* Protected Routes */}
       <Route
         path="/dashboard"
         element={
