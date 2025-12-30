@@ -5,7 +5,7 @@ import { useNotification } from '../context/NotificationContext';
 import { 
   Container, Typography, Box, TextField, Button, 
   CircularProgress, FormControl, InputLabel, Select, 
-  MenuItem, Paper, Avatar, Divider, Stack 
+  MenuItem, Paper, Avatar, Divider, Stack, InputAdornment 
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
@@ -36,7 +36,13 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
           const data = await response.json();
           setFullName(data.full_name || '');
           setGender(data.gender || '');
-          setPhoneNumber(data.phone || '');
+          
+          
+          let phone = data.phone || '';
+          if (phone.startsWith('+91')) {
+            phone = phone.replace('+91', '');
+          }
+          setPhoneNumber(phone);
         }
       } catch (error) {
         console.log("No existing profile found to pre-fill.");
@@ -52,13 +58,16 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
     e.preventDefault();
     setSaving(true);
 
+  
+    const formattedPhone = `+91${phoneNumber}`;
+
     try {
       const response = await fetch(`${API_BASE}/profiles/${session.user.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           full_name: fullName,
-          phone: phoneNumber,
+          phone: formattedPhone, 
           email: session.user.email,
           gender: gender,
         }),
@@ -67,12 +76,10 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
       if (response.ok) {
         showNotification('Profile setup complete!', 'success');
         
-        // 3. Tell App.jsx to refresh its 'hasProfile' state
         if (onProfileUpdate) {
           await onProfileUpdate(); 
         }
         
-        // 4. Now navigate; ProtectedRoute will now see hasProfile = true
         navigate('/dashboard'); 
       } else {
         throw new Error('Failed to save profile');
@@ -116,10 +123,18 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
             <TextField
               label="Phone Number"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              // Optional: Only allow typing numbers
+              onChange={(e) => {
+                const val = e.target.value;
+                if (/^\d*$/.test(val)) setPhoneNumber(val);
+              }}
               fullWidth
               required
               type="tel"
+              // 
+              InputProps={{
+                startAdornment: <InputAdornment position="start">+91</InputAdornment>,
+              }}
               sx={{ '& .MuiOutlinedInput-root.Mui-focused fieldset': { borderColor: pinkColor }, '& label.Mui-focused': { color: pinkColor } }}
             />
 
@@ -133,7 +148,7 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
               >
                 <MenuItem value="male">Male</MenuItem>
                 <MenuItem value="female">Female</MenuItem>
-                <MenuItem value="other">Other</MenuItem>
+                
               </Select>
             </FormControl>
 
