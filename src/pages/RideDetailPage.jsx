@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
@@ -18,90 +18,100 @@ const RideDetailPage = ({ session }) => {
 
   const [ride, setRide] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // ✅ NEW: Track the specific status of the current user's request
+  const [myRequestStatus, setMyRequestStatus] = useState(null); // 'pending', 'approved', 'rejected'
   const [requesting, setRequesting] = useState(false);
-  const [requestSent, setRequestSent] = useState(false);
-  const [hasRequested, setHasRequested] = useState(false);
-
 
   const user = session?.user ?? null;
+
   const openWhatsApp = (phone, from, to) => {
-  const message = encodeURIComponent(
-    `Hi, I found your CabMate ride from ${from} to ${to}.`
-  );
-  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
-};
+    const message = encodeURIComponent(
+      `Hi, I found your CabMate ride from ${from} to ${to}.`
+    );
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+  };
 
-  /** FETCH RIDE */
+  /** FETCH RIDE & STATUS */
   useEffect(() => {
-  let mounted = true;
+    let mounted = true;
 
-  const fetchRide = async () => {
-    try {
-      const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}`);
-      if (!res.ok) throw new Error("Ride not found");
-      const data = await res.json();
-      if (mounted) setRide(data);
-    } catch {
-      showNotification("Could not fetch the requested ride.", "error");
-    } finally {
-      if (mounted) setLoading(false);
-    }
-  };
+    const fetchRideAndStatus = async () => {
+      try {
+        // 1. Fetch Ride Details
+        const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}`);
+        if (!res.ok) throw new Error("Ride not found");
+        const rideData = await res.json();
+        
+        if (mounted) setRide(rideData);
 
-  if (rideId) fetchRide();
+        // 2. ✅ NEW: Fetch Requests to check my status
+        if (user?.id) {
+          const reqRes = await fetch(`http://127.0.0.1:8000/rides/${rideId}/requests`);
+          if (reqRes.ok) {
+            const requests = await reqRes.json();
+            const myReq = requests.find((r) => r.requester_id === user.id);
+            if (myReq && mounted) {
+              setMyRequestStatus(myReq.status);
+            }
+          }
+        }
 
-  return () => {
-    mounted = false;
-  };
-}, [rideId, showNotification]);
+      } catch (err) {
+        console.error(err);
+        showNotification("Could not fetch ride details.", "error");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
 
+    if (rideId) fetchRideAndStatus();
 
-  /** CREATOR CHECK */
-  //const isCreator =
-  // user && ride && user.id === ride.created_by;
-  const isCreator = session?.user?.id === ride?.created_by;
+    return () => {
+      mounted = false;
+    };
+  }, [rideId, user, showNotification]);
 
+  const isCreator = user?.id === ride?.created_by;
 
   /** REQUEST TO JOIN */
   const handleRequestToJoin = async () => {
-  if (!rideId || !user?.id) {
-    showNotification("Ride or user not loaded yet", "error");
-    return;
-  }
+    if (!rideId || !user?.id) {
+      showNotification("Ride or user not loaded yet", "error");
+      return;
+    }
 
-  setRequesting(true);
+    setRequesting(true);
 
-  try {
-    const res = await fetch(
-      `http://127.0.0.1:8000/rides/${rideId}/request`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: user.id }),
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/rides/${rideId}/request`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user.id }),
+        }
+      );
+
+      if (res.status === 400) {
+        showNotification("You have already requested to join this ride.", "info");
+        setMyRequestStatus("pending"); // Optimistic update
+        return;
       }
-    );
 
-    if (res.status === 400) {
-  showNotification("You have already requested to join this ride.", "info");
-  setHasRequested(true);
-  return;
-}
+      if (!res.ok) {
+        throw new Error("Failed to request ride");
+      }
 
-if (!res.ok) {
-  throw new Error("Failed to request ride");
-}
+      setMyRequestStatus("pending"); // Update UI immediately
+      showNotification("Request sent successfully", "success");
+    } catch {
+      showNotification("Could not send request", "error");
+    } finally {
+      setRequesting(false);
+    }
+  };
 
-
-    setRequestSent(true);
-    showNotification("Request sent successfully", "success");
-  } catch {
-    showNotification("Could not send request", "error");
-  } finally {
-    setRequesting(false);
-  }
-};
-
-  /** LOADING */
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -117,8 +127,6 @@ if (!res.ok) {
       </Typography>
     );
   }
-console.log("rideId:", rideId);
-console.log("ride:", ride);
 
   return (
     <Container maxWidth="md">
@@ -135,46 +143,48 @@ console.log("ride:", ride);
           <Typography variant="h6">
             Seats Available: {ride.seats_available}
           </Typography>
-          
-          <Button
-  fullWidth
-  variant="contained"
-  sx={{ mt: 3, backgroundColor: "#ad57c1ff" }}
-  disabled={
-    requesting ||
-    requestSent ||
-    hasRequested ||
-    isCreator ||
-    ride.seats_available === 0
-  }
-  onClick={handleRequestToJoin}
->
-  {isCreator
-    ? "YOU CREATED THIS RIDE"
-    : hasRequested || requestSent
-    ? "REQUEST SENT"
-    : ride.seats_available === 0
-    ? "NO SEATS AVAILABLE"
-    : "REQUEST TO JOIN"}
-</Button>
-{ride?.creator?.phone && (
-  <Button
-    fullWidth
-    variant="outlined"
-    color="success"
-    sx={{ mt: 2 }}
-    onClick={() =>
-      openWhatsApp(
-        ride.creator.phone,
-        ride.from_location,
-        ride.to_location
-      )
-    }
-  >
-    CHAT ON WHATSAPP
-  </Button>
-)}
 
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, backgroundColor: "#ad57c1ff" }}
+            disabled={
+              requesting ||
+              isCreator ||
+              myRequestStatus === "pending" ||
+              myRequestStatus === "approved" ||
+              myRequestStatus === "rejected" ||
+              ride.seats_available === 0
+            }
+            onClick={handleRequestToJoin}
+          >
+            
+            {isCreator
+              ? "YOU CREATED THIS RIDE"
+              : myRequestStatus === "approved"
+              ? " YOU'VE JOINED THIS RIDE"
+              : myRequestStatus === "pending"
+              ? " REQUEST PENDING"
+              : myRequestStatus === "rejected"
+              ? " REQUEST REJECTED"
+              : ride.seats_available === 0
+              ? "NO SEATS AVAILABLE"
+              : "REQUEST TO JOIN"}
+          </Button>
+
+          {ride?.creator?.phone && (
+            <Button
+              fullWidth
+              variant="outlined"
+              color="success"
+              sx={{ mt: 2 }}
+              onClick={() =>
+                openWhatsApp(ride.creator.phone, ride.from_location, ride.to_location)
+              }
+            >
+              CHAT ON WHATSAPP
+            </Button>
+          )}
         </CardContent>
       </Card>
     </Container>
