@@ -12,7 +12,7 @@ import { useNotification } from '../context/NotificationContext';
 
 const API_BASE = "http://127.0.0.1:8000";
 
-// Modern Stat Widget Component
+//Widget Component
 const StatWidget = ({ title, value, icon, color }) => (
   <Paper
     elevation={0}
@@ -29,11 +29,10 @@ const StatWidget = ({ title, value, icon, color }) => (
       cursor: 'default',
       '&:hover': {
         transform: 'translateY(-5px)',
-        boxShadow: `0 12px 30px ${color}25`, // Dynamic colored shadow
+        boxShadow: `0 12px 30px ${color}25`, //shadow
       }
     }}
   >
-    {/* Icon Container with Gradient */}
     <Box sx={{
       p: 2,
       borderRadius: '18px',
@@ -46,7 +45,6 @@ const StatWidget = ({ title, value, icon, color }) => (
       {React.cloneElement(icon, { sx: { fontSize: 28 } })}
     </Box>
     
-    {/* Text Content */}
     <Box>
       <Typography variant="h4" fontWeight="800" sx={{ color: '#2c3e50', lineHeight: 1, mb: 0.5 }}>
         {value}
@@ -127,7 +125,6 @@ const DashboardPage = ({ session }) => {
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>
       
-      {/* 1. WELCOME SECTION */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 5 }}>
         <Box>
           <Fade in={true} timeout={800}>
@@ -195,7 +192,6 @@ const DashboardPage = ({ session }) => {
         </Grid>
       </Grid>
 
-      {/* 3. UPCOMING RIDES SECTION */}
       <Fade in={true} style={{ transitionDelay: '500ms' }}>
         <Paper 
             elevation={0}
