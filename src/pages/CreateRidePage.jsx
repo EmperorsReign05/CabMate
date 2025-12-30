@@ -18,18 +18,48 @@ const libraries = ["places"];
 const commonRoutes = [
   {
     label: "Hostel ➝ Station",
-    from: { address: "GHS Hostel campus...", shortName: "GHS Hostel", lat: 26.84, lng: 75.56 },
-    to: { address: "Railway Station...", shortName: "Jaipur Junction", lat: 26.91, lng: 75.78 }
+    from: { 
+      address: "GHS Hostel campus, Jaipur, Dahmi Kalan, Rajasthan 303007, India", 
+      shortName: "GHS Hostel", 
+      lat: 26.841918, 
+      lng: 75.562363 
+    },
+    to: { 
+      address: "Jaipur Junction, Gopalbari, Jaipur, Rajasthan 302006, India", 
+      shortName: "Jaipur Junction", 
+      lat: 26.918140, 
+      lng: 75.789769 
+    }
   },
   {
     label: "Hostel ➝ Airport",
-    from: { address: "GHS Hostel campus...", shortName: "GHS Hostel", lat: 26.84, lng: 75.56 },
-    to: { address: "Airport Rd...", shortName: "Jaipur Airport", lat: 26.82, lng: 75.80 }
+    from: { 
+      address: "GHS Hostel campus, Jaipur, Dahmi Kalan, Rajasthan 303007, India", 
+      shortName: "GHS Hostel", 
+      lat: 26.841918, 
+      lng: 75.562363 
+    },
+    to: { 
+      address: "Jaipur International Airport, Airport Rd, Sanganer, Jaipur, Rajasthan 302029, India", 
+      shortName: "Jaipur Airport", 
+      lat: 26.828500, 
+      lng: 75.806398 
+    }
   },
   {
     label: "Hostel ➝ Sindhi Camp",
-    from: { address: "GHS Hostel...", shortName: "GHS Hostel", lat: 26.84, lng: 75.56 },
-    to: { address: "Sindhi Camp...", shortName: "Sindhi Camp", lat: 26.92, lng: 75.80 }
+    from: { 
+      address: "GHS Hostel campus, Jaipur, Dahmi Kalan, Rajasthan 303007, India", 
+      shortName: "GHS Hostel", 
+      lat: 26.841918, 
+      lng: 75.562363 
+    },
+    to: { 
+      address: "Sindhi Camp Bus Stand, Station Road, Jaipur, Rajasthan 302001, India", 
+      shortName: "Sindhi Camp", 
+      lat: 26.924389, 
+      lng: 75.800747 
+    }
   }
 ];
 

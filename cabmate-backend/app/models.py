@@ -9,7 +9,8 @@ class Ride:
         departure_time: datetime,
         seats_available: int,
         price_per_seat: int,
-        created_by: str
+        created_by: str,
+        remark: str = None
     ):
         self.from_location = from_location
         self.to_location = to_location
@@ -17,4 +18,5 @@ class Ride:
         self.seats_available = seats_available
         self.price_per_seat = price_per_seat
         self.created_by = created_by
+        self.remark = remark
         self.created_at = datetime.utcnow()

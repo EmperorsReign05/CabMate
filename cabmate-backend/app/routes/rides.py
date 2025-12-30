@@ -53,6 +53,7 @@ def create_ride(ride: RideCreate):
             "expires_at": expires_at,
             "seats_available": ride.seats_available,
             "price_per_seat": ride.price_per_seat,
+            "remark": getattr(ride, "remark", None),
             "created_by": ride.created_by,
             "created_at": datetime.now(timezone.utc)
         }
