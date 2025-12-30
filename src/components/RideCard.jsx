@@ -16,7 +16,7 @@ const getShortLocation = (address) => {
   if (lowerAddr.includes("sindhi camp")) {
     // Distinguish between the Bus Station and Railway Station if they share keywords, 
     // or just catch specific unique parts.
-    if (lowerAddr.includes("kanti nagar") || lowerAddr.includes("wq9q") || lowerAddr.includes("railway")) {
+    if (lowerAddr.includes("wq9q") || lowerAddr.includes("railway")) {
       return "Jaipur Junction";
     }
     return "Sindhi Camp";

@@ -33,7 +33,7 @@ const commonRoutes = [
       lat: 26.84191836301402, lng: 75.56236340893899
     },
     to: {
-      address: "Railway Station, Kanti Nagar, Sindhi Camp, Jaipur, Rajasthan 302006, India",
+      address: "WQ9Q+5V9, Kanti Nagar, Sindhi Camp, Jaipur, Rajasthan 302006, India",
       shortName: "Jaipur Junction",
       lat: 26.91814083720423, lng: 75.78976998195542
     }
@@ -59,7 +59,7 @@ const commonRoutes = [
       lat: 26.84191836301402, lng: 75.56236340893899
     },
     to: {
-      address: "Sindhi Camp Bus Station Jaipur",
+      address: "Sindhi Camp, Jaipur, Rajasthan, India",
       shortName: "Sindhi Camp",
       lat: 26.924389960352105, lng: 75.80074728010615 
     }

@@ -9,7 +9,7 @@ import RideCard from '../components/RideCard';
 const MyRidesPage = ({ session }) => {
   const navigate = useNavigate();
   const [createdRides, setCreatedRides] = useState([]);
-  const [joinedRides, setJoinedRides] = useState([]);
+  const [joinedRides, setJoinedRides] = useState([]); // This state was previously empty!
   const [loading, setLoading] = useState(true);
   const { showNotification } = useNotification();
   const [rideRequests, setRideRequests] = useState({});
@@ -18,18 +18,23 @@ const MyRidesPage = ({ session }) => {
   useEffect(() => {
     if (!session) return;
 
-    const fetchMyCreatedRides = async () => {
+    const fetchAllMyRides = async () => {
       try {
+        // ✅ CHANGE 1: Use the /user/ endpoint to get BOTH created and joined rides
         const res = await fetch(
-          `http://127.0.0.1:8000/rides/my-created?user_id=${session.user.id}`
+          `http://127.0.0.1:8000/rides/user/${session.user.id}`
         );
 
         if (!res.ok) {
-          throw new Error("Failed to fetch created rides");
+          throw new Error("Failed to fetch rides");
         }
 
         const data = await res.json();
-        setCreatedRides(data);
+        
+        // ✅ CHANGE 2: Set both states from the response
+        setCreatedRides(data.created || []); 
+        setJoinedRides(data.joined || []);
+        
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -38,7 +43,7 @@ const MyRidesPage = ({ session }) => {
       }
     };
 
-    fetchMyCreatedRides();
+    fetchAllMyRides();
   }, [session]);
 
   const fetchRideRequests = async (rideId) => {
@@ -76,11 +81,9 @@ const MyRidesPage = ({ session }) => {
     }));
   };
 
-  // ✅ NEW DELETE FUNCTION
   const handleDelete = async (rideId) => {
     if (window.confirm('Are you sure you want to delete this ride? This action cannot be undone.')) {
       try {
-        // Pass user_id as a query param for ownership verification
         const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}?user_id=${session.user.id}`, {
             method: 'DELETE',
         });
@@ -90,7 +93,6 @@ const MyRidesPage = ({ session }) => {
             throw new Error(errorData.detail || 'Failed to delete ride');
         }
 
-        // Remove from UI immediately
         setCreatedRides(prevRides => prevRides.filter(ride => ride._id !== rideId));
         showNotification('Ride deleted successfully', 'success');
 
@@ -119,6 +121,7 @@ const MyRidesPage = ({ session }) => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* SECTION 1: RIDES CREATED */}
       <Box sx={{ mb: 4 }}>
         <Card sx={cardStyles}>
           <CardHeader
@@ -182,10 +185,12 @@ const MyRidesPage = ({ session }) => {
         </Card>
       </Box>
 
+      {/* SECTION 2: RIDES JOINED */}
       <Box>
         <Card sx={cardStyles}>
           <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides Joined</Typography>} />
           <CardContent>
+            {/* ✅ UPDATED LOGIC: Correctly renders joinedRides */}
             {joinedRides.length > 0 ? (
               <Grid container spacing={2}>
                 {joinedRides.map(ride => (
