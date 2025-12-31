@@ -11,6 +11,7 @@ import RideCard from '../components/RideCard';
 import { useNotification } from '../context/NotificationContext';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
 const StatWidget = ({ title, value, icon, color }) => (
   <Paper
     elevation={0}
