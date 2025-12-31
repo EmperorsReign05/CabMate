@@ -12,7 +12,7 @@ import { useNotification } from '../context/NotificationContext';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-//Widget
+
 const StatWidget = ({ title, value, icon, color }) => (
   <Paper
     elevation={0}
@@ -29,7 +29,7 @@ const StatWidget = ({ title, value, icon, color }) => (
       cursor: 'default',
       '&:hover': {
         transform: 'translateY(-5px)',
-        boxShadow: `0 12px 30px ${color}25`, //shadow
+        boxShadow: `0 12px 30px ${color}25`, // shadow
       }
     }}
   >
