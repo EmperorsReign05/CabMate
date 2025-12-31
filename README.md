@@ -1,90 +1,135 @@
+
 <p align="center">
-A modern, responsive carpooling web application designed to replace chaotic WhatsApp groups with a structured, safe, and user-friendly platform for students to find, create, and share rides.
+  <h1 align="center">🚖 CabMate</h1>
+  <p align="center">
+    <strong>Smart Campus Mobility Solution</strong>
+  </p>
+  <p align="center">
+    A modern, full-stack carpooling platform designed to replace chaotic WhatsApp groups with a structured, safe, and algorithmic way for students to find and share rides.
+  </p>
+  <p align="center">
+    <a href="https://cabmate.pages.dev"><strong>View Live Demo »</strong></a>
+    <br />
+    <br />
+    <a href="#-tech-stack">Tech Stack</a>
+    ·
+    <a href="#-features">Features</a>
+    ·
+    <a href="#-installation--setup">Setup Guide</a>
+  </p>
 </p>
 
-✨ Core Features
-CabMate is packed with features designed specifically for the needs of college students:
+---
 
-Secure User Authentication: Full sign-in and sign-up functionality, with password reset capabilities.
+## 💡 The Problem
+Students often struggle to find affordable travel options. Coordination happens in disorganized chat groups, leading to missed rides, safety concerns, and inefficient splitting of costs. **CabMate** centralizes this process, connecting travelers with verified peers in real-time.
 
-Dynamic Ride Search: An intuitive homepage where users can find available rides using a location autocomplete powered by the Google Maps API.
+## ✨ Features
+CabMate is engineered for trust and efficiency:
 
-Personalized User Dashboard: A central hub for users to see a summary of their activity, including rides created, rides joined, and upcoming trips.
+* **🔐 Secure Authentication:** Custom JWT-based authentication system for secure sign-up and login.
+* **🗺️ Dynamic Ride Matching:** Interactive ride discovery powered by the **Google Maps API**.
+* **📊 User Dashboard:** Real-time summary of travel activity, active rides, and requests.
+* **🤝 Request System:** A "Request-Approve" workflow ensuring drivers have full control over who joins their ride.
+* **📱 Contact Masking:** Phone numbers are only revealed *after* a ride request is approved by the driver.
+* **🚕 Local Directory:** Integrated directory of fixed-rate local cab services for backup options.
 
-Request & Approval System: A complete workflow for users to request to join a ride, and for creators to view and approve those requests.
+---
 
-Profile Verification: Users must complete their profile with their name and phone number before full participation.
+## 🛠️ Tech Stack
+This project transitioned from a serverless BaaS architecture to a **robust, containerized microservice architecture**.
 
-Contact Sharing: Once a passenger is approved, the creator and passenger can view each other's  phone number for direct contact if needed.
+### **Frontend (Client)**
+* **Framework:** React.js (Vite)
+* **Styling:** Tailwind CSS / Modern UI
+* **Maps:** Google Maps Platform API
+* **Deployment:** Cloudflare Pages
 
-Local Cab Directory: A dedicated page with contact information for fixed-rate local cab services, providing a reliable alternative when a carpool isn't available.
+### **Backend (Server)**
+* **Language:** Python 3.10+
+* **Framework:** FastAPI (High-performance async API)
+* **Server:** Uvicorn (ASGI)
+* **Architecture:** RESTful API with Pydantic models
 
-Modern, Responsive UI: A beautiful, mobile-first design with a soft gradient background and rounded, "floating" UI elements for a modern user experience.
+### **Database & DevOps**
+* **Database:** MongoDB Atlas (NoSQL Cloud Database)
+* **Containerization:** Docker & Docker Compose
+* **Production Host:** AWS EC2 (t3.micro) / Render (Hybrid Deployment)
+* **Reverse Proxy:** Nginx / Cloudflare Tunneling
 
-🛠️ Tech Stack
-This project is built with a modern, scalable tech stack:
+---
 
-Frontend: React (with Vite)
+## 🚀 Installation & Setup
 
-Backend & Database: Supabase (PostgreSQL) for user authentication, database, and real-time features.
+To run CabMate locally, you need to set up both the **Frontend** and the **Backend**.
 
-UI Library: Material UI (MUI) for a comprehensive set of React components.
+### Prerequisites
+* Node.js (v16+)
+* Python (v3.10+)
+* MongoDB Atlas Connection String
+* Google Maps API Key
 
-Maps & Geolocation: Google Maps Platform API for location search and autocomplete.
-
-Routing: React Router for client-side navigation.
-
-Deployment: Cloudflare Pages.
-
-🚀 Getting Started
-To get a local copy up and running, follow these simple steps.
-
-Prerequisites
-Node.js (v16 or later)
-
-npm or yarn
-
-A Supabase account
-
-A Google Maps Platform account with the Places API enabled
-
-Installation & Setup
-Clone the repository:
+### 1️⃣ Backend Setup
+Navigate to the server directory:
+```bash
+cd cabmate-backend
+Create a virtual environment and install dependencies:
 
 Bash
 
-git clone https://github.com/EmperorsReign05/CabMate.git
-cd cabmate
-Install NPM packages:
+# Create virtual env
+python -m venv venv
+
+# Activate it (Windows)
+venv\Scripts\activate
+# Activate it (Mac/Linux)
+source venv/bin/activate
+
+# Install requirements
+pip install -r requirements.txt
+Create a .env file in the backend folder:
+
+Ini, TOML
+
+MONGO_URI="mongodb+srv://<your_user>:<password>@cluster0.mongodb.net/cabmate?retryWrites=true&w=majority"
+SECRET_KEY="your_secret_key_for_jwt"
+Run the server:
+
+Bash
+
+uvicorn app.main:app --reload
+# Server running at http://localhost:8000
+2️⃣ Frontend Setup
+Navigate to the client directory:
+
+Bash
+
+cd cabmate-frontend
+Install dependencies:
 
 Bash
 
 npm install
-Set up your environment variables:
-Create a new file named .env in the root of your project and add your Supabase and Google Maps API keys:
+Create a .env file in the frontend folder:
 
-VITE_SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
-VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-VITE_GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
-Run the development server:
+Ini, TOML
+
+VITE_API_BASE_URL="http://localhost:8000"
+VITE_GOOGLE_MAPS_API_KEY="your_google_maps_key"
+Run the client:
 
 Bash
 
 npm run dev
-Your app should now be running on http://localhost:5173 (or another port if 5173 is in use).
+# App running at http://localhost:5173
+🐳 Docker Support
+The application is fully containerized. To run the backend in a container:
 
-Database Setup
-The application relies on a specific Supabase database schema and Row Level Security (RLS) policies. You will need to run the SQL scripts we developed to create the tables (rides, profiles, ride_passengers, messages) and their corresponding policies and functions.
+Bash
 
-☁️ Deployment
-This project is configured for easy deployment on Cloudflare Pages.
+docker build -t cabmate-backend .
+docker run -d -p 8000:8000 --env-file .env cabmate-backend
+📄 License
+Distributed under the MIT License. See LICENSE for more information.
 
-Framework Preset: React (Vite)
-
-Build Command: npm run build
-
-Build Output Directory: dist
-
-Remember to set your Supabase and Google Maps keys as environment variables in your Cloudflare project settings. You will also need to add a _redirects file to the root of your project to handle client-side routing:
-
-/* /index.html 200
+<p align="center"> Built with ❤️ by <strong>Mohammad Alman Farooqui</strong> </p>
