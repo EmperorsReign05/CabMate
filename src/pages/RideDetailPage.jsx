@@ -196,7 +196,7 @@ const RideDetailPage = ({ session }) => {
                             <Stack direction="row" spacing={1} alignItems="center" mb={1}>
                                 <InfoOutlined fontSize="small" sx={{ color: '#ad57c1' }} />
                                 <Typography variant="caption" fontWeight="bold" sx={{ color: '#ad57c1', textTransform: 'uppercase' }}>
-                                    Note from Driver
+                                    Note from Ride Creator
                                 </Typography>
                             </Stack>
                             <Typography variant="body2" color="#444">"{ride.remark}"</Typography>
