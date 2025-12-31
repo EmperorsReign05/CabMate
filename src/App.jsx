@@ -45,6 +45,11 @@ function App() {
   
   const verifyProfile = async (user) => {
     if (!user) return;
+    if (user.email === 'guest@cabmate.com') {
+        setHasProfile(true);
+        setProfileChecked(true);
+        return;
+    }
     try {
       const res = await fetch(`${API_BASE}/profiles/${user.id}`);
       if (res.ok) {

@@ -55,7 +55,7 @@ const LoginPage = () => {
       });
       if (error) throw error;
       showNotification('Welcome, Guest!', 'success');
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       showNotification('Guest login failed. Please try again.', 'error');
     } finally {
