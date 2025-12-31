@@ -158,6 +158,7 @@ def get_single_ride(ride_id: str):
         raise HTTPException(status_code=404, detail="Ride not found")
 
     ride["_id"] = str(ride["_id"])
+    ride["creator"] = get_profile(ride.get("created_by"))
     return ride
 
 @router.post("/{ride_id}/request")
