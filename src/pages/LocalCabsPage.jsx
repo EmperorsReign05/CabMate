@@ -42,6 +42,7 @@ const LocalCabsPage = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 6, minHeight: '80vh' }}>
       
+      
       {/*header*/}
       <Box sx={{ textAlign: 'center', mb: 8 }}>
         <Fade in={true} timeout={800}>
