@@ -12,7 +12,7 @@ import { useNotification } from '../context/NotificationContext';
 
 const API_BASE = "http://127.0.0.1:8000";
 
-//Widget Component
+//Widget
 const StatWidget = ({ title, value, icon, color }) => (
   <Paper
     elevation={0}
@@ -167,8 +167,6 @@ const DashboardPage = ({ session }) => {
           New Ride
         </Button>
       </Box>
-
-      {/* 2. STAT WIDGETS */}
       <Grid container spacing={3} sx={{ mb: 6 }}>
         <Grid item xs={12} sm={6} md={3}>
             <Fade in={true} style={{ transitionDelay: '100ms' }}>

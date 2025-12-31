@@ -13,7 +13,7 @@ const ForgotPasswordPage = () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/update-password', // Where to redirect after email link click
+        redirectTo: window.location.origin + '/update-password', 
       });
       if (error) throw error;
       showNotification('Password reset link sent! Please check your email.', 'success');

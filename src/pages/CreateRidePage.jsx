@@ -75,7 +75,7 @@ const CreateRidePage = ({ session }) => {
     departure_time: "",
     seats_available: 1,
     cost_per_seat: 0,
-    remark: "", // ✅ NEW FIELD
+    remark: "", 
   });
 
   const [isLadiesOnly, setIsLadiesOnly] = useState(false);
@@ -118,7 +118,7 @@ const CreateRidePage = ({ session }) => {
       seats_available: Number(rideDetails.seats_available),
       price_per_seat: Number(rideDetails.cost_per_seat),
       is_ladies_only: isLadiesOnly,
-      remark: rideDetails.remark, // ✅ SENDING REMARK
+      remark: rideDetails.remark, 
       created_by: session.user.id 
     };
 
@@ -160,7 +160,7 @@ const CreateRidePage = ({ session }) => {
             Publish a Ride
           </Typography>
 
-          {/* Quick Routes */}
+          
           <Stack direction="row" spacing={1} sx={{ mb: 3, overflowX: 'auto', pb: 1, '::-webkit-scrollbar': { display: 'none' } }}>
             {commonRoutes.map((route) => (
               <Chip
@@ -195,8 +195,6 @@ const CreateRidePage = ({ session }) => {
               <LocationAutocomplete label="Going to..." onPlaceSelect={setTo} value={to} />
             </Box>
           </Box>
-
-          {/* Date & Time */}
           <TextField
             name="departure_time"
             label="Departure Time"
@@ -209,8 +207,6 @@ const CreateRidePage = ({ session }) => {
             sx={{ mb: 2, '& .MuiOutlinedInput-root': { bgcolor: 'white', borderRadius: 3 } }}
             onClick={(e) => e.target.showPicker && e.target.showPicker()}
           />
-
-          {/* Seats & Cost - SIDE BY SIDE to save space */}
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid item xs={6}>
               <TextField
@@ -238,8 +234,6 @@ const CreateRidePage = ({ session }) => {
               />
             </Grid>
           </Grid>
-
-          {/* ✅ NEW: Remark Field */}
           <TextField
             name="remark"
             label="Remarks (Optional)"
@@ -257,8 +251,6 @@ const CreateRidePage = ({ session }) => {
                 '& .MuiOutlinedInput-root': { bgcolor: 'white', borderRadius: 3 } 
             }}
           />
-
-          {/* Footer Actions */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
             {userProfile?.gender === "female" && (
               <FormControlLabel
@@ -272,7 +264,7 @@ const CreateRidePage = ({ session }) => {
             <Button
               type="submit"
               variant="contained"
-              fullWidth={userProfile?.gender !== "female"} // Full width if not female (no checkbox)
+              fullWidth={userProfile?.gender !== "female"} 
               disabled={loading}
               sx={{
                 flex: userProfile?.gender === "female" ? 1 : 'auto',

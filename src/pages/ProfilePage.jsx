@@ -123,7 +123,6 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
             <TextField
               label="Phone Number"
               value={phoneNumber}
-              // Optional: Only allow typing numbers
               onChange={(e) => {
                 const val = e.target.value;
                 if (/^\d*$/.test(val)) setPhoneNumber(val);

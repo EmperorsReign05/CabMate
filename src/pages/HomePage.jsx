@@ -148,8 +148,6 @@ const HomePage = () => {
                 </Typography>
             </Fade>
         </Box>
-
-        {/* search section*/}
         <Zoom in={true} style={{ transitionDelay: '300ms' }}>
           <Paper 
             elevation={0}

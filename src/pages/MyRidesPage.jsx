@@ -45,7 +45,6 @@ const MyRidesPage = ({ session }) => {
   }, [session]);
 
   const fetchRideRequests = async (rideId) => {
-    // Toggle visibility: if already loaded, just clear them to "hide"
     if (rideRequests[rideId]) {
         setRideRequests((prev) => {
             const newState = { ...prev };
@@ -71,7 +70,6 @@ const MyRidesPage = ({ session }) => {
   const handleApprove = async (rideId, requesterId) => {
     await fetch(`http://127.0.0.1:8000/rides/${rideId}/requests/${requesterId}/approve`, { method: "POST" });
     
-    // ✅ UPDATE STATUS instead of removing, so it moves to "Approved" section
     setRideRequests((prev) => ({
       ...prev,
       [rideId]: prev[rideId].map((r) => 
@@ -89,7 +87,6 @@ const MyRidesPage = ({ session }) => {
   const handleReject = async (rideId, requesterId) => {
     await fetch(`http://127.0.0.1:8000/rides/${rideId}/requests/${requesterId}/reject`, { method: "POST" });
     
-    // Remove rejected request from UI
     setRideRequests((prev) => ({
       ...prev,
       [rideId]: prev[rideId].filter((r) => r.requester_id !== requesterId),
@@ -158,7 +155,6 @@ const MyRidesPage = ({ session }) => {
             {createdRides.length > 0 ? (
               <Grid container spacing={3}>
                 {createdRides.map((ride) => {
-                  // ✅ FILTER REQUESTS HERE
                   const allRequests = rideRequests[ride._id] || [];
                   const pendingRequests = allRequests.filter(r => r.status === 'pending');
                   const approvedRequests = allRequests.filter(r => r.status === 'approved');
@@ -180,8 +176,6 @@ const MyRidesPage = ({ session }) => {
                           {rideRequests[ride._id] ? 'Hide Requests' : 'View Requests'}
                         </Button>
                       </Box>
-
-                      {/* REQUESTS PANEL */}
                       {(pendingRequests.length > 0 || approvedRequests.length > 0) && (
                         <Box sx={{ 
                           mt: 1, 
@@ -191,7 +185,6 @@ const MyRidesPage = ({ session }) => {
                           boxShadow: '0 4px 12px rgba(0,0,0,0.05)' 
                         }}>
                           
-                          {/* 1. PENDING REQUESTS SECTION */}
                           {pendingRequests.length > 0 && (
                             <Box sx={{ mb: approvedRequests.length > 0 ? 2 : 0 }}>
                               <Typography variant="caption" sx={{ color: 'orange', fontWeight: 'bold', mb: 1, display: 'block' }}>
@@ -241,8 +234,6 @@ const MyRidesPage = ({ session }) => {
                               ))}
                             </Box>
                           )}
-
-                          {/* 2. APPROVED PASSENGERS SECTION */}
                           {approvedRequests.length > 0 && (
                             <Box>
                               <Typography variant="caption" sx={{ color: '#00c853', fontWeight: 'bold', mb: 1, display: 'block' }}>
@@ -294,8 +285,6 @@ const MyRidesPage = ({ session }) => {
           </CardContent>
         </Card>
       </Box>
-
-      {/* RIDES JOINED SECTION */}
       <Box>
         <Card sx={cardStyles}>
           <CardHeader title={<Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>Rides Joined</Typography>} />

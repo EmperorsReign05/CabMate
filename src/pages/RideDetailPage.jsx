@@ -159,10 +159,8 @@ const RideDetailPage = ({ session }) => {
             <Divider sx={{ mb: 4 }} />
 
             <Grid container spacing={4}>
-                {/* LEFT COLUMN: Route Info */}
                 <Grid item xs={12} md={7}>
                     <Box sx={{ position: 'relative', pl: 1 }}>
-                        {/* Timeline Line */}
                         <Box sx={{ 
                             position: 'absolute', top: 12, bottom: 32, left: '18px', width: '2px', 
                             background: 'linear-gradient(to bottom, #ad57c1 0%, #e0e0e0 100%)' 
@@ -181,7 +179,6 @@ const RideDetailPage = ({ session }) => {
                             </Box>
                         </Box>
 
-                        {/* TO */}
                         <Box sx={{ display: 'flex', position: 'relative', zIndex: 1 }}>
                             <Box sx={{ width: '24px', display: 'flex', justifyContent: 'center', mt: 0.2, mr: 2 }}>
                                 <LocationOn sx={{ fontSize: 24, color: '#ff5252' }} />
@@ -209,7 +206,6 @@ const RideDetailPage = ({ session }) => {
                 <Grid item xs={12} md={5}>
                     <Paper elevation={0} sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.5)', borderRadius: '24px' }}>
                         
-                        {/* Driver Info */}
                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                             <Avatar sx={{ width: 48, height: 48, bgcolor: '#ad57c1', mr: 2 }}>
                                 <Person />

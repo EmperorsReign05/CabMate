@@ -11,7 +11,6 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNotification } from '../context/NotificationContext';
 
-// Custom Google Icon
 const GoogleIcon = (props) => (
   <SvgIcon {...props}>
     <path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z" />
@@ -67,11 +66,11 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (tabIndex === 1) { // Sign Up
+      if (tabIndex === 1) {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         showNotification('Account created! Check email to confirm.', 'success');
-      } else { // Sign In
+      } else { 
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         navigate('/dashboard'); 
@@ -87,17 +86,11 @@ const LoginPage = () => {
     <Container 
       maxWidth="xs" 
       sx={{ 
-        // 1. Calculate height to exclude Header (approx 85px)
-        // This prevents the page from scrolling
         height: 'calc(100vh - 90px)',
-        
-        // 2. Flexbox to center the card perfectly
         display: 'flex', 
         flexDirection: 'column',
-        justifyContent: 'center', // Vertically center
-        alignItems: 'center',     // Horizontally center
-        
-        // Remove padding that was pushing it down
+        justifyContent: 'center', 
+        alignItems: 'center',     
         pt: 0, 
         pb: 2
       }}
@@ -117,8 +110,6 @@ const LoginPage = () => {
           <Typography component="h1" variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
              {tabIndex === 0 ? 'Welcome Back' : 'Create Account'}
           </Typography>
-
-          {/* Compact Tabs */}
           <Tabs
             value={tabIndex}
             onChange={handleTabChange}
@@ -158,8 +149,6 @@ const LoginPage = () => {
           <Divider sx={{ width: '100%', mb: 2, color: 'text.secondary', fontSize: '0.8rem' }}>
              Or continue with
           </Divider>
-
-          {/* Compact Social Buttons */}
           <Stack direction="row" spacing={2} width="100%" sx={{ mb: 2 }}>
             <Button 
               fullWidth 
@@ -188,8 +177,6 @@ const LoginPage = () => {
           </Stack>
 
           <Divider sx={{ width: '100%', mb: 2 }} />
-
-          {/* Compact Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
             <TextField
               margin="dense"

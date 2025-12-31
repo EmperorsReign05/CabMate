@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
-import { CircularProgress, Box } from "@mui/material"; // Added Box for better layout
+import { CircularProgress, Box } from "@mui/material"; 
 import Header from "./components/Header";
 import Background from "./components/Background";
 
-// Import Pages
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";

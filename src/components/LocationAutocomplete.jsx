@@ -1,13 +1,9 @@
-// src/components/LocationAutocomplete.jsx
-
 import React, { useState, useEffect } from 'react';
 import { Autocomplete } from '@react-google-maps/api';
 
 const LocationAutocomplete = ({ onPlaceSelect, label, value }) => {
   const [autocomplete, setAutocomplete] = useState(null);
   const [inputValue, setInputValue] = useState('');
-
-  // Sync input text when parent sets a value (e.g. via quick search)
   useEffect(() => {
     if (value?.shortName) {
       setInputValue(value.shortName);
@@ -36,8 +32,6 @@ const LocationAutocomplete = ({ onPlaceSelect, label, value }) => {
         lat: place.geometry.location.lat(),
         lng: place.geometry.location.lng(),
       };
-
-      // Update visible input to the bold name (shortName)
       setInputValue(shortName);
 
       onPlaceSelect(details);
@@ -58,7 +52,7 @@ const LocationAutocomplete = ({ onPlaceSelect, label, value }) => {
     textOverflow: `ellipses`,
   };
    const options = {
-    componentRestrictions: { country: 'in' }, // 'in' is the country code for India
+    componentRestrictions: { country: 'in' }, 
   };
 
   return (

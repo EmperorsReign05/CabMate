@@ -23,7 +23,6 @@ const Header = ({ session, profile }) => {
     setDrawerOpen(open);
   };
 
-  // Modern "Pill" Button Style
   const navButtonStyle = (path) => {
     const isActive = location.pathname === path;
     return {
@@ -47,14 +46,13 @@ const Header = ({ session, profile }) => {
   };
 
   return (
-    // ✅ CHANGED: 'sticky' -> 'relative' and 'top: 16' -> 'mt: 2'
     <Container maxWidth="xl" sx={{ position: 'relative', mt: 2, zIndex: 1100, pointerEvents: 'none', mb: 2 }}>
       <AppBar
         position="static"
         elevation={0}
         sx={{
           pointerEvents: 'auto',
-          borderRadius: '50px', // The "Floating Pill" look
+          borderRadius: '50px',
           backdropFilter: 'blur(16px)',
           backgroundColor: 'rgba(255, 255, 255, 0.85)',
           border: '1px solid rgba(255, 255, 255, 0.5)',
@@ -67,7 +65,6 @@ const Header = ({ session, profile }) => {
       >
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 4 } }}>
           
-          {/* LOGO SECTION */}
           <RouterLink to="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center' }}>
             <Box 
                 component="img"
@@ -86,7 +83,6 @@ const Header = ({ session, profile }) => {
             </Typography>
           </RouterLink>
 
-          {/* DESKTOP NAV */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
             
             <Stack direction="row" spacing={0.5} sx={{ bg: 'rgba(0,0,0,0.02)', p: 0.5, borderRadius: '50px' }}>
@@ -113,7 +109,6 @@ const Header = ({ session, profile }) => {
               <>
                  <Box sx={{ width: '1px', height: '24px', bgcolor: 'rgba(0,0,0,0.1)', mx: 2 }} />
                 
-                {/* Profile Pill */}
                 <Button 
                   component={RouterLink} 
                   to="/profile" 
@@ -167,7 +162,6 @@ const Header = ({ session, profile }) => {
             )}
           </Box>
 
-          {/* MOBILE HAMBURGER */}
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton 
                 edge="end" 
@@ -181,7 +175,6 @@ const Header = ({ session, profile }) => {
         </Toolbar>
       </AppBar>
 
-      {/* MOBILE DRAWER */}
       <Drawer 
         anchor="right" 
         open={drawerOpen} 

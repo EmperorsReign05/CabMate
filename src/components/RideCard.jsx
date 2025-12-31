@@ -3,7 +3,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Box, Card, CardContent, Typography, Button, CardActions, Chip, Divider, Stack } from '@mui/material';
 import { People, Delete, Woman, Circle, LocationOn } from '@mui/icons-material';
 
-// Helper function to get Short Name
 const getShortLocation = (address) => {
   if (!address) return "Unknown";
   const lowerAddr = address.toLowerCase();
@@ -37,16 +36,16 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column', 
-        borderRadius: '24px', // Ultra rounded corners
-        border: '1px solid rgba(255, 255, 255, 0.6)', // Glass border
-        background: 'rgba(255, 255, 255, 0.75)', // Glassy background
-        backdropFilter: 'blur(16px)', // Blur effect behind the card
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.05)', // Soft, deep shadow
-        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)', // Smooth physics-like transition
-        overflow: 'visible', // Allows the hover glow to spill out
+        borderRadius: '24px', 
+        border: '1px solid rgba(255, 255, 255, 0.6)', 
+        background: 'rgba(255, 255, 255, 0.75)', 
+        backdropFilter: 'blur(16px)', 
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.05)', 
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)', 
+        overflow: 'visible', 
         '&:hover': { 
-          transform: 'translateY(-8px)', // Big lift on hover
-          boxShadow: '0 20px 40px rgba(173, 87, 193, 0.25)', // Purple ambient glow
+          transform: 'translateY(-8px)', 
+          boxShadow: '0 20px 40px rgba(173, 87, 193, 0.25)', 
           borderColor: '#ad57c1',
         } 
       }}
@@ -54,7 +53,6 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
       <RouterLink to={`/ride/${rideId}`} style={{ textDecoration: 'none', color: 'inherit', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ p: 3, pb: 1, flexGrow: 1 }}>
           
-          {/* HEADER: Time & Date */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
             <Box>
                <Typography variant="h4" sx={{ fontWeight: '800', color: '#2c3e50', letterSpacing: '-1px', lineHeight: 1 }}>
@@ -83,10 +81,8 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
             </Stack>
           </Box>
 
-          {/* ROUTE VISUALIZATION */}
           <Box sx={{ position: 'relative', pl: 1, mb: 2 }}>
             
-            {/* The Vertical Line */}
             <Box 
                 sx={{ 
                     position: 'absolute', 
@@ -100,7 +96,6 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
                 }} 
             />
 
-            {/* FROM ROW */}
             <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2.5, position: 'relative', zIndex: 1 }}>
               <Box sx={{ width: '24px', display: 'flex', justifyContent: 'center', mt: 0.5, mr: 2 }}>
                 <Circle sx={{ fontSize: 14, color: '#ad57c1', bgcolor: 'white', borderRadius: '50%', boxShadow: '0 0 0 4px rgba(255,255,255,0.8)' }} />
@@ -113,7 +108,6 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
               </Box>
             </Box>
 
-            {/* TO ROW */}
             <Box sx={{ display: 'flex', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
               <Box sx={{ width: '24px', display: 'flex', justifyContent: 'center', mt: 0.2, mr: 2 }}>
                 <LocationOn sx={{ fontSize: 22, color: '#ff5252', filter: 'drop-shadow(0 2px 4px rgba(255,82,82,0.3))' }} />
@@ -129,10 +123,9 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
 
         </CardContent>
         
-        {/* FOOTER: Price Badge */}
         <Box sx={{ p: 3, pt: 0, mt: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
             <Box sx={{ 
-                background: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)', // Gradient background
+                background: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)', //Gradient background
                 borderRadius: '50px',
                 px: 2.5,
                 py: 0.8,
@@ -152,7 +145,6 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
         </Box>
       </RouterLink>
 
-      {/* CREATOR ACTIONS */}
       {isCreator && (
         <CardActions sx={{ px: 3, pb: 3, pt: 0 }}>
           <Button
