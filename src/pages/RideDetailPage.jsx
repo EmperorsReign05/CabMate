@@ -9,7 +9,7 @@ import {
   ArrowBack, VerifiedUser, InfoOutlined 
 } from "@mui/icons-material";
 import { useNotification } from "../context/NotificationContext";
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const THEME = {
   primary: '#ad57c1',
   gradient: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
@@ -52,14 +52,14 @@ const RideDetailPage = ({ session }) => {
 
     const fetchRideAndStatus = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}`);
+        const res = await fetch(`${API_BASE}/rides/${rideId}`);
         if (!res.ok) throw new Error("Ride not found");
         const rideData = await res.json();
         
         if (mounted) setRide(rideData);
 
         if (user?.id) {
-          const reqRes = await fetch(`http://127.0.0.1:8000/rides/${rideId}/requests`);
+          const reqRes = await fetch(`${API_BASE}/rides/${rideId}/requests`);
           if (reqRes.ok) {
             const requests = await reqRes.json();
             const myReq = requests.find((r) => r.requester_id === user.id);
@@ -84,7 +84,7 @@ const RideDetailPage = ({ session }) => {
     if (!rideId || !user?.id) return;
     setRequesting(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}/request`, {
+      const res = await fetch(`${API_BASE}/rides/${rideId}/request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user_id: user.id }),

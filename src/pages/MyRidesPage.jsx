@@ -7,7 +7,7 @@ import {
 import { CheckCircleOutline, HighlightOff, WhatsApp, Person, VerifiedUser } from '@mui/icons-material';
 import { useNotification } from '../context/NotificationContext';
 import RideCard from '../components/RideCard';
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const MyRidesPage = ({ session }) => {
   const navigate = useNavigate();
   const [createdRides, setCreatedRides] = useState([]);
@@ -23,7 +23,7 @@ const MyRidesPage = ({ session }) => {
     const fetchAllMyRides = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/rides/user/${session.user.id}`
+          `${API_BASE}/rides/user/${session.user.id}`
         );
 
         if (!res.ok) {
@@ -56,7 +56,7 @@ const MyRidesPage = ({ session }) => {
 
     try {
       setLoadingRequests(true);
-      const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}/requests`);
+      const res = await fetch(`${API_BASE}/rides/${rideId}/requests`);
       if (!res.ok) throw new Error("Failed to fetch requests");
       const data = await res.json();
       setRideRequests((prev) => ({ ...prev, [rideId]: data }));
@@ -68,7 +68,7 @@ const MyRidesPage = ({ session }) => {
   };
 
   const handleApprove = async (rideId, requesterId) => {
-    await fetch(`http://127.0.0.1:8000/rides/${rideId}/requests/${requesterId}/approve`, { method: "POST" });
+    await fetch(`${API_BASE}/rides/${rideId}/requests/${requesterId}/approve`, { method: "POST" });
     
     setRideRequests((prev) => ({
       ...prev,
@@ -85,7 +85,7 @@ const MyRidesPage = ({ session }) => {
   };
 
   const handleReject = async (rideId, requesterId) => {
-    await fetch(`http://127.0.0.1:8000/rides/${rideId}/requests/${requesterId}/reject`, { method: "POST" });
+    await fetch(`${API_BASE}/rides/${rideId}/requests/${requesterId}/reject`, { method: "POST" });
     
     setRideRequests((prev) => ({
       ...prev,
@@ -96,7 +96,7 @@ const MyRidesPage = ({ session }) => {
   const handleDelete = async (rideId) => {
     if (window.confirm('Are you sure you want to delete this ride? This action cannot be undone.')) {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/rides/${rideId}?user_id=${session.user.id}`, {
+        const res = await fetch(`${API_BASE}/rides/${rideId}?user_id=${session.user.id}`, {
             method: 'DELETE',
         });
 

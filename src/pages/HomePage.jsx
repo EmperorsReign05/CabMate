@@ -12,7 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RideCard from '../components/RideCard';
 
 const libraries = ['places'];
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const THEME = {
   primary: '#ad57c1ff',
   primaryDark: '#7b1fa2',
@@ -96,7 +96,7 @@ const HomePage = () => {
       if (fromLocation) params.append("from_location", fromLocation.address);
       if (toLocation) params.append("to_location", toLocation.address);
 
-      const res = await fetch(`http://127.0.0.1:8000/rides/search?${params.toString()}`);
+      const res = await fetch(`${API_BASE}/rides/search?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to fetch rides");
       
       const data = await res.json();

@@ -5,16 +5,14 @@ import { useJsApiLoader } from "@react-google-maps/api";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import {
   Container, Box, TextField, Button, Typography, CircularProgress,
-  FormControlLabel, Checkbox, Tooltip, Stack, Chip, IconButton,
-  Paper, Grid, Fade
+  Stack, Chip, IconButton, Paper, Grid, Fade
 } from "@mui/material";
 import { useNotification } from "../context/NotificationContext";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import NotesIcon from '@mui/icons-material/Notes';
 
 const libraries = ["places"];
-
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const commonRoutes = [
   {
     label: "Hostel ➝ Station",
@@ -78,9 +76,7 @@ const CreateRidePage = ({ session }) => {
     remark: "", 
   });
 
-  const [isLadiesOnly, setIsLadiesOnly] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -90,11 +86,6 @@ const CreateRidePage = ({ session }) => {
 
   useEffect(() => {
     if (!session) { navigate("/login"); return; }
-    const fetchProfile = async () => {
-      const { data } = await supabase.from("profiles").select("gender").eq("id", session.user.id).single();
-      setUserProfile(data);
-    };
-    fetchProfile();
   }, [session, navigate]);
 
   const handleChange = (e) => {
@@ -117,13 +108,12 @@ const CreateRidePage = ({ session }) => {
       departure_time: new Date(rideDetails.departure_time).toISOString(),
       seats_available: Number(rideDetails.seats_available),
       price_per_seat: Number(rideDetails.cost_per_seat),
-      is_ladies_only: isLadiesOnly,
       remark: rideDetails.remark, 
       created_by: session.user.id 
     };
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/rides/", {
+      const res = await fetch(`${API_BASE}/rides/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload), 
@@ -138,7 +128,7 @@ const CreateRidePage = ({ session }) => {
     }
   };
 
-  if (!isLoaded || !userProfile) return <CircularProgress sx={{ mt: 5, mx: 'auto', display: 'block' }} />;
+  if (!isLoaded) return <CircularProgress sx={{ mt: 5, mx: 'auto', display: 'block' }} />;
 
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
@@ -160,7 +150,6 @@ const CreateRidePage = ({ session }) => {
             Publish a Ride
           </Typography>
 
-          
           <Stack direction="row" spacing={1} sx={{ mb: 3, overflowX: 'auto', pb: 1, '::-webkit-scrollbar': { display: 'none' } }}>
             {commonRoutes.map((route) => (
               <Chip
@@ -251,37 +240,26 @@ const CreateRidePage = ({ session }) => {
                 '& .MuiOutlinedInput-root': { bgcolor: 'white', borderRadius: 3 } 
             }}
           />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-            {userProfile?.gender === "female" && (
-              <FormControlLabel
-                control={
-                  <Checkbox checked={isLadiesOnly} onChange={(e) => setIsLadiesOnly(e.target.checked)} sx={{ color: '#ad57c1', '&.Mui-checked': { color: '#ad57c1' } }} />
-                }
-                label={<Typography variant="body2" fontWeight="600" color="text.secondary">Ladies Only</Typography>}
-              />
-            )}
-            
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth={userProfile?.gender !== "female"} 
-              disabled={loading}
-              sx={{
-                flex: userProfile?.gender === "female" ? 1 : 'auto',
-                ml: userProfile?.gender === "female" ? 2 : 0,
-                py: 1.5,
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
-                boxShadow: '0 4px 14px rgba(173, 87, 193, 0.4)',
-                fontWeight: 'bold',
-                textTransform: 'none',
-                fontSize: '1rem',
-                '&:hover': { boxShadow: '0 6px 20px rgba(173, 87, 193, 0.6)' }
-              }}
-            >
-              {loading ? "Publishing..." : "Publish Ride"}
-            </Button>
-          </Box>
+          
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={loading}
+            sx={{
+              mt: 2,
+              py: 1.5,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
+              boxShadow: '0 4px 14px rgba(173, 87, 193, 0.4)',
+              fontWeight: 'bold',
+              textTransform: 'none',
+              fontSize: '1rem',
+              '&:hover': { boxShadow: '0 6px 20px rgba(173, 87, 193, 0.6)' }
+            }}
+          >
+            {loading ? "Publishing..." : "Publish Ride"}
+          </Button>
         </Paper>
       </Fade>
     </Container>

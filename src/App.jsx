@@ -18,7 +18,7 @@ import UpdatePasswordPage from "./pages/UpdatePasswordPage";
 
 import { NotificationProvider } from "./context/NotificationContext";
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 function ProtectedRoute({ session, profileChecked, hasProfile, children }) {
   if (!session) return <Navigate to="/login" replace />;

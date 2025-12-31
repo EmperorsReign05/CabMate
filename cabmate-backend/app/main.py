@@ -7,11 +7,11 @@ app = FastAPI(title="CabMate Backend")
 # ✅ CORS MUST come before include_router
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://localhost:3000",
-        "https://cabmate.pages.dev"
+    allow_origins=["*"
+       # '''"http://localhost:5173",
+       # "http://127.0.0.1:5173",
+       # "https://localhost:3000",
+       # "https://cabmate.pages.dev"'''
     ],
     allow_credentials=True,
     allow_methods=["*"],

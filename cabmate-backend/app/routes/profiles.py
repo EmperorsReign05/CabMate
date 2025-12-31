@@ -35,7 +35,6 @@ def upsert_profile(user_id: str, payload: dict):
                 "full_name": payload.get("full_name"),
                 "phone": payload.get("phone"),
                 "email": payload.get("email"),
-                "gender": payload.get("gender"), # Added gender
                 "updated_at": datetime.now(timezone.utc),
             },
             "$setOnInsert": {

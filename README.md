@@ -13,15 +13,9 @@ Personalized User Dashboard: A central hub for users to see a summary of their a
 
 Request & Approval System: A complete workflow for users to request to join a ride, and for creators to view and approve those requests.
 
-Safe & Inclusive Rides:
+Profile Verification: Users must complete their profile with their name and phone number before full participation.
 
-Ladies-Only Rides: Female students can create and join rides that are exclusively for women, enforced by gender selection in user profiles.
-
-Profile Verification: Users must complete their profile with their name and gender before full participation.
-
-In-App Ride Chat: A private, real-time chat for the creator and approved passengers of a ride, allowing for easy coordination without sharing personal contact details.
-
-Contact Sharing: Once a passenger is approved, the creator and passenger can view each other's email and phone number for direct contact if needed.
+Contact Sharing: Once a passenger is approved, the creator and passenger can view each other's  phone number for direct contact if needed.
 
 Local Cab Directory: A dedicated page with contact information for fixed-rate local cab services, providing a reliable alternative when a carpool isn't available.
 

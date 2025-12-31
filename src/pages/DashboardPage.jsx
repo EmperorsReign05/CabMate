@@ -10,7 +10,7 @@ import {
 import RideCard from '../components/RideCard';
 import { useNotification } from '../context/NotificationContext';
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 //Widget
 const StatWidget = ({ title, value, icon, color }) => (

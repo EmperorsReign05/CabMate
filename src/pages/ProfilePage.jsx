@@ -4,12 +4,11 @@ import { supabase } from '../supabaseClient';
 import { useNotification } from '../context/NotificationContext';
 import { 
   Container, Typography, Box, TextField, Button, 
-  CircularProgress, FormControl, InputLabel, Select, 
-  MenuItem, Paper, Avatar, Divider, Stack, InputAdornment 
+  CircularProgress, Paper, Avatar, Divider, Stack, InputAdornment 
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const ProfilePage = ({ session, onProfileUpdate}) => {
   const navigate = useNavigate();
@@ -18,7 +17,6 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [fullName, setFullName] = useState('');
-  const [gender, setGender] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const pinkColor = '#ad57c1ff';
@@ -35,8 +33,6 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
         if (response.ok) {
           const data = await response.json();
           setFullName(data.full_name || '');
-          setGender(data.gender || '');
-          
           
           let phone = data.phone || '';
           if (phone.startsWith('+91')) {
@@ -58,7 +54,6 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
     e.preventDefault();
     setSaving(true);
 
-  
     const formattedPhone = `+91${phoneNumber}`;
 
     try {
@@ -69,7 +64,6 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
           full_name: fullName,
           phone: formattedPhone, 
           email: session.user.email,
-          gender: gender,
         }),
       });
 
@@ -130,26 +124,11 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
               fullWidth
               required
               type="tel"
-              // 
               InputProps={{
                 startAdornment: <InputAdornment position="start">+91</InputAdornment>,
               }}
               sx={{ '& .MuiOutlinedInput-root.Mui-focused fieldset': { borderColor: pinkColor }, '& label.Mui-focused': { color: pinkColor } }}
             />
-
-            <FormControl fullWidth required>
-              <InputLabel sx={{ '&.Mui-focused': { color: pinkColor } }}>Gender</InputLabel>
-              <Select
-                value={gender}
-                label="Gender"
-                onChange={(e) => setGender(e.target.value)}
-                sx={{ '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: pinkColor } }}
-              >
-                <MenuItem value="male">Male</MenuItem>
-                <MenuItem value="female">Female</MenuItem>
-                
-              </Select>
-            </FormControl>
 
             <Button
               type="submit"

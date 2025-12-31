@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Box, Card, CardContent, Typography, Button, CardActions, Chip, Divider, Stack } from '@mui/material';
-import { People, Delete, Woman, Circle, LocationOn } from '@mui/icons-material';
+import { People, Delete, Circle, LocationOn } from '@mui/icons-material';
 
 const getShortLocation = (address) => {
   if (!address) return "Unknown";
@@ -64,14 +64,6 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
             </Box>
             
             <Stack direction="column" alignItems="flex-end" spacing={1}>
-                {ride.is_ladies_only && (
-                    <Chip 
-                        icon={<Woman sx={{ fontSize: 16 }} />} 
-                        label="Ladies" 
-                        size="small" 
-                        sx={{ bgcolor: '#fce4ec', color: '#c2185b', fontWeight: 'bold', fontSize: '0.7rem', height: 24 }} 
-                    />
-                )}
                 <Chip 
                     icon={<People sx={{ fontSize: 14 }} />} 
                     label={`${ride.seats_available} left`}
