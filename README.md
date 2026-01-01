@@ -132,4 +132,4 @@ docker run -d -p 8000:8000 --env-file .env cabmate-backend
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
 
-<p align="center"> Built with ❤️ by <strong>Mohammad Alman Farooqui</strong> </p>
+Built by Mohammad Alman Farooqui
