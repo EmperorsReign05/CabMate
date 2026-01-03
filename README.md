@@ -8,7 +8,7 @@
     A modern, full-stack carpooling platform designed to replace chaotic WhatsApp groups with a structured, safe, and algorithmic way for students to find and share rides.
   </p>
   <p align="center">
-    <a href="https://cabmate.pages.dev"><strong>View Live Demo »</strong></a>
+    <a href="https://cabmate.pages.dev"><strong>View Live Site »</strong></a>
     <br />
     <br />
     <a href="#-tech-stack">Tech Stack</a>
