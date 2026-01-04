@@ -1,11 +1,11 @@
 
 <p align="center">
-  <h1 align="center">🚖 CabMate</h1>
+  <h1 align="center">CabMate</h1>
   <p align="center">
     <strong>Smart Campus Mobility Solution</strong>
   </p>
   <p align="center">
-    A modern, full-stack carpooling platform designed to replace chaotic WhatsApp groups with a structured, safe, and algorithmic way for students to find and share rides.
+    A modern,centralized,full-stack carpooling platform designed to replace chaotic WhatsApp groups with a structured, safe, and algorithmic way for students to find and share rides.
   </p>
   <p align="center">
     <a href="https://cabmate.pages.dev"><strong>View Live Site »</strong></a>
