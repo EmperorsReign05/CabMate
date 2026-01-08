@@ -34,7 +34,7 @@ def serialize_ride_request(r):
 def get_profile(user_id: str):
     return profiles_collection.find_one(
         {"_id": user_id},
-        {"_id": 0, "full_name": 1, "phone": 1}
+        {"_id": 0, "full_name": 1, "phone": 1, "email": 1}
     )
 
 @router.post("/")
@@ -73,6 +73,11 @@ def get_rides(from_location: str = None, to_location: str = None):
     if to_location:
         query["to_location"] = to_location
 
+    # Exclude rides created by guest user
+    guest_user = profiles_collection.find_one({"email": "guest@cabmate.com"})
+    if guest_user:
+        query["created_by"] = {"$ne": str(guest_user["_id"])}
+
     rides = []
     # Sort by departure time to show nearest rides first
     for ride in rides_collection.find(query).sort("departure_time", 1):
@@ -88,6 +93,11 @@ def search_rides(from_location: str = None, to_location: str = None):
     
     # 1. Start with the base query (always filter by time)
     query = {"departure_time": {"$gt": now}}
+
+    # Exclude rides created by guest user
+    guest_user = profiles_collection.find_one({"email": "guest@cabmate.com"})
+    if guest_user:
+        query["created_by"] = {"$ne": str(guest_user["_id"])}
 
     # 2. Add filters only if the user provided them
     if from_location:

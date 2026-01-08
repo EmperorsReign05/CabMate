@@ -35,6 +35,11 @@ const RideDetailPage = ({ session }) => {
       return;
     }
 
+    if (ride?.creator?.email === 'guest@cabmate.com') {
+      showNotification("You cannot chat with a guest user", "warning");
+      return;
+    }
+
     if (!ride?.creator?.phone) {
       showNotification("Creator's phone number not available", "warning");
       return;
@@ -90,6 +95,11 @@ const RideDetailPage = ({ session }) => {
 
     if (user.email === 'guest@cabmate.com') {
       showNotification("You are on a guest login", "warning");
+      return;
+    }
+
+    if (ride?.creator?.email === 'guest@cabmate.com') {
+      showNotification("You cannot join a guest user's ride", "warning");
       return;
     }
 
