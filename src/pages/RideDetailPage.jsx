@@ -30,6 +30,11 @@ const RideDetailPage = ({ session }) => {
   const user = session?.user ?? null;
 
   const openWhatsApp = () => {
+    if (user?.email === 'guest@cabmate.com') {
+      showNotification("You are on a guest login", "warning");
+      return;
+    }
+
     if (!ride?.creator?.phone) {
       showNotification("Creator's phone number not available", "warning");
       return;
