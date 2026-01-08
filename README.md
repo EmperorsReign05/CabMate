@@ -1,14 +1,14 @@
 
 <p align="center">
-  <h1 align="center">🚖 CabMate</h1>
+  <h1 align="center">CabMate</h1>
   <p align="center">
     <strong>Smart Campus Mobility Solution</strong>
   </p>
   <p align="center">
-    A modern, full-stack carpooling platform designed to replace chaotic WhatsApp groups with a structured, safe, and algorithmic way for students to find and share rides.
+    A modern,centralized,full-stack carpooling platform designed to replace chaotic WhatsApp groups with a structured, safe, and algorithmic way for students to find and share rides.
   </p>
   <p align="center">
-    <a href="https://cabmate.pages.dev"><strong>View Live Demo »</strong></a>
+    <a href="https://cabmate.pages.dev"><strong>View Live Site »</strong></a>
     <br />
     <br />
     <a href="#-tech-stack">Tech Stack</a>
@@ -29,7 +29,7 @@ CabMate is engineered for trust and efficiency:
 
 * **🔐 Secure Authentication:** Custom JWT-based authentication system for secure sign-up and login.
 * **🗺️ Dynamic Ride Matching:** Interactive ride discovery powered by the **Google Maps API**.
-* **📊 User Dashboard:** Real-time summary of travel activity, active rides, and requests.
+* **📊 User Dashboard:**  Real-time summary of travel activity, active rides, and requests.
 * **🤝 Request System:** A "Request-Approve" workflow ensuring drivers have full control over who joins their ride.
 * **📱 Contact Masking:** Phone numbers are only revealed *after* a ride request is approved by the driver.
 * **🚕 Local Directory:** Integrated directory of fixed-rate local cab services for backup options.
@@ -132,4 +132,4 @@ docker run -d -p 8000:8000 --env-file .env cabmate-backend
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
 
-<p align="center"> Built with ❤️ by <strong>Mohammad Alman Farooqui</strong> </p>
+Built by Mohammad Alman Farooqui
