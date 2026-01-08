@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useNotification } from '../context/NotificationContext';
-import { 
-  Container, Typography, Box, TextField, Button, 
-  CircularProgress, Paper, Avatar, Divider, Stack, InputAdornment 
+import {
+  Container, Typography, Box, TextField, Button,
+  CircularProgress, Paper, Avatar, Divider, Stack, InputAdornment
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-const ProfilePage = ({ session, onProfileUpdate}) => {
+const ProfilePage = ({ session, onProfileUpdate }) => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [fullName, setFullName] = useState('');
@@ -33,7 +33,7 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
         if (response.ok) {
           const data = await response.json();
           setFullName(data.full_name || '');
-          
+
           let phone = data.phone || '';
           if (phone.startsWith('+91')) {
             phone = phone.replace('+91', '');
@@ -52,6 +52,10 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (session?.user?.email === 'guest@cabmate.com') {
+      showNotification("You cannot update the guest profile.", "warning");
+      return;
+    }
     setSaving(true);
 
     const formattedPhone = `+91${phoneNumber}`;
@@ -62,19 +66,19 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           full_name: fullName,
-          phone: formattedPhone, 
+          phone: formattedPhone,
           email: session.user.email,
         }),
       });
 
       if (response.ok) {
         showNotification('Profile setup complete!', 'success');
-        
+
         if (onProfileUpdate) {
-          await onProfileUpdate(); 
+          await onProfileUpdate();
         }
-        
-        navigate('/dashboard'); 
+
+        navigate('/dashboard');
       } else {
         throw new Error('Failed to save profile');
       }
@@ -84,9 +88,9 @@ const ProfilePage = ({ session, onProfileUpdate}) => {
       setSaving(false);
     }
   };
-  
+
   if (loading) return (
-    <Box display="flex" justifyContent="center" mt={10}><CircularProgress sx={{color: pinkColor}}/></Box>
+    <Box display="flex" justifyContent="center" mt={10}><CircularProgress sx={{ color: pinkColor }} /></Box>
   );
 
   return (
