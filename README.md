@@ -9,6 +9,8 @@
   </p>
   <p align="center">
     <a href="https://cabmate.pages.dev"><strong>View Live Site »</strong></a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="https://cabmate-auaw.onrender.com/docs"><strong>API Docs (Swagger) »</strong></a>
     <br />
     <br />
     <a href="#-tech-stack">Tech Stack</a>
