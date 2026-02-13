@@ -1,0 +1,852 @@
+openapi: 3.0.3
+
+info:
+  title: CabMate API
+  description: |
+    # 🚕 CabMate - Smart Campus Mobility API
+
+    CabMate is a modern, full-stack carpooling platform designed to replace chaotic WhatsApp groups
+    with a structured, safe, and algorithmic way for students to find and share rides.
+
+    ## Overview
+    This API powers the CabMate platform, providing endpoints for:
+    - **Ride Management** – Create, search, view, and delete rides
+    - **Join Request Workflow** – Request to join rides, approve/reject requests
+    - **User Profiles** – Manage user profile information
+    - **Dashboard** – Get user-specific ride data (created & joined rides)
+
+    ## Authentication
+    Currently, user identity is passed via `user_id` (Supabase Auth UID) in request bodies or query parameters.
+
+    ## Base URL
+    - **Production:** `https://cabmate-auaw.onrender.com`
+    - **Local Development:** `http://localhost:8000`
+
+    ---
+    Built by **Mohammad Alman Farooqui** | [View Live App](https://cabmate.pages.dev)
+  version: 1.0.0
+  contact:
+    name: Mohammad Alman Farooqui
+    url: https://cabmate.pages.dev
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://cabmate-auaw.onrender.com
+    description: Production Server (Render)
+  - url: http://localhost:8000
+    description: Local Development Server
+
+tags:
+  - name: System
+    description: Health check and system status endpoints
+  - name: Rides
+    description: |
+      Core ride management – create, search, view, and delete rides.
+      Rides auto-expire 2 hours after departure time via MongoDB TTL index.
+  - name: Join Requests
+    description: |
+      Request-Approve workflow for joining rides. Drivers have full control
+      over who joins their ride. Contact info is only revealed after approval.
+  - name: Profiles
+    description: User profile management (linked to Supabase Auth)
+
+paths:
+  # ─── System ────────────────────────────────────────────────────────────
+  /:
+    get:
+      tags: [System]
+      summary: Root
+      description: Returns basic API status. Use this to verify the server is running.
+      operationId: root
+      responses:
+        "200":
+          description: API is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /health:
+    get:
+      tags: [System]
+      summary: Health Check
+      description: Returns health status of the API server.
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: active
+
+  # ─── Rides ─────────────────────────────────────────────────────────────
+  /rides/:
+    post:
+      tags: [Rides]
+      summary: Create a new ride
+      description: |
+        Creates a new ride listing. The ride will automatically expire 2 hours
+        after the departure time via MongoDB TTL index.
+      operationId: createRide
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RideCreate"
+            example:
+              from_location: "IIIT Lucknow"
+              to_location: "Lucknow Railway Station"
+              departure_time: "2026-02-15T10:30:00Z"
+              seats_available: 3
+              price_per_seat: 150
+              remark: "Leaving sharp at 10:30, meet at Main Gate"
+              created_by: "abc123-user-uid"
+      responses:
+        "200":
+          description: Ride created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: MongoDB ObjectId of the created ride
+                    example: "65a1b2c3d4e5f6a7b8c9d0e1"
+        "500":
+          description: Server error during ride creation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      tags: [Rides]
+      summary: Get all rides
+      description: |
+        Retrieves all rides, optionally filtered by location. Results are sorted
+        by departure time (nearest first). Guest user rides are excluded.
+      operationId: getRides
+      parameters:
+        - name: from_location
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by exact origin location
+          example: "IIIT Lucknow"
+        - name: to_location
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by exact destination location
+          example: "Lucknow Railway Station"
+      responses:
+        "200":
+          description: List of rides
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RideWithCreator"
+
+  /rides/search:
+    get:
+      tags: [Rides]
+      summary: Search rides
+      description: |
+        Searches for upcoming rides with case-insensitive partial matching on locations.
+        Only returns rides with departure time in the future. Guest user rides are excluded.
+      operationId: searchRides
+      parameters:
+        - name: from_location
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Partial match for origin (case-insensitive)
+          example: "IIIT"
+        - name: to_location
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Partial match for destination (case-insensitive)
+          example: "Railway"
+      responses:
+        "200":
+          description: List of matching rides
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RideResponse"
+
+  /rides/my-created:
+    get:
+      tags: [Rides]
+      summary: Get rides created by a user
+      description: Returns all rides created by the specified user.
+      operationId: getMyCreatedRides
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Supabase Auth UID of the user
+          example: "abc123-user-uid"
+      responses:
+        "200":
+          description: List of rides created by the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RideResponse"
+
+  /rides/user/{user_id}:
+    get:
+      tags: [Rides]
+      summary: Get user dashboard rides
+      description: |
+        Returns a combined dashboard view with:
+        - **created**: All rides the user has created
+        - **joined**: All rides where the user's join request was approved
+      operationId: getUserDashboardRides
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Supabase Auth UID of the user
+          example: "abc123-user-uid"
+      responses:
+        "200":
+          description: Dashboard data with created and joined rides
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardResponse"
+
+  /rides/stats/total:
+    get:
+      tags: [Rides]
+      summary: Get total ride count
+      description: Returns the total number of rides in the database (including expired).
+      operationId: getTotalRidesCount
+      responses:
+        "200":
+          description: Total ride count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    description: Total number of rides
+                    example: 42
+
+  /rides/{ride_id}:
+    get:
+      tags: [Rides]
+      summary: Get a single ride
+      description: Retrieves full details for a specific ride, including creator profile.
+      operationId: getSingleRide
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the ride
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+      responses:
+        "200":
+          description: Ride details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RideWithCreator"
+        "400":
+          description: Invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                detail: "Invalid ID format"
+        "404":
+          description: Ride not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                detail: "Ride not found"
+
+    delete:
+      tags: [Rides]
+      summary: Delete a ride
+      description: |
+        Deletes a ride and all associated join requests.
+        Only the ride creator can delete their own ride (ownership check).
+      operationId: deleteRide
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the ride to delete
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Supabase Auth UID of the user (must be ride creator)
+          example: "abc123-user-uid"
+      responses:
+        "200":
+          description: Ride deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Ride deleted successfully"
+        "400":
+          description: Invalid Ride ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Not the ride creator
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                detail: "You can only delete your own rides"
+        "404":
+          description: Ride not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ─── Join Requests ─────────────────────────────────────────────────────
+  /rides/{ride_id}/request:
+    post:
+      tags: [Join Requests]
+      summary: Request to join a ride
+      description: |
+        Sends a request to join a ride. The ride creator will then approve or reject it.
+        - Cannot request to join your own ride
+        - Cannot send duplicate requests
+      operationId: requestToJoin
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the ride
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: string
+                  description: Supabase Auth UID of the requester
+            example:
+              user_id: "xyz789-requester-uid"
+      responses:
+        "200":
+          description: Request sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Request sent"
+        "400":
+          description: |
+            Bad request – possible reasons:
+            - `user_id` not provided
+            - Invalid ride ID
+            - Creator cannot request their own ride
+            - Already requested
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Ride not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /rides/{ride_id}/requests:
+    get:
+      tags: [Join Requests]
+      summary: Get all requests for a ride
+      description: |
+        Returns all join requests for a specific ride, enriched with requester
+        profile info (name, phone). Used by ride creators to manage requests.
+      operationId: getRideRequests
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the ride
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+      responses:
+        "200":
+          description: List of join requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RideRequest"
+
+  /rides/{ride_id}/requests/{requester_id}/approve:
+    post:
+      tags: [Join Requests]
+      summary: Approve a join request
+      description: |
+        Approves a pending join request. This also decrements the available seats
+        by 1. Fails if no seats are available.
+      operationId: approveRequest
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the ride
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+        - name: requester_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Supabase Auth UID of the requester to approve
+          example: "xyz789-requester-uid"
+      responses:
+        "200":
+          description: Request approved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Request approved"
+        "400":
+          description: Invalid Ride ID or no seats available
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Ride or request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /rides/{ride_id}/requests/{requester_id}/reject:
+    post:
+      tags: [Join Requests]
+      summary: Reject a join request
+      description: Rejects a pending join request. Seat count remains unchanged.
+      operationId: rejectRequest
+      parameters:
+        - name: ride_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: MongoDB ObjectId of the ride
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+        - name: requester_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Supabase Auth UID of the requester to reject
+          example: "xyz789-requester-uid"
+      responses:
+        "200":
+          description: Request rejected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Request rejected"
+        "404":
+          description: Request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ─── Profiles ──────────────────────────────────────────────────────────
+  /profiles/{user_id}:
+    get:
+      tags: [Profiles]
+      summary: Get user profile
+      description: |
+        Retrieves the profile for a given user. Returns 404 if the profile
+        doesn't exist yet (triggers new-user setup flow on frontend).
+      operationId: getProfile
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Supabase Auth UID
+          example: "abc123-user-uid"
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: Profile not found (new user)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                detail: "Profile not found"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags: [Profiles]
+      summary: Create or update user profile
+      description: |
+        Upserts a user profile. If the profile exists, it updates the fields.
+        If it doesn't exist, it creates a new one with the provided data.
+      operationId: upsertProfile
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Supabase Auth UID
+          example: "abc123-user-uid"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileCreate"
+            example:
+              full_name: "Alman Farooqui"
+              phone: "+91 9876543210"
+              email: "alman@example.com"
+      responses:
+        "200":
+          description: Profile saved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+
+# ═══════════════════════════════════════════════════════════════════════════
+# SCHEMAS
+# ═══════════════════════════════════════════════════════════════════════════
+components:
+  schemas:
+    RideCreate:
+      type: object
+      required:
+        - from_location
+        - to_location
+        - departure_time
+        - seats_available
+        - price_per_seat
+        - created_by
+      properties:
+        from_location:
+          type: string
+          description: Origin location / pickup point
+          example: "IIIT Lucknow"
+        to_location:
+          type: string
+          description: Destination location
+          example: "Lucknow Railway Station"
+        departure_time:
+          type: string
+          format: date-time
+          description: Scheduled departure time (ISO 8601 format, UTC)
+          example: "2026-02-15T10:30:00Z"
+        seats_available:
+          type: integer
+          minimum: 1
+          description: Number of seats available for sharing
+          example: 3
+        price_per_seat:
+          type: integer
+          minimum: 0
+          description: Price per seat in INR (₹)
+          example: 150
+        remark:
+          type: string
+          nullable: true
+          description: Optional remark or instructions from the ride creator
+          example: "Leaving sharp at 10:30, meet at Main Gate"
+        created_by:
+          type: string
+          description: Supabase Auth UID of the ride creator
+          example: "abc123-user-uid"
+
+    RideResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: MongoDB ObjectId
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+        from_location:
+          type: string
+          example: "IIIT Lucknow"
+        to_location:
+          type: string
+          example: "Lucknow Railway Station"
+        departure_time:
+          type: string
+          format: date-time
+          example: "2026-02-15T10:30:00+00:00"
+        expires_at:
+          type: string
+          format: date-time
+          description: Auto-expiry time (departure_time + 2 hours)
+          example: "2026-02-15T12:30:00+00:00"
+        seats_available:
+          type: integer
+          example: 3
+        price_per_seat:
+          type: integer
+          example: 150
+        remark:
+          type: string
+          nullable: true
+          example: "Leaving sharp at 10:30, meet at Main Gate"
+        created_by:
+          type: string
+          example: "abc123-user-uid"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-02-13T16:00:00+00:00"
+
+    RideWithCreator:
+      type: object
+      description: Ride object with embedded creator profile (created_by field is replaced with creator object)
+      properties:
+        _id:
+          type: string
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+        from_location:
+          type: string
+          example: "IIIT Lucknow"
+        to_location:
+          type: string
+          example: "Lucknow Railway Station"
+        departure_time:
+          type: string
+          format: date-time
+          example: "2026-02-15T10:30:00+00:00"
+        expires_at:
+          type: string
+          format: date-time
+          example: "2026-02-15T12:30:00+00:00"
+        seats_available:
+          type: integer
+          example: 3
+        price_per_seat:
+          type: integer
+          example: 150
+        remark:
+          type: string
+          nullable: true
+          example: "Leaving sharp at 10:30"
+        creator:
+          $ref: "#/components/schemas/CreatorProfile"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-02-13T16:00:00+00:00"
+
+    CreatorProfile:
+      type: object
+      nullable: true
+      description: Embedded creator profile info
+      properties:
+        full_name:
+          type: string
+          example: "Alman Farooqui"
+        phone:
+          type: string
+          example: "+91 9876543210"
+        email:
+          type: string
+          example: "alman@example.com"
+
+    DashboardResponse:
+      type: object
+      description: Dashboard data containing rides created and joined by the user
+      properties:
+        created:
+          type: array
+          description: Rides created by the user
+          items:
+            $ref: "#/components/schemas/RideWithCreator"
+        joined:
+          type: array
+          description: Rides the user has joined (approved requests)
+          items:
+            $ref: "#/components/schemas/RideWithCreator"
+
+    RideRequest:
+      type: object
+      description: A join request for a ride
+      properties:
+        _id:
+          type: string
+          description: MongoDB ObjectId of the request
+          example: "65b2c3d4e5f6a7b8c9d0e1f2"
+        ride_id:
+          type: string
+          description: ID of the ride being requested
+          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+        requester_id:
+          type: string
+          description: Supabase Auth UID of the requester
+          example: "xyz789-requester-uid"
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+          description: Current status of the request
+          example: "pending"
+        requested_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2026-02-13T17:00:00+00:00"
+        requester:
+          type: object
+          nullable: true
+          description: Requester profile info (name and phone)
+          properties:
+            full_name:
+              type: string
+              example: "John Doe"
+            phone:
+              type: string
+              example: "+91 9123456789"
+
+    Profile:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: Supabase Auth UID (used as document _id)
+          example: "abc123-user-uid"
+        full_name:
+          type: string
+          example: "Alman Farooqui"
+        phone:
+          type: string
+          example: "+91 9876543210"
+        email:
+          type: string
+          format: email
+          example: "alman@example.com"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-01T00:00:00+00:00"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-02-13T16:00:00+00:00"
+
+    ProfileCreate:
+      type: object
+      properties:
+        full_name:
+          type: string
+          description: User's full name
+          example: "Alman Farooqui"
+        phone:
+          type: string
+          description: User's phone number
+          example: "+91 9876543210"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "alman@example.com"
+
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Error message describing what went wrong
+          example: "Ride not found"
