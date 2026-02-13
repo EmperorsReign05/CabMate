@@ -5,8 +5,8 @@ info:
   description: |
     A campus carpooling API that lets students create, discover, and share rides.
 
-    ## 🚀 Quick Start
-    1. Expand **🧪 Try It Out** below → hit `GET /demo/credentials` → **Execute**
+    ##  Quick Start
+    1. Expand ** Try It Out** below → hit `GET /demo/credentials` → **Execute**
     2. Copy the `demo_user_id` and `ride_id` values from the response
     3. Paste them into any endpoint's **Try it out** fields — done!
 
@@ -48,7 +48,7 @@ tags:
       Rides auto-expire 2 hours after departure time via MongoDB TTL index.
   - name: Join Requests
     description: |
-      Request-Approve workflow for joining rides. Drivers have full control
+      Request-Approve workflow for joining rides. Creators have full control
       over who joins their ride. Contact info is only revealed after approval.
   - name: Profiles
     description: User profile management (linked to Supabase Auth)

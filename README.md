@@ -30,8 +30,8 @@ CabMate is engineered for trust and efficiency:
 * **🔐 Secure Authentication:** Custom JWT-based authentication system for secure sign-up and login.
 * **🗺️ Dynamic Ride Matching:** Interactive ride discovery powered by the **Google Maps API**.
 * **📊 User Dashboard:**  Real-time summary of travel activity, active rides, and requests.
-* **🤝 Request System:** A "Request-Approve" workflow ensuring drivers have full control over who joins their ride.
-* **📱 Contact Masking:** Phone numbers are only revealed *after* a ride request is approved by the driver.
+* **🤝 Request System:** A "Request-Approve" workflow ensuring creators have full control over who joins their ride.
+* **📱 Contact Masking:** Phone numbers are only revealed *after* a ride request is approved by the creator.
 * **🚕 Local Directory:** Integrated directory of fixed-rate local cab services for backup options.
 
 ---

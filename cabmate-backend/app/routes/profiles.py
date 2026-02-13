@@ -20,8 +20,10 @@ def get_profile(user_id: str):
         profile["_id"] = str(profile["_id"])
         return profile
 
+    except HTTPException:
+        raise
     except Exception as e:
-        # This catches the 500 crash and prints it to your terminal
+        # This catches actual crashes and prints to terminal
         print("CRITICAL ERROR IN GET_PROFILE:")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
