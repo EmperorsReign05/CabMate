@@ -3,27 +3,24 @@ openapi: 3.0.3
 info:
   title: CabMate API
   description: |
-    # 🚕 CabMate - Smart Campus Mobility API
+    A campus carpooling API that lets students create, discover, and share rides.
 
-    CabMate is a modern, full-stack carpooling platform designed to replace chaotic WhatsApp groups
-    with a structured, safe, and algorithmic way for students to find and share rides.
+    ## 🚀 Quick Start
+    1. Expand **🧪 Try It Out** below → hit `GET /demo/credentials` → **Execute**
+    2. Copy the `demo_user_id` and `ride_id` values from the response
+    3. Paste them into any endpoint's **Try it out** fields — done!
 
-    ## Overview
-    This API powers the CabMate platform, providing endpoints for:
-    - **Ride Management** – Create, search, view, and delete rides
-    - **Join Request Workflow** – Request to join rides, approve/reject requests
-    - **User Profiles** – Manage user profile information
-    - **Dashboard** – Get user-specific ride data (created & joined rides)
+    ## Endpoints
+    - **Rides** – Create, search, view, delete rides
+    - **Join Requests** – Request/approve/reject ride joins
+    - **Profiles** – User profile CRUD
+    - **Dashboard** – User-specific ride data
 
-    ## Authentication
-    Currently, user identity is passed via `user_id` (Supabase Auth UID) in request bodies or query parameters.
-
-    ## Base URL
-    - **Production:** `https://cabmate-auaw.onrender.com`
-    - **Local Development:** `http://localhost:8000`
+    ## Auth
+    Pass `user_id` in request body or query params. Use `/demo/credentials` to get a test ID.
 
     ---
-    Built by **Mohammad Alman Farooqui** | [View Live App](https://cabmate.pages.dev)
+    Built by **Mohammad Alman Farooqui** | [Live App](https://cabmate.pages.dev)
   version: 1.0.0
   contact:
     name: Mohammad Alman Farooqui
@@ -39,6 +36,10 @@ servers:
     description: Local Development Server
 
 tags:
+  - name: "\U0001F9EA Try It Out"
+    description: |
+      **Start here!** Get demo credentials to test all endpoints.
+      No sign-up or authentication required.
   - name: System
     description: Health check and system status endpoints
   - name: Rides
@@ -53,6 +54,68 @@ tags:
     description: User profile management (linked to Supabase Auth)
 
 paths:
+  # ─── Demo / Try It Out ─────────────────────────────────────────────────
+  /demo/credentials:
+    get:
+      tags: ["\U0001F9EA Try It Out"]
+      summary: "\U0001F680 Get Demo Credentials (Start Here!)"
+      description: |
+        **This is the first endpoint you should call!**
+
+        Returns a working `demo_user_id` and sample `ride_id` values
+        that you can copy-paste into all other endpoints.
+
+        ### How to use:
+        1. Click **Try it out** → **Execute**
+        2. Copy `demo_user_id` from the response
+        3. Use it in endpoints that require `user_id` or `created_by`
+        4. Use `ride_id` values from `sample_rides` for ride-specific endpoints
+      operationId: getDemoCredentials
+      responses:
+        "200":
+          description: Demo credentials with working test values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "✅ Copy these values and paste them into the 'Try it out' fields on other endpoints!"
+                  demo_user_id:
+                    type: string
+                    description: Use this as `user_id` or `created_by` in other endpoints
+                    example: "demo-swagger-test-user"
+                  sample_rides:
+                    type: array
+                    description: Sample ride IDs from the database for testing
+                    items:
+                      type: object
+                      properties:
+                        ride_id:
+                          type: string
+                          example: "65a1b2c3d4e5f6a7b8c9d0e1"
+                        from:
+                          type: string
+                          example: "Manipal University Jaipur"
+                        to:
+                          type: string
+                          example: "Jaipur Railway Station"
+                  tips:
+                    type: object
+                    description: Helpful tips on which endpoints to try
+                    properties:
+                      create_ride:
+                        type: string
+                      view_profile:
+                        type: string
+                      view_dashboard:
+                        type: string
+                      get_single_ride:
+                        type: string
+                      search_rides:
+                        type: string
+
   # ─── System ────────────────────────────────────────────────────────────
   /:
     get:
@@ -106,13 +169,13 @@ paths:
             schema:
               $ref: "#/components/schemas/RideCreate"
             example:
-              from_location: "IIIT Lucknow"
-              to_location: "Lucknow Railway Station"
-              departure_time: "2026-02-15T10:30:00Z"
+              from_location: "Manipal University Jaipur"
+              to_location: "Jaipur Railway Station"
+              departure_time: "2026-03-15T10:30:00Z"
               seats_available: 3
               price_per_seat: 150
               remark: "Leaving sharp at 10:30, meet at Main Gate"
-              created_by: "abc123-user-uid"
+              created_by: "demo-swagger-test-user"
       responses:
         "200":
           description: Ride created successfully
@@ -146,14 +209,14 @@ paths:
           schema:
             type: string
           description: Filter by exact origin location
-          example: "IIIT Lucknow"
+          example: "Manipal University Jaipur"
         - name: to_location
           in: query
           required: false
           schema:
             type: string
           description: Filter by exact destination location
-          example: "Lucknow Railway Station"
+          example: "Jaipur Railway Station"
       responses:
         "200":
           description: List of rides
@@ -179,7 +242,7 @@ paths:
           schema:
             type: string
           description: Partial match for origin (case-insensitive)
-          example: "IIIT"
+          example: "Manipal"
         - name: to_location
           in: query
           required: false
@@ -209,8 +272,8 @@ paths:
           required: true
           schema:
             type: string
-          description: Supabase Auth UID of the user
-          example: "abc123-user-uid"
+          description: "User ID — use `demo-swagger-test-user` from /demo/credentials"
+          example: "demo-swagger-test-user"
       responses:
         "200":
           description: List of rides created by the user
@@ -236,8 +299,8 @@ paths:
           required: true
           schema:
             type: string
-          description: Supabase Auth UID of the user
-          example: "abc123-user-uid"
+          description: "User ID — use `demo-swagger-test-user` from /demo/credentials"
+          example: "demo-swagger-test-user"
       responses:
         "200":
           description: Dashboard data with created and joined rides
@@ -323,8 +386,8 @@ paths:
           required: true
           schema:
             type: string
-          description: Supabase Auth UID of the user (must be ride creator)
-          example: "abc123-user-uid"
+          description: "User ID of the ride creator — use `demo-swagger-test-user`"
+          example: "demo-swagger-test-user"
       responses:
         "200":
           description: Ride deleted successfully
@@ -545,8 +608,8 @@ paths:
           required: true
           schema:
             type: string
-          description: Supabase Auth UID
-          example: "abc123-user-uid"
+          description: "User ID — use `demo-swagger-test-user` from /demo/credentials"
+          example: "demo-swagger-test-user"
       responses:
         "200":
           description: User profile
@@ -582,8 +645,8 @@ paths:
           required: true
           schema:
             type: string
-          description: Supabase Auth UID
-          example: "abc123-user-uid"
+          description: "User ID — use `demo-swagger-test-user` from /demo/credentials"
+          example: "demo-swagger-test-user"
       requestBody:
         required: true
         content:
@@ -624,11 +687,11 @@ components:
         from_location:
           type: string
           description: Origin location / pickup point
-          example: "IIIT Lucknow"
+          example: "Manipal University Jaipur"
         to_location:
           type: string
           description: Destination location
-          example: "Lucknow Railway Station"
+          example: "Jaipur Railway Station"
         departure_time:
           type: string
           format: date-time
@@ -651,8 +714,8 @@ components:
           example: "Leaving sharp at 10:30, meet at Main Gate"
         created_by:
           type: string
-          description: Supabase Auth UID of the ride creator
-          example: "abc123-user-uid"
+          description: "User ID of the ride creator — use `demo-swagger-test-user` for testing"
+          example: "demo-swagger-test-user"
 
     RideResponse:
       type: object
@@ -663,10 +726,10 @@ components:
           example: "65a1b2c3d4e5f6a7b8c9d0e1"
         from_location:
           type: string
-          example: "IIIT Lucknow"
+          example: "Manipal University Jaipur"
         to_location:
           type: string
-          example: "Lucknow Railway Station"
+          example: "Jaipur Railway Station"
         departure_time:
           type: string
           format: date-time
@@ -703,10 +766,10 @@ components:
           example: "65a1b2c3d4e5f6a7b8c9d0e1"
         from_location:
           type: string
-          example: "IIIT Lucknow"
+          example: "Manipal University Jaipur"
         to_location:
           type: string
-          example: "Lucknow Railway Station"
+          example: "Jaipur Railway Station"
         departure_time:
           type: string
           format: date-time

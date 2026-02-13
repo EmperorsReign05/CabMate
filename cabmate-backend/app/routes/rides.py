@@ -73,10 +73,12 @@ def get_rides(from_location: str = None, to_location: str = None):
     if to_location:
         query["to_location"] = to_location
 
-    # Exclude rides created by guest user
+    # Exclude rides created by guest user and demo/swagger test user
+    exclude_ids = ["demo-swagger-test-user"]
     guest_user = profiles_collection.find_one({"email": "guest@cabmate.com"})
     if guest_user:
-        query["created_by"] = {"$ne": str(guest_user["_id"])}
+        exclude_ids.append(str(guest_user["_id"]))
+    query["created_by"] = {"$nin": exclude_ids}
 
     rides = []
     # Sort by departure time to show nearest rides first
@@ -94,10 +96,12 @@ def search_rides(from_location: str = None, to_location: str = None):
     # 1. Start with the base query (always filter by time)
     query = {"departure_time": {"$gt": now}}
 
-    # Exclude rides created by guest user
+    # Exclude rides created by guest user and demo/swagger test user
+    exclude_ids = ["demo-swagger-test-user"]
     guest_user = profiles_collection.find_one({"email": "guest@cabmate.com"})
     if guest_user:
-        query["created_by"] = {"$ne": str(guest_user["_id"])}
+        exclude_ids.append(str(guest_user["_id"]))
+    query["created_by"] = {"$nin": exclude_ids}
 
     # 2. Add filters only if the user provided them
     if from_location:
