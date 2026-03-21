@@ -15,7 +15,7 @@ import RideCard from '../components/RideCard';
 const libraries = ['places'];
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const THEME = {
-  primary: '#ad57c1ff',
+  primary: '#ad57c1',
   primaryDark: '#7b1fa2',
   gradient: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
   glass: 'rgba(255, 255, 255, 0.75)',

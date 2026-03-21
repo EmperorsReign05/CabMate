@@ -25,7 +25,7 @@ const LoginPage = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const navigate = useNavigate();
 
-  const pinkColor = '#ad57c1ff'; 
+  const pinkColor = '#ad57c1'; 
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);

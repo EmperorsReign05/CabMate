@@ -143,7 +143,7 @@ const MyRidesPage = ({ session }) => {
                 px: 3,
                 borderRadius: 2,
                 textTransform: 'none',
-                backgroundColor: '#ad57c1ff',
+                backgroundColor: '#ad57c1',
                 fontWeight: 'bold',
                 '&:hover': { backgroundColor: '#4A148C' },
               }}>

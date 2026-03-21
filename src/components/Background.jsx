@@ -16,11 +16,11 @@ const Background = ({ children }) => {
           bottom: 0,
           zIndex: -1, // Ensures it stays in the background
           background: `
-            radial-gradient(ellipse 80% 60% at 60% 20%, rgba(175, 109, 255, 0.50), transparent 65%),
-            radial-gradient(ellipse 70% 60% at 20% 80%, rgba(255, 100, 180, 0.45), transparent 65%),
-            radial-gradient(ellipse 60% 50% at 60% 65%, rgba(255, 235, 170, 0.43), transparent 62%),
-            radial-gradient(ellipse 65% 40% at 50% 60%, rgba(120, 190, 255, 0.48), transparent 68%),
-            linear-gradient(180deg, #f7eaff 0%, #fde2ea 100%)
+            radial-gradient(ellipse 80% 60% at 60% 20%, rgba(199, 219, 201, 0.55), transparent 65%),
+            radial-gradient(ellipse 70% 60% at 20% 80%, rgba(181, 204, 185, 0.45), transparent 65%),
+            radial-gradient(ellipse 60% 50% at 60% 65%, rgba(215, 230, 216, 0.50), transparent 62%),
+            radial-gradient(ellipse 65% 40% at 50% 60%, rgba(232, 242, 233, 0.65), transparent 68%),
+            linear-gradient(180deg, #f7f9f7 0%, #e2ede4 100%)
           `,
         }}
       />
