@@ -130,7 +130,7 @@ const DashboardPage = ({ session }) => {
             <Typography variant="h3" component="h1" sx={{ 
                 fontWeight: '800', 
                 mb: 1,
-                background: 'linear-gradient(45deg, #2c3e50 30%, #ad57c1 90%)',
+                background: 'linear-gradient(45deg, #2c3e50 30%, #f06292 90%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 letterSpacing: '-1px'
@@ -151,14 +151,14 @@ const DashboardPage = ({ session }) => {
             component={RouterLink} 
             to="/create" 
             sx={{
-                bgcolor: '#ad57c1', 
+                bgcolor: '#f06292', 
                 borderRadius: '12px',
                 px: 3,
                 py: 1.2,
                 textTransform: 'none',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                boxShadow: '0 4px 14px rgba(173, 87, 193, 0.4)',
+                boxShadow: '0 4px 14px rgba(240, 98, 146, 0.4)',
                 '&:hover': { bgcolor: '#8e44ad', transform: 'translateY(-2px)' },
                 transition: 'all 0.2s'
             }}
@@ -169,7 +169,7 @@ const DashboardPage = ({ session }) => {
       <Grid container spacing={3} sx={{ mb: 6 }}>
         <Grid item xs={12} sm={6} md={3}>
             <Fade in={true} style={{ transitionDelay: '100ms' }}>
-                <div><StatWidget title="Rides Created" value={stats.created} icon={<DirectionsCar />} color="#ad57c1" /></div>
+                <div><StatWidget title="Rides Created" value={stats.created} icon={<DirectionsCar />} color="#f06292" /></div>
             </Fade>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -212,8 +212,8 @@ const DashboardPage = ({ session }) => {
                     sx={{ 
                         textTransform: 'none', 
                         fontWeight: 'bold', 
-                        color: '#ad57c1',
-                        '&:hover': { bgcolor: 'rgba(173, 87, 193, 0.08)' }
+                        color: '#f06292',
+                        '&:hover': { bgcolor: 'rgba(240, 98, 146, 0.08)' }
                     }}
                 >
                     View All
@@ -241,8 +241,8 @@ const DashboardPage = ({ session }) => {
                         sx={{ 
                             borderRadius: '10px', 
                             textTransform: 'none', 
-                            borderColor: '#ad57c1', 
-                            color: '#ad57c1', 
+                            borderColor: '#f06292', 
+                            color: '#f06292', 
                             fontWeight: 'bold' 
                         }}
                     >

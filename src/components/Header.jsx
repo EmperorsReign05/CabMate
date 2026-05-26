@@ -202,8 +202,8 @@ const Header = ({ session, profile }) => {
           
           <List>
             <ListItem disablePadding sx={{ mb: 1 }}>
-              <ListItemButton component={RouterLink} to="/" sx={{ borderRadius: 3, bgcolor: location.pathname === '/' ? 'rgba(173, 87, 193, 0.1)' : 'transparent' }}>
-                <Home sx={{ mr: 2, color: '#ad57c1' }} />
+              <ListItemButton component={RouterLink} to="/" sx={{ borderRadius: 3, bgcolor: location.pathname === '/' ? 'rgba(240, 98, 146, 0.1)' : 'transparent' }}>
+                <Home sx={{ mr: 2, color: '#f06292' }} />
                 <ListItemText primary="Home" primaryTypographyProps={{ fontWeight: 600 }} />
               </ListItemButton>
             </ListItem>
@@ -211,20 +211,20 @@ const Header = ({ session, profile }) => {
             {session ? (
               <>
                 <ListItem disablePadding sx={{ mb: 1 }}>
-                  <ListItemButton component={RouterLink} to="/dashboard" sx={{ borderRadius: 3, bgcolor: location.pathname === '/dashboard' ? 'rgba(173, 87, 193, 0.1)' : 'transparent' }}>
-                    <Dashboard sx={{ mr: 2, color: '#ad57c1' }} />
+                  <ListItemButton component={RouterLink} to="/dashboard" sx={{ borderRadius: 3, bgcolor: location.pathname === '/dashboard' ? 'rgba(240, 98, 146, 0.1)' : 'transparent' }}>
+                    <Dashboard sx={{ mr: 2, color: '#f06292' }} />
                     <ListItemText primary="Dashboard" primaryTypographyProps={{ fontWeight: 600 }} />
                   </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding sx={{ mb: 1 }}>
-                  <ListItemButton component={RouterLink} to="/my-rides" sx={{ borderRadius: 3, bgcolor: location.pathname === '/my-rides' ? 'rgba(173, 87, 193, 0.1)' : 'transparent' }}>
-                    <DirectionsCar sx={{ mr: 2, color: '#ad57c1' }} />
+                  <ListItemButton component={RouterLink} to="/my-rides" sx={{ borderRadius: 3, bgcolor: location.pathname === '/my-rides' ? 'rgba(240, 98, 146, 0.1)' : 'transparent' }}>
+                    <DirectionsCar sx={{ mr: 2, color: '#f06292' }} />
                     <ListItemText primary="My Rides" primaryTypographyProps={{ fontWeight: 600 }} />
                   </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding sx={{ mb: 1 }}>
-                  <ListItemButton component={RouterLink} to="/local-cabs" sx={{ borderRadius: 3, bgcolor: location.pathname === '/local-cabs' ? 'rgba(173, 87, 193, 0.1)' : 'transparent' }}>
-                    <LocalTaxi sx={{ mr: 2, color: '#ad57c1' }} />
+                  <ListItemButton component={RouterLink} to="/local-cabs" sx={{ borderRadius: 3, bgcolor: location.pathname === '/local-cabs' ? 'rgba(240, 98, 146, 0.1)' : 'transparent' }}>
+                    <LocalTaxi sx={{ mr: 2, color: '#f06292' }} />
                     <ListItemText primary="Local Cabs" primaryTypographyProps={{ fontWeight: 600 }} />
                   </ListItemButton>
                 </ListItem>

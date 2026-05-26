@@ -11,8 +11,8 @@ import {
 import { useNotification } from "../context/NotificationContext";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const THEME = {
-  primary: '#ad57c1',
-  gradient: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
+  primary: '#f06292',
+  gradient: 'linear-gradient(135deg, #f06292 0%, #d81b60 100%)',
   glass: 'rgba(255, 255, 255, 0.8)',
   glassBorder: '1px solid rgba(255, 255, 255, 0.6)',
 };
@@ -61,6 +61,31 @@ const RideDetailPage = ({ session }) => {
     let mounted = true;
 
     const fetchRideAndStatus = async () => {
+      if (rideId.startsWith("mock")) {
+        // Mock data for recruiter portfolio view
+        setTimeout(() => {
+          if (mounted) {
+            setRide({
+              _id: rideId,
+              from_location: "Hostel, Campus",
+              to_location: "Railway Station, City",
+              departure_time: new Date(Date.now() + 1000 * 60 * 60 * 2).toISOString(),
+              seats_available: rideId === 'mock2' ? 1 : 3,
+              price_per_seat: rideId === 'mock1' ? 150 : 200,
+              created_by: "mock_user_1",
+              creator: {
+                full_name: rideId === 'mock2' ? "Priya Patel" : "Rahul Sharma",
+                phone: "9876543210",
+                email: "demo@cabmate.com"
+              },
+              remark: "Leaving right after classes, minimal luggage please!"
+            });
+            setLoading(false);
+          }
+        }, 600);
+        return;
+      }
+
       try {
         const res = await fetch(`${API_BASE}/rides/${rideId}`);
         if (!res.ok) throw new Error("Ride not found");
@@ -104,6 +129,15 @@ const RideDetailPage = ({ session }) => {
     }
 
     setRequesting(true);
+    if (rideId.startsWith('mock')) {
+      setTimeout(() => {
+        setMyRequestStatus("pending");
+        showNotification("Mock request sent successfully!", "success");
+        setRequesting(false);
+      }, 800);
+      return;
+    }
+
     try {
       const res = await fetch(`${API_BASE}/rides/${rideId}/request`, {
         method: "POST",
@@ -126,7 +160,7 @@ const RideDetailPage = ({ session }) => {
     }
   };
 
-  if (loading) return <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}><CircularProgress sx={{ color: '#ad57c1' }} /></Box>;
+  if (loading) return <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}><CircularProgress sx={{ color: '#f06292' }} /></Box>;
   if (!ride) return <Typography sx={{ mt: 10, textAlign: "center" }}>Ride not found.</Typography>;
 
   const isCreator = user?.id === ride?.created_by;
@@ -154,7 +188,7 @@ const RideDetailPage = ({ session }) => {
             background: THEME.glass,
             backdropFilter: 'blur(20px)',
             border: THEME.glassBorder,
-            boxShadow: '0 20px 60px rgba(173, 87, 193, 0.15)',
+            boxShadow: '0 20px 60px rgba(240, 98, 146, 0.15)',
           }}
         >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4, flexWrap: 'wrap', gap: 2 }}>
@@ -184,13 +218,13 @@ const RideDetailPage = ({ session }) => {
               <Box sx={{ position: 'relative', pl: 1 }}>
                 <Box sx={{
                   position: 'absolute', top: 12, bottom: 32, left: '18px', width: '2px',
-                  background: 'linear-gradient(to bottom, #ad57c1 0%, #e0e0e0 100%)'
+                  background: 'linear-gradient(to bottom, #f06292 0%, #e0e0e0 100%)'
                 }} />
 
                 {/* FROM */}
                 <Box sx={{ display: 'flex', mb: 4, position: 'relative', zIndex: 1 }}>
                   <Box sx={{ width: '24px', display: 'flex', justifyContent: 'center', mt: 0.5, mr: 2 }}>
-                    <Circle sx={{ fontSize: 16, color: '#ad57c1', bgcolor: 'white', borderRadius: '50%' }} />
+                    <Circle sx={{ fontSize: 16, color: '#f06292', bgcolor: 'white', borderRadius: '50%' }} />
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary" fontWeight="bold">FROM</Typography>
@@ -213,10 +247,10 @@ const RideDetailPage = ({ session }) => {
                 </Box>
               </Box>
               {ride.remark && (
-                <Box sx={{ mt: 4, p: 2, bgcolor: 'rgba(173, 87, 193, 0.08)', borderRadius: 3, border: '1px dashed rgba(173, 87, 193, 0.3)' }}>
+                <Box sx={{ mt: 4, p: 2, bgcolor: 'rgba(240, 98, 146, 0.08)', borderRadius: 3, border: '1px dashed rgba(240, 98, 146, 0.3)' }}>
                   <Stack direction="row" spacing={1} alignItems="center" mb={1}>
-                    <InfoOutlined fontSize="small" sx={{ color: '#ad57c1' }} />
-                    <Typography variant="caption" fontWeight="bold" sx={{ color: '#ad57c1', textTransform: 'uppercase' }}>
+                    <InfoOutlined fontSize="small" sx={{ color: '#f06292' }} />
+                    <Typography variant="caption" fontWeight="bold" sx={{ color: '#f06292', textTransform: 'uppercase' }}>
                       Note from Ride Creator
                     </Typography>
                   </Stack>
@@ -228,7 +262,7 @@ const RideDetailPage = ({ session }) => {
               <Paper elevation={0} sx={{ p: 3, bgcolor: 'rgba(255,255,255,0.5)', borderRadius: '24px' }}>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                  <Avatar sx={{ width: 48, height: 48, bgcolor: '#ad57c1', mr: 2 }}>
+                  <Avatar sx={{ width: 48, height: 48, bgcolor: '#f06292', mr: 2 }}>
                     <Person />
                   </Avatar>
                   <Box>
@@ -255,7 +289,7 @@ const RideDetailPage = ({ session }) => {
                       background: THEME.gradient,
                       fontWeight: 'bold',
                       textTransform: 'none',
-                      boxShadow: '0 8px 20px rgba(173, 87, 193, 0.3)',
+                      boxShadow: '0 8px 20px rgba(240, 98, 146, 0.3)',
                       opacity: (isCreator || myRequestStatus) ? 0.7 : 1
                     }}
                   >

@@ -13,9 +13,9 @@ import RideCard from '../components/RideCard';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const THEME = {
-  primary: '#ad57c1',
-  primaryDark: '#7b1fa2',
-  gradient: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
+  primary: '#f06292',
+  primaryDark: '#d81b60',
+  gradient: 'linear-gradient(135deg, #f06292 0%, #d81b60 100%)',
   glass: 'rgba(255, 255, 255, 0.75)',
   glassBorder: '1px solid rgba(255, 255, 255, 0.5)',
 };
@@ -243,13 +243,13 @@ const HomePage = () => {
                   px: 4,
                   borderRadius: 3,
                   background: THEME.gradient,
-                  boxShadow: '0 8px 24px rgba(173, 87, 193, 0.4)',
+                  boxShadow: '0 8px 24px rgba(240, 98, 146, 0.4)',
                   fontSize: '1rem',
                   fontWeight: 'bold',
                   textTransform: 'none',
                   minWidth: '140px',
                   '&:hover': {
-                    boxShadow: '0 12px 32px rgba(173, 87, 193, 0.6)',
+                    boxShadow: '0 12px 32px rgba(240, 98, 146, 0.6)',
                     transform: 'translateY(-2px)'
                   },
                   transition: 'all 0.3s'
@@ -346,20 +346,31 @@ const HomePage = () => {
           </Box>
         )}
         <Box sx={{ mt: 12, mb: 4, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary" sx={{ opacity: 0.7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 0.5 }}>
+          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)', textShadow: '0 2px 4px rgba(0,0,0,0.4)', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 0.5 }}>
             <span>&copy; 2026 CabMate Inc. All rights reserved.</span>
-            <span style={{ margin: '0 8px', opacity: 0.5 }}>|</span>
+            <span style={{ margin: '0 8px', opacity: 0.7 }}>|</span>
             <span>Made by Mohammad Alman Farooqui</span>
             <IconButton
               component="a"
               href="https://github.com/EmperorsReign05"
               target="_blank"
               rel="noopener noreferrer"
-              sx={{ color: 'inherit', '&:hover': { color: THEME.primary } }}
+              sx={{ color: 'inherit', opacity: 0.9, '&:hover': { color: 'white', opacity: 1, transform: 'scale(1.1)' }, transition: 'all 0.2s' }}
               size="small"
             >
               <GitHubIcon fontSize="inherit" />
             </IconButton>
+            <span style={{ margin: '0 8px', opacity: 0.7 }}>|</span>
+            <Button
+              component="a"
+              href="https://cabmate-auaw.onrender.com/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="text"
+              sx={{ color: 'inherit', p: 0, textTransform: 'none', fontWeight: 500, minWidth: 'auto', '&:hover': { color: 'white', textDecoration: 'underline', bgcolor: 'transparent' } }}
+            >
+              API Docs
+            </Button>
           </Typography>
         </Box>
       </Container>

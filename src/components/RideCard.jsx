@@ -45,8 +45,8 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
         overflow: 'visible', 
         '&:hover': { 
           transform: 'translateY(-8px)', 
-          boxShadow: '0 20px 40px rgba(173, 87, 193, 0.25)', 
-          borderColor: '#ad57c1',
+          boxShadow: '0 20px 40px rgba(240, 98, 146, 0.25)', 
+          borderColor: '#f06292',
         } 
       }}
     >
@@ -58,7 +58,7 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
                <Typography variant="h4" sx={{ fontWeight: '800', color: '#2c3e50', letterSpacing: '-1px', lineHeight: 1 }}>
                  {timeStr}
                </Typography>
-               <Typography variant="body2" sx={{ fontWeight: '600', color: '#ad57c1', textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', mt: 0.5 }}>
+               <Typography variant="body2" sx={{ fontWeight: '600', color: '#f06292', textTransform: 'uppercase', fontSize: '0.85rem', letterSpacing: '1px', mt: 0.5 }}>
                  {dateStr}
                </Typography>
             </Box>
@@ -83,14 +83,14 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
                     left: '16px', 
                     width: '2px', 
                     borderRadius: '2px',
-                    background: 'linear-gradient(to bottom, #ad57c1 0%, #e0e0e0 100%)', // Gradient line
+                    background: 'linear-gradient(to bottom, #f06292 0%, #e0e0e0 100%)', // Gradient line
                     zIndex: 0
                 }} 
             />
 
             <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2.5, position: 'relative', zIndex: 1 }}>
               <Box sx={{ width: '24px', display: 'flex', justifyContent: 'center', mt: 0.5, mr: 2 }}>
-                <Circle sx={{ fontSize: 14, color: '#ad57c1', bgcolor: 'white', borderRadius: '50%', boxShadow: '0 0 0 4px rgba(255,255,255,0.8)' }} />
+                <Circle sx={{ fontSize: 14, color: '#f06292', bgcolor: 'white', borderRadius: '50%', boxShadow: '0 0 0 4px rgba(255,255,255,0.8)' }} />
               </Box>
               <Box>
                 <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, letterSpacing: '0.5px' }}>FROM</Typography>
@@ -117,11 +117,11 @@ const RideCard = ({ ride, isCreator = false, onDelete = () => {} }) => {
         
         <Box sx={{ p: 3, pt: 0, mt: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
             <Box sx={{ 
-                background: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)', //Gradient background
+                background: 'linear-gradient(135deg, #f06292 0%, #d81b60 100%)', //Gradient background
                 borderRadius: '50px',
                 px: 2.5,
                 py: 0.8,
-                boxShadow: '0 4px 12px rgba(173, 87, 193, 0.4)',
+                boxShadow: '0 4px 12px rgba(240, 98, 146, 0.4)',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'baseline',

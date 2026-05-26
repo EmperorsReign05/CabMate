@@ -121,7 +121,7 @@ const RideChat = ({ rideId, session, creatorId }) => {
           placeholder="Type a message..."
           size="small"
         />
-        <Button type="submit" variant="contained" sx={{ ml: 1 , backgroundColor: '#ad57c1', // A deep purple color
+        <Button type="submit" variant="contained" sx={{ ml: 1 , backgroundColor: '#f06292', // A deep purple color
               '&:hover': {
                 backgroundColor: '#4A148C', // A slightly darker purple for hover
               },}}>Send</Button>

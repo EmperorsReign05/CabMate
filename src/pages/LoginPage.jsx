@@ -25,7 +25,7 @@ const LoginPage = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const navigate = useNavigate();
 
-  const pinkColor = '#ad57c1'; 
+  const pinkColor = '#f06292'; 
 
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
@@ -96,7 +96,7 @@ const LoginPage = () => {
         display: 'flex', 
         width: '100%', 
         maxWidth: '1100px', 
-        minHeight: '520px',
+        height: '560px',
         borderRadius: '32px', 
         overflow: 'hidden', 
         boxShadow: '0 24px 64px rgba(0,0,0,0.1)' 
@@ -128,20 +128,37 @@ const LoginPage = () => {
           flex: { xs: 1, md: '0 0 450px' }, 
           display: 'flex', 
           flexDirection: 'column', 
-          justifyContent: 'center',
           bgcolor: '#f5f1ea',
+          overflowY: 'auto',
           p: { xs: 4, md: 6 }
         }}>
-        <Box sx={{ width: '100%', maxWidth: '360px', mx: 'auto' }}>
+        <Box sx={{ width: '100%', maxWidth: '360px', m: 'auto', py: 2 }}>
           <Typography variant="overline" sx={{ color: '#8c7b68', fontWeight: 700, letterSpacing: 1.5 }}>
             {tabIndex === 0 ? 'WELCOME BACK' : 'GET STARTED'}
           </Typography>
           <Typography variant="h4" sx={{ fontWeight: 700, color: '#2c251f', mb: 1, mt: 0.5 }}>
             {tabIndex === 0 ? 'Sign In' : 'Create Account'}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#5e554d', mb: 2 }}>
+          <Typography variant="body2" sx={{ color: '#5e554d', mb: 1 }}>
             Use your email and password to access your dashboard.
           </Typography>
+          <Button
+            variant="text"
+            onClick={handleGuestLogin}
+            disabled={loading}
+            disableRipple
+            sx={{ 
+              color: '#f06292',
+              fontWeight: 700,
+              textTransform: 'none',
+              p: 0,
+              mb: 2,
+              minWidth: 'auto',
+              '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' }
+            }}
+          >
+            Or log in as Guest &rarr;
+          </Button>
 
           <Tabs
             value={tabIndex}
@@ -229,60 +246,45 @@ const LoginPage = () => {
                OR
             </Divider>
 
-            <Button 
-              fullWidth 
-              variant="outlined" 
-              startIcon={<GoogleIcon />}
-              onClick={handleGoogleLogin}
-              sx={{ 
-                mb: 2,
-                py: 1.2,
-                borderRadius: '12px',
-                borderColor: '#d1c9c0', 
-                color: '#2c251f', 
-                textTransform: 'none', 
-                fontWeight: 600,
-                bgcolor: 'transparent',
-                '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', borderColor: '#b5a99d' }
-              }}
-            >
-              Continue with Google
-            </Button>
+            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+              <Button 
+                fullWidth 
+                variant="outlined" 
+                startIcon={<GoogleIcon />}
+                onClick={handleGoogleLogin}
+                sx={{ 
+                  py: 1,
+                  borderRadius: '12px',
+                  borderColor: '#d1c9c0', 
+                  color: '#2c251f', 
+                  textTransform: 'none', 
+                  fontWeight: 600,
+                  bgcolor: 'transparent',
+                  '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', borderColor: '#b5a99d' }
+                }}
+              >
+                Google
+              </Button>
 
-            <Button 
-              fullWidth 
-              variant="outlined" 
-              startIcon={<GitHubIcon />}
-              onClick={handleGithubLogin}
-              sx={{ 
-                mb: 2,
-                py: 1.2,
-                borderRadius: '12px',
-                borderColor: '#d1c9c0', 
-                color: '#2c251f', 
-                textTransform: 'none', 
-                fontWeight: 600,
-                bgcolor: 'transparent',
-                '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', borderColor: '#b5a99d' }
-              }}
-            >
-              Continue with GitHub
-            </Button>
-
-            <Button
-              fullWidth
-              variant="text"
-              onClick={handleGuestLogin}
-              disabled={loading}
-              sx={{ 
-                color: '#5e554d',
-                fontWeight: 600,
-                textTransform: 'none',
-                '&:hover': { bgcolor: 'transparent', color: '#2c251f' }
-              }}
-            >
-              Log in as Guest
-            </Button>
+              <Button 
+                fullWidth 
+                variant="outlined" 
+                startIcon={<GitHubIcon />}
+                onClick={handleGithubLogin}
+                sx={{ 
+                  py: 1,
+                  borderRadius: '12px',
+                  borderColor: '#d1c9c0', 
+                  color: '#2c251f', 
+                  textTransform: 'none', 
+                  fontWeight: 600,
+                  bgcolor: 'transparent',
+                  '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', borderColor: '#b5a99d' }
+                }}
+              >
+                GitHub
+              </Button>
+            </Box>
             
             {tabIndex === 0 && (
               <Box sx={{ mt: 2, textAlign: 'center' }}>

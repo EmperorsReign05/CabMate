@@ -152,8 +152,8 @@ const CreateRidePage = ({ session }) => {
                 sx={{
                   bgcolor: 'white',
                   fontWeight: 600,
-                  color: '#ad57c1',
-                  border: '1px solid rgba(173, 87, 193, 0.2)',
+                  color: '#f06292',
+                  border: '1px solid rgba(240, 98, 146, 0.2)',
                   '&:hover': { bgcolor: '#f3e5f5' }
                 }}
               />
@@ -168,7 +168,7 @@ const CreateRidePage = ({ session }) => {
 
             <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 10 }}>
               <IconButton onClick={handleSwap} sx={{ bgcolor: 'white', border: '1px solid #eee', width: 32, height: 32, '&:hover': { bgcolor: '#f5f5f5' } }}>
-                <SwapVertIcon fontSize="small" color="primary" sx={{ color: '#ad57c1' }} />
+                <SwapVertIcon fontSize="small" color="primary" sx={{ color: '#f06292' }} />
               </IconButton>
             </Box>
 
@@ -242,12 +242,12 @@ const CreateRidePage = ({ session }) => {
               mt: 2,
               py: 1.5,
               borderRadius: 3,
-              background: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
-              boxShadow: '0 4px 14px rgba(173, 87, 193, 0.4)',
+              background: 'linear-gradient(135deg, #f06292 0%, #d81b60 100%)',
+              boxShadow: '0 4px 14px rgba(240, 98, 146, 0.4)',
               fontWeight: 'bold',
               textTransform: 'none',
               fontSize: '1rem',
-              '&:hover': { boxShadow: '0 6px 20px rgba(173, 87, 193, 0.6)' }
+              '&:hover': { boxShadow: '0 6px 20px rgba(240, 98, 146, 0.6)' }
             }}
           >
             {loading ? "Publishing..." : "Publish Ride"}

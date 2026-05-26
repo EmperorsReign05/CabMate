@@ -8,8 +8,8 @@ import {
 } from '@mui/icons-material';
 
 const THEME = {
-  primary: '#ad57c1',
-  gradient: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
+  primary: '#f06292',
+  gradient: 'linear-gradient(135deg, #f06292 0%, #d81b60 100%)',
   glass: 'rgba(255, 255, 255, 0.8)',
   glassBorder: '1px solid rgba(255, 255, 255, 0.6)',
 };
@@ -49,7 +49,7 @@ const LocalCabsPage = () => {
           <Typography variant="h3" component="h1" sx={{ 
               fontWeight: '800', 
               mb: 2,
-              background: 'linear-gradient(45deg, #2c3e50 30%, #ad57c1 90%)',
+              background: 'linear-gradient(45deg, #2c3e50 30%, #f06292 90%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               letterSpacing: '-1px'
@@ -84,19 +84,19 @@ const LocalCabsPage = () => {
                   flexDirection: 'column',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: '0 20px 40px rgba(173, 87, 193, 0.2)',
-                    borderColor: '#ad57c1'
+                    boxShadow: '0 20px 40px rgba(240, 98, 146, 0.2)',
+                    borderColor: '#f06292'
                   }
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                   <Avatar sx={{ 
                       bgcolor: '#f3e5f5', 
-                      color: '#ad57c1', 
+                      color: '#f06292', 
                       width: 56, 
                       height: 56, 
                       mr: 2,
-                      boxShadow: '0 4px 12px rgba(173, 87, 193, 0.2)'
+                      boxShadow: '0 4px 12px rgba(240, 98, 146, 0.2)'
                   }}>
                     <LocalTaxi sx={{ fontSize: 32 }} />
                   </Avatar>
@@ -114,12 +114,12 @@ const LocalCabsPage = () => {
                   <Chip 
                     label={`₹${cab.price}`} 
                     sx={{ 
-                        bgcolor: '#ad57c1', 
+                        bgcolor: '#f06292', 
                         color: 'white', 
                         fontWeight: 'bold', 
                         fontSize: '1rem',
                         height: '32px',
-                        boxShadow: '0 4px 12px rgba(173, 87, 193, 0.4)'
+                        boxShadow: '0 4px 12px rgba(240, 98, 146, 0.4)'
                     }} 
                   />
                   <Typography variant="caption" sx={{ ml: 1, color: 'text.secondary', fontWeight: 600 }}>
@@ -165,9 +165,9 @@ const LocalCabsPage = () => {
                     textTransform: 'none',
                     fontSize: '1rem',
                     fontWeight: 'bold',
-                    boxShadow: '0 8px 20px rgba(173, 87, 193, 0.3)',
+                    boxShadow: '0 8px 20px rgba(240, 98, 146, 0.3)',
                     '&:hover': {
-                      boxShadow: '0 12px 24px rgba(173, 87, 193, 0.5)',
+                      boxShadow: '0 12px 24px rgba(240, 98, 146, 0.5)',
                       transform: 'scale(1.02)'
                     },
                     transition: 'all 0.2s'

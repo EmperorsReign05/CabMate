@@ -19,7 +19,7 @@ const ProfilePage = ({ session, onProfileUpdate }) => {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
 
-  const pinkColor = '#ad57c1';
+  const pinkColor = '#f06292';
 
   useEffect(() => {
     if (!session) {
