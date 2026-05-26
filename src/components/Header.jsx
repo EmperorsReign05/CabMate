@@ -15,6 +15,10 @@ const Header = ({ session, profile }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
 
+  if (location.pathname === '/login') {
+    return null;
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
@@ -27,18 +31,18 @@ const Header = ({ session, profile }) => {
     const isActive = location.pathname === path;
     return {
       textTransform: 'none',
-      fontWeight: isActive ? 700 : 600,
+      fontWeight: isActive ? 700 : 500,
       borderRadius: '50px', 
       px: 3,
       py: 1,
       mx: 0.5,
       fontSize: '0.9rem',
-      color: isActive ? '#fff' : '#555',
-      background: isActive ? 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)' : 'transparent',
-      boxShadow: isActive ? '0 4px 12px rgba(173, 87, 193, 0.3)' : 'none',
+      color: isActive ? '#fff' : 'rgba(255, 255, 255, 0.7)',
+      background: isActive ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
+      boxShadow: isActive ? '0 4px 12px rgba(0, 0, 0, 0.2)' : 'none',
       '&:hover': {
-        backgroundColor: isActive ? '#ad57c1' : 'rgba(173, 87, 193, 0.08)',
-        color: isActive ? '#fff' : '#ad57c1',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        color: '#fff',
         transform: 'translateY(-1px)',
       },
       transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
@@ -53,11 +57,11 @@ const Header = ({ session, profile }) => {
         sx={{
           pointerEvents: 'auto',
           borderRadius: '50px',
-          backdropFilter: 'blur(16px)',
-          backgroundColor: 'rgba(255, 255, 255, 0.85)',
-          border: '1px solid rgba(255, 255, 255, 0.5)',
-          boxShadow: '0 8px 32px rgba(173, 87, 193, 0.1)',
-          color: 'black',
+          backdropFilter: 'blur(20px)',
+          backgroundColor: 'var(--dark-glass-bg)',
+          border: 'var(--dark-glass-border)',
+          boxShadow: 'var(--glass-shadow)',
+          color: 'white',
           maxWidth: '1200px',
           mx: 'auto', 
           py: 0.5
@@ -78,7 +82,7 @@ const Header = ({ session, profile }) => {
                     boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
                 }}
             />
-            <Typography variant="h6" sx={{ fontWeight: '800', letterSpacing: '-0.5px', color: '#2c3e50' }}>
+            <Typography variant="h6" sx={{ fontWeight: '800', letterSpacing: '-0.5px', color: 'white', fontFamily: '"Playfair Display", serif' }}>
               CabMate
             </Typography>
           </RouterLink>
@@ -117,9 +121,9 @@ const Header = ({ session, profile }) => {
                     textTransform: 'none',
                     borderRadius: '50px',
                     fontWeight: 700,
-                    color: location.pathname === '/profile' ? '#ad57c1' : '#555',
+                    color: location.pathname === '/profile' ? '#fff' : 'rgba(255, 255, 255, 0.7)',
                     px: 2,
-                    '&:hover': { color: '#ad57c1', bgcolor: 'rgba(173, 87, 193, 0.05)' }
+                    '&:hover': { color: '#fff', bgcolor: 'rgba(255, 255, 255, 0.1)' }
                   }}
                 >
                   {profile?.full_name?.split(' ')[0] || "Profile"}
@@ -152,9 +156,10 @@ const Header = ({ session, profile }) => {
                   textTransform: 'none',
                   fontWeight: 'bold',
                   px: 4,
-                  background: 'linear-gradient(135deg, #ad57c1 0%, #7b1fa2 100%)',
-                  boxShadow: '0 8px 16px rgba(173, 87, 193, 0.3)',
-                  '&:hover': { transform: 'translateY(-1px)', boxShadow: '0 12px 20px rgba(173, 87, 193, 0.4)' },
+                  bgcolor: 'white',
+                  color: 'black',
+                  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+                  '&:hover': { bgcolor: '#f0f0f0', transform: 'translateY(-1px)', boxShadow: '0 12px 20px rgba(0, 0, 0, 0.3)' },
                 }}
               >
                 Login

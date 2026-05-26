@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { useJsApiLoader } from '@react-google-maps/api';
 import LocationAutocomplete from '../components/LocationAutocomplete';
 import {
   Container, Typography, Grid, Box, Button, CircularProgress,
@@ -12,7 +11,6 @@ import AddIcon from '@mui/icons-material/Add';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import RideCard from '../components/RideCard';
 
-const libraries = ['places'];
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const THEME = {
   primary: '#ad57c1',
@@ -71,17 +69,13 @@ const commonRoutes = [
 ];
 const HomePage = () => {
   const navigate = useNavigate();
-  const [fromLocation, setFromLocation] = useState(null);
-  const [toLocation, setToLocation] = useState(null);
+  const [fromLocation, setFromLocation] = useState(commonRoutes[0].from);
+  const [toLocation, setToLocation] = useState(commonRoutes[0].to);
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries,
-  });
+
 
   const handleSearch = async () => {
     if (!fromLocation && !toLocation) {
@@ -93,15 +87,40 @@ const HomePage = () => {
     setSearched(true);
 
     try {
-      const params = new URLSearchParams();
-      if (fromLocation) params.append("from_location", fromLocation.address);
-      if (toLocation) params.append("to_location", toLocation.address);
-
-      const res = await fetch(`${API_BASE}/rides/search?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to fetch rides");
-
-      const data = await res.json();
-      setSearchResults(data);
+      // Mocking the API response for portfolio demo purposes
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const mockRides = [
+        {
+          _id: "mock1",
+          from_location: fromLocation ? fromLocation.address : "Campus",
+          to_location: toLocation ? toLocation.address : "City",
+          departure_time: new Date(Date.now() + 1000 * 60 * 60 * 2).toISOString(),
+          seats_available: 3,
+          price_per_seat: 150,
+          created_by: { full_name: "Rahul Sharma" }
+        },
+        {
+          _id: "mock2",
+          from_location: fromLocation ? fromLocation.address : "Campus",
+          to_location: toLocation ? toLocation.address : "City",
+          departure_time: new Date(Date.now() + 1000 * 60 * 60 * 4.5).toISOString(),
+          seats_available: 1,
+          price_per_seat: 200,
+          created_by: { full_name: "Priya Patel" }
+        },
+        {
+          _id: "mock3",
+          from_location: fromLocation ? fromLocation.address : "Campus",
+          to_location: toLocation ? toLocation.address : "City",
+          departure_time: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(),
+          seats_available: 4,
+          price_per_seat: 100,
+          created_by: { full_name: "Amit Kumar" }
+        }
+      ];
+      
+      setSearchResults(mockRides);
     } catch (err) {
       console.error(err);
       alert("Could not fetch rides");
@@ -121,29 +140,56 @@ const HomePage = () => {
     setToLocation(temp);
   };
 
-  if (!isLoaded) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}><CircularProgress /></Box>;
-  }
 
   return (
     <Box sx={{ minHeight: '90vh', pb: 8 }}>
+      <Box sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundImage: 'url(/home_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        zIndex: -1
+      }} />
+      <Box sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        zIndex: -1
+      }} />
 
       <Container maxWidth="lg">
         <Box sx={{ pt: 8, pb: 4, textAlign: 'center' }}>
           <Fade in={true} timeout={1000}>
-            <Typography variant="h2" component="h1" sx={{
-              fontWeight: 800,
-              mb: 2,
-              background: 'linear-gradient(45deg, #2c3e50 30%, #ad57c1 90%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              letterSpacing: '-1px'
-            }}>
-              Your Campus Commute, <br /> Reimagined.
-            </Typography>
+            <Box>
+              <Typography variant="h2" component="h1" sx={{
+                fontWeight: 800,
+                color: 'white',
+                letterSpacing: '-1px',
+                textShadow: '0 4px 20px rgba(0,0,0,0.5)'
+              }}>
+                Your Campus Commute,
+              </Typography>
+              <Typography variant="h1" component="h2" sx={{
+                fontFamily: '"Playfair Display", serif',
+                fontStyle: 'italic',
+                fontWeight: 600,
+                color: '#ffe5b4',
+                textShadow: '0 4px 20px rgba(0,0,0,0.5)',
+                mb: 2
+              }}>
+                Reimagined.
+              </Typography>
+            </Box>
           </Fade>
           <Fade in={true} timeout={1500}>
-            <Typography variant="h6" color="text.secondary" sx={{ mb: 6, fontWeight: 400, maxWidth: '600px', mx: 'auto' }}>
+            <Typography variant="h6" sx={{ mb: 6, fontWeight: 500, color: 'rgba(255,255,255,0.9)', textShadow: '0 2px 10px rgba(0,0,0,0.5)', maxWidth: '600px', mx: 'auto' }}>
               Share rides, split costs, and travel safely with fellow students.
               The smartest way to get from Campus to City.
             </Typography>
@@ -155,10 +201,10 @@ const HomePage = () => {
             sx={{
               p: { xs: 3, md: 5 },
               borderRadius: '32px',
-              background: THEME.glass,
-              backdropFilter: 'blur(20px)',
-              border: THEME.glassBorder,
-              boxShadow: '0 20px 80px rgba(173, 87, 193, 0.15)',
+              background: 'var(--dark-glass-bg)',
+              backdropFilter: 'blur(30px)',
+              border: 'var(--dark-glass-border)',
+              boxShadow: 'var(--glass-shadow)',
               maxWidth: '900px',
               mx: 'auto',
               position: 'relative',
@@ -166,36 +212,25 @@ const HomePage = () => {
             }}
           >
 
-            <Box sx={{
-              position: 'absolute',
-              top: '-50%',
-              left: '-50%',
-              width: '200%',
-              height: '200%',
-              background: 'radial-gradient(circle at 50% 50%, rgba(173, 87, 193, 0.05) 0%, transparent 50%)',
-              zIndex: 0,
-              pointerEvents: 'none'
-            }} />
-
-            <Typography variant="h5" fontWeight="800" sx={{ mb: 3, position: 'relative', color: '#2c3e50', letterSpacing: '-0.5px' }}>
+            <Typography variant="h5" fontWeight="800" sx={{ mb: 3, position: 'relative', color: 'white', letterSpacing: '-0.5px' }}>
               Where are you headed?
             </Typography>
 
             <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="center" sx={{ position: 'relative', zIndex: 1 }}>
-              <Box sx={{ width: '100%', bgcolor: 'white', borderRadius: 3, p: 0.5, boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+              <Box sx={{ width: '100%', bgcolor: 'rgba(255,255,255,0.95)', borderRadius: 3, p: 0.5, boxShadow: '0 2px 12px rgba(0,0,0,0.1)' }}>
                 <LocationAutocomplete label="Leaving from..." onPlaceSelect={setFromLocation} value={fromLocation} />
               </Box>
 
               <IconButton onClick={handleSwap} sx={{
                 bgcolor: 'white',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                 '&:hover': { bgcolor: '#f5f5f5', transform: 'rotate(180deg)' },
                 transition: 'all 0.3s'
               }}>
-                <SwapVertIcon color="primary" />
+                <SwapVertIcon color="action" />
               </IconButton>
 
-              <Box sx={{ width: '100%', bgcolor: 'white', borderRadius: 3, p: 0.5, boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}>
+              <Box sx={{ width: '100%', bgcolor: 'rgba(255,255,255,0.95)', borderRadius: 3, p: 0.5, boxShadow: '0 2px 12px rgba(0,0,0,0.1)' }}>
                 <LocationAutocomplete label="Going to..." onPlaceSelect={setToLocation} value={toLocation} />
               </Box>
 
@@ -226,7 +261,7 @@ const HomePage = () => {
 
 
             <Box sx={{ mt: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1.5, position: 'relative', zIndex: 1 }}>
-              <Typography variant="body2" color="text.secondary" fontWeight="600" mr={1}>
+              <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', fontWeight: '600', mr: 1 }}>
                 Popular:
               </Typography>
               {commonRoutes.map((route) => (
@@ -235,13 +270,13 @@ const HomePage = () => {
                   label={route.label}
                   onClick={() => handleQuickSearch(route)}
                   sx={{
-                    bgcolor: 'rgba(173, 87, 193, 0.1)',
-                    color: '#ad57c1',
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: 'white',
                     fontWeight: '600',
-                    border: '1px solid transparent',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
                     '&:hover': {
-                      bgcolor: 'rgba(173, 87, 193, 0.2)',
-                      border: '1px solid #ad57c1'
+                      bgcolor: 'rgba(255, 255, 255, 0.2)',
+                      border: '1px solid rgba(255, 255, 255, 0.4)'
                     }
                   }}
                 />

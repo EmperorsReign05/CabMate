@@ -1,8 +1,38 @@
+:root {
+  --primary: #ad57c1;
+  --primary-dark: #7b1fa2;
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --dark-glass-bg: rgba(20, 20, 25, 0.6);
+  --dark-glass-border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 html, body {
   margin: 0;
-  margin-top: 0%;
   padding: 0;
   box-sizing: border-box;
-  background: transparent;
-  
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.dark-glass-panel {
+  background: var(--dark-glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: var(--dark-glass-border);
+  box-shadow: var(--glass-shadow);
 }

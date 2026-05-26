@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabaseClient";
-import { useJsApiLoader } from "@react-google-maps/api";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import {
   Container, Box, TextField, Button, Typography, CircularProgress,
@@ -11,7 +10,6 @@ import { useNotification } from "../context/NotificationContext";
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import NotesIcon from '@mui/icons-material/Notes';
 
-const libraries = ["places"];
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 const commonRoutes = [
   {
@@ -78,11 +76,6 @@ const CreateRidePage = ({ session }) => {
 
   const [loading, setLoading] = useState(false);
 
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries,
-  });
 
   useEffect(() => {
     if (!session) { navigate("/login"); return; }
@@ -128,7 +121,6 @@ const CreateRidePage = ({ session }) => {
     }
   };
 
-  if (!isLoaded) return <CircularProgress sx={{ mt: 5, mx: 'auto', display: 'block' }} />;
 
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>

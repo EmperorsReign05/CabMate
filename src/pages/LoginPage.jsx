@@ -83,132 +83,125 @@ const LoginPage = () => {
   };
 
   return (
-    <Container 
-      maxWidth="xs" 
-      sx={{ 
-        height: 'calc(100vh - 90px)',
+    <Box sx={{ 
+      display: 'flex', 
+      minHeight: '100vh', 
+      width: '100vw', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      bgcolor: '#e8e2d9', 
+      p: { xs: 2, md: 4 }
+    }}>
+      <Paper sx={{ 
         display: 'flex', 
-        flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center',     
-        pt: 0, 
-        pb: 2
-      }}
-    >
-      <Paper 
-        elevation={6} 
-        sx={{ 
-          p: 3, 
-          width: '100%', 
-          borderRadius: 4, 
-          bgcolor: 'rgba(255, 255, 255, 0.9)', 
-          backdropFilter: 'blur(10px)' 
-        }}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          
-          <Typography component="h1" variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
-             {tabIndex === 0 ? 'Welcome Back' : 'Create Account'}
+        width: '100%', 
+        maxWidth: '1100px', 
+        minHeight: '520px',
+        borderRadius: '32px', 
+        overflow: 'hidden', 
+        boxShadow: '0 24px 64px rgba(0,0,0,0.1)' 
+      }}>
+        {/* Left side: Image */}
+        <Box sx={{ 
+          flex: 1, 
+        display: { xs: 'none', md: 'flex' }, 
+        position: 'relative',
+        backgroundImage: 'url(/login_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        padding: 6,
+        alignItems: 'flex-end'
+      }}>
+        <Box sx={{ color: 'white', textShadow: '0 2px 10px rgba(0,0,0,0.5)', maxWidth: '500px' }}>
+          <Typography variant="overline" sx={{ letterSpacing: 2, fontWeight: 600 }}>CABMATE WORKSPACE</Typography>
+          <Typography variant="h3" sx={{ fontFamily: '"Playfair Display", serif', fontStyle: 'italic', fontWeight: 600, mt: 1, mb: 2 }}>
+            Log in and continue from exactly where you left off.
           </Typography>
+          <Typography variant="body1" sx={{ opacity: 0.9 }}>
+            Keep your commute simple, safe, and ready for every journey.
+          </Typography>
+        </Box>
+      </Box>
+
+        {/* Right side: Form */}
+        <Box sx={{ 
+          flex: { xs: 1, md: '0 0 450px' }, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'center',
+          bgcolor: '#f5f1ea',
+          p: { xs: 4, md: 6 }
+        }}>
+        <Box sx={{ width: '100%', maxWidth: '360px', mx: 'auto' }}>
+          <Typography variant="overline" sx={{ color: '#8c7b68', fontWeight: 700, letterSpacing: 1.5 }}>
+            {tabIndex === 0 ? 'WELCOME BACK' : 'GET STARTED'}
+          </Typography>
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#2c251f', mb: 1, mt: 0.5 }}>
+            {tabIndex === 0 ? 'Sign In' : 'Create Account'}
+          </Typography>
+          <Typography variant="body2" sx={{ color: '#5e554d', mb: 2 }}>
+            Use your email and password to access your dashboard.
+          </Typography>
+
           <Tabs
             value={tabIndex}
             onChange={handleTabChange}
             variant="fullWidth"
             sx={{
-              width: '100%',
               mb: 2, 
               minHeight: '36px', 
-              '& .MuiTabs-indicator': { backgroundColor: pinkColor },
-              '& .Mui-selected': { color: `${pinkColor} !important`, fontWeight: 'bold' },
+              '& .MuiTabs-indicator': { backgroundColor: '#2c251f' },
+              '& .Mui-selected': { color: '#2c251f !important', fontWeight: 'bold' },
+              '& .MuiTab-root': { color: '#8c7b68', textTransform: 'none', fontWeight: 600 }
             }}
           >
             <Tab label="Sign In" sx={{ py: 0.5, minHeight: '36px' }} />
             <Tab label="Sign Up" sx={{ py: 0.5, minHeight: '36px' }} />
           </Tabs>
 
-          <Button
-            fullWidth
-            variant="contained"
-            onClick={handleGuestLogin}
-            startIcon={<PersonIcon />}
-            disabled={loading}
-            size="small"
-            sx={{ 
-              mb: 2,
-              bgcolor: '#2e7d32', 
-              color: 'white',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              py: 1,
-              '&:hover': { bgcolor: '#1b5e20' }
-            }}
-          >
-            Log in as Guest
-          </Button>
-
-          <Divider sx={{ width: '100%', mb: 2, color: 'text.secondary', fontSize: '0.8rem' }}>
-             Or continue with
-          </Divider>
-          <Stack direction="row" spacing={2} width="100%" sx={{ mb: 2 }}>
-            <Button 
-              fullWidth 
-              variant="outlined" 
-              startIcon={<GoogleIcon />}
-              onClick={handleGoogleLogin}
-              sx={{ 
-                borderColor: '#e0e0e0', color: '#666', textTransform: 'none', bgcolor: 'white',
-                '&:hover': { bgcolor: '#f5f5f5', borderColor: '#bdbdbd' }
-              }}
-            >
-              Google
-            </Button>
-            <Button 
-              fullWidth 
-              variant="outlined" 
-              startIcon={<GitHubIcon />}
-              onClick={handleGithubLogin}
-              sx={{ 
-                borderColor: '#e0e0e0', color: '#666', textTransform: 'none', bgcolor: 'white',
-                '&:hover': { bgcolor: '#f5f5f5', borderColor: '#bdbdbd' }
-              }}
-            >
-              GitHub
-            </Button>
-          </Stack>
-
-          <Divider sx={{ width: '100%', mb: 2 }} />
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: '100%' }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: '#5e554d', mb: 0.5 }}>Email</Typography>
             <TextField
-              margin="dense"
               required
               fullWidth
               id="email"
-              label="Email Address"
+              placeholder="Enter your email"
               name="email"
               autoComplete="email"
-              size="small"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               sx={{
-                '& .MuiOutlinedInput-root.Mui-focused fieldset': { borderColor: pinkColor },
-                '& label.Mui-focused': { color: pinkColor },
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  bgcolor: 'transparent',
+                  borderRadius: '12px',
+                  '& fieldset': { borderColor: '#d1c9c0' },
+                  '&:hover fieldset': { borderColor: '#b5a99d' },
+                  '&.Mui-focused fieldset': { borderColor: '#2c251f' },
+                }
               }}
             />
+
+            <Typography variant="body2" sx={{ fontWeight: 600, color: '#5e554d', mb: 0.5 }}>Password</Typography>
             <TextField
-              margin="dense"
               required
               fullWidth
               name="password"
-              label="Password"
+              placeholder="Enter your password"
               type="password"
               id="password"
               autoComplete="current-password"
-              size="small"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={{
-                '& .MuiOutlinedInput-root.Mui-focused fieldset': { borderColor: pinkColor },
-                '& label.Mui-focused': { color: pinkColor },
+                mb: 3,
+                '& .MuiOutlinedInput-root': {
+                  bgcolor: 'transparent',
+                  borderRadius: '12px',
+                  '& fieldset': { borderColor: '#d1c9c0' },
+                  '&:hover fieldset': { borderColor: '#b5a99d' },
+                  '&.Mui-focused fieldset': { borderColor: '#2c251f' },
+                }
               }}
             />
             
@@ -218,36 +211,95 @@ const LoginPage = () => {
               variant="contained"
               disabled={loading}
               sx={{ 
-                mt: 2, 
-                mb: 1, 
-                py: 1,
-                borderRadius: 2,
-                backgroundColor: pinkColor, 
-                fontWeight: 'bold',
+                py: 1.5,
+                borderRadius: '12px',
+                backgroundColor: '#2c251f', 
+                color: 'white',
+                fontWeight: 600,
                 textTransform: 'none',
                 fontSize: '1rem',
-                '&:hover': { backgroundColor: '#8e44ad' }
+                boxShadow: 'none',
+                '&:hover': { backgroundColor: '#1a1511', boxShadow: 'none' }
               }}
             >
-              {loading ? 'Processing...' : (tabIndex === 0 ? 'Sign In' : 'Sign Up')}
+              {loading ? 'Processing...' : (tabIndex === 0 ? 'Sign In' : 'Create Account')}
             </Button>
 
-            <Grid container justifyContent="center">
-              <Grid item>
+            <Divider sx={{ my: 3, color: '#8c7b68', fontSize: '0.8rem', fontWeight: 600, '&::before, &::after': { borderColor: '#d1c9c0' } }}>
+               OR
+            </Divider>
+
+            <Button 
+              fullWidth 
+              variant="outlined" 
+              startIcon={<GoogleIcon />}
+              onClick={handleGoogleLogin}
+              sx={{ 
+                mb: 2,
+                py: 1.2,
+                borderRadius: '12px',
+                borderColor: '#d1c9c0', 
+                color: '#2c251f', 
+                textTransform: 'none', 
+                fontWeight: 600,
+                bgcolor: 'transparent',
+                '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', borderColor: '#b5a99d' }
+              }}
+            >
+              Continue with Google
+            </Button>
+
+            <Button 
+              fullWidth 
+              variant="outlined" 
+              startIcon={<GitHubIcon />}
+              onClick={handleGithubLogin}
+              sx={{ 
+                mb: 2,
+                py: 1.2,
+                borderRadius: '12px',
+                borderColor: '#d1c9c0', 
+                color: '#2c251f', 
+                textTransform: 'none', 
+                fontWeight: 600,
+                bgcolor: 'transparent',
+                '&:hover': { bgcolor: 'rgba(0,0,0,0.02)', borderColor: '#b5a99d' }
+              }}
+            >
+              Continue with GitHub
+            </Button>
+
+            <Button
+              fullWidth
+              variant="text"
+              onClick={handleGuestLogin}
+              disabled={loading}
+              sx={{ 
+                color: '#5e554d',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': { bgcolor: 'transparent', color: '#2c251f' }
+              }}
+            >
+              Log in as Guest
+            </Button>
+            
+            {tabIndex === 0 && (
+              <Box sx={{ mt: 2, textAlign: 'center' }}>
                 <Button
                   component={RouterLink}
                   to="/forgot-password"
-                  size="small"
-                  sx={{ textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}
+                  sx={{ textTransform: 'none', color: '#5e554d', fontWeight: 600 }}
                 >
                   Forgot password?
                 </Button>
-              </Grid>
-            </Grid>
+              </Box>
+            )}
           </Box>
         </Box>
+        </Box>
       </Paper>
-    </Container>
+    </Box>
   );
 };
 

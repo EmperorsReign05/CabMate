@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Autocomplete } from '@react-google-maps/api';
+import React, { useState, useEffect, useRef } from 'react';
+import { Autocomplete, TextField, CircularProgress } from '@mui/material';
 
 const LocationAutocomplete = ({ onPlaceSelect, label, value }) => {
-  const [autocomplete, setAutocomplete] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  
+  const debounceTimeout = useRef(null);
+
   useEffect(() => {
     if (value?.shortName) {
       setInputValue(value.shortName);
@@ -12,59 +17,91 @@ const LocationAutocomplete = ({ onPlaceSelect, label, value }) => {
     }
   }, [value]);
 
-  const onLoad = (ac) => {
-    setAutocomplete(ac);
-  };
-
-  const onPlaceChanged = () => {
-    if (autocomplete !== null) {
-      const place = autocomplete.getPlace();
-      if (!place || !place.geometry) return;
-
-      const shortName =
-        place.name?.length < 35
-          ? place.name
-          : place.formatted_address.split(',')[0];
-
-      const details = {
-        address: place.formatted_address,
-        shortName,
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-      };
-      setInputValue(shortName);
-
-      onPlaceSelect(details);
-    } else {
-      console.log('Autocomplete is not loaded yet!');
+  const fetchOptions = async (query) => {
+    if (!query) {
+      setOptions([]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5&countrycodes=in`);
+      const data = await res.json();
+      
+      const formattedOptions = data.map((item) => ({
+        address: item.display_name,
+        shortName: item.name || item.display_name.split(',')[0],
+        lat: parseFloat(item.lat),
+        lng: parseFloat(item.lon),
+        place_id: item.place_id,
+      }));
+      
+      setOptions(formattedOptions);
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const inputStyle = {
-    boxSizing: `border-box`,
-    border: `1px solid #c4c4c4`,
-    width: `100%`,
-    height: `56px`,
-    padding: `0 12px`,
-    borderRadius: `12px`,
-    fontSize: `1rem`,
-    outline: `none`,
-    textOverflow: `ellipses`,
+  const handleInputChange = (event, newInputValue) => {
+    setInputValue(newInputValue);
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    
+    debounceTimeout.current = setTimeout(() => {
+      fetchOptions(newInputValue);
+    }, 600);
   };
-   const options = {
-    componentRestrictions: { country: 'in' }, 
+
+  const handleChange = (event, newValue) => {
+    if (newValue) {
+      onPlaceSelect({
+        address: newValue.address,
+        shortName: newValue.shortName,
+        lat: newValue.lat,
+        lng: newValue.lng,
+      });
+    } else {
+      onPlaceSelect(null);
+    }
   };
 
   return (
-    <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged} options={options} >
-      <input
-        type="text"
-        placeholder={label}
-        style={inputStyle}
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-      />
-    </Autocomplete>
+    <Autocomplete
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
+      isOptionEqualToValue={(option, val) => option.shortName === val.shortName}
+      getOptionLabel={(option) => option?.shortName || ""}
+      options={value && !options.find(o => o.shortName === value.shortName) ? [value, ...options] : options}
+      loading={loading}
+      value={value || null}
+      inputValue={inputValue}
+      onInputChange={handleInputChange}
+      onChange={handleChange}
+      filterOptions={(x) => x}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          placeholder={label}
+          variant="outlined"
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+            sx: {
+              height: '56px',
+              borderRadius: '12px',
+              bgcolor: 'transparent',
+              '& fieldset': { border: 'none' }
+            }
+          }}
+        />
+      )}
+    />
   );
 };
 
